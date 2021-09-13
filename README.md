@@ -5,11 +5,12 @@ Utilities for analyzing, plotting, animating and manipulating data from contMech
 
 Usage
 -----
-These Python modules mostly contains convenient functions to use in an IPython instance in a terminal window.
+These Python modules mostly contain convenient functions to use in an IPython instance in a terminal window.
 
 cmutils.py
 ----------
 Miscellaneous functions for input, output, manipulation and simple plotting.
+Very powerful in combinations with numpy's and scipy's standard manipulation and statistics tools.
 
 cmanim.py
 ---------
