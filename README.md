@@ -28,3 +28,7 @@ Example:
 `animation2 = cmanim.runCont2D()`
 
 Specifying custom parameters and animating more specific things is possible but currently rather inconvenient.
+
+mpl.py
+------
+contains presetes etc. for plotting with matplotlib. It is really useful to ensure consistent visuals in publications and working with matplotlib's rcParams in general, giving access to very advanced functionality.
