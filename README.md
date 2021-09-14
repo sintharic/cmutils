@@ -32,3 +32,10 @@ Specifying custom parameters and animating more specific things is possible but 
 mpl.py
 ------
 contains presetes etc. for plotting with matplotlib. It is really useful to ensure consistent visuals in publications and working with matplotlib's rcParams in general, giving access to very advanced functionality.
+
+Other recommendations
+---------------------
+To permanently add these modules to your Anaconda path, you have the options described here: https://stackoverflow.com/questions/37006114/anaconda-permanently-include-external-packages-like-in-pythonpath
+
+If you are often using modules in the IPython console, consider importing them by default. 
+Any .py file in the folder `~/.ipython/profile_default/startup` will automatically be loaded at IPython startup.
