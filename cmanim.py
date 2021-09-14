@@ -41,11 +41,13 @@ RAMP = False
 
 IID = 0 # TODO: now always plots inter class with ID 0
 
-fATTRACT = False # TODO: read this in?
+fATTRACT = True # TODO: read this in?
+
+
+
 
 
 #%% ----- Class and function definitions ----- %%#
-
 
 import numpy as np
 import os
@@ -86,6 +88,8 @@ class gfmdSheet:
         if self.ny == 0: self.ny = self.nx
 
     def updateFiles(self, path):#, numFrames):
+        """ sets up list of frame files belonging to this object """
+
         global NFRAMES
         
         # konfigName
@@ -137,6 +141,8 @@ class gfmdSheet:
             sys.exit("[ERROR] No files found for sheet "+str(self.ID))
     
     def updateCols(self):
+        """ determines which columns in the data files must be imported """
+
         if MODE == "DispX": self.usecols = [0,1]
         elif MODE == "DispY": self.usecols = [0,2]
         elif MODE == "DispD": 
@@ -151,6 +157,8 @@ class gfmdSheet:
         else: print("[WARNING] sheet["+str(self.ID)+"] cannot update cols according to MODE.")
         
     def updateData(self,numFrame):
+        """ reads and sets up the data file needed to plot the next frame """
+
         idx = START + self.increment*(numFrame-1-START) # numFrame starts at 1, not 0!
 
         if MODE[-2:] == "3D":
@@ -212,6 +220,8 @@ class interSheet:
         self.increment = INCREMENT
 
     def updateFiles(self, path):#, numFrames):
+        """ sets up list of frame files belonging to this object """
+
         global NFRAMES
         
         self.nFrames = NFRAMES
@@ -256,6 +266,8 @@ class interSheet:
                 sys.exit("[ERROR] "+str(self.nFrames)+" frames, "+str(len(self.contFiles))+" cont and "+str(len(self.attrFiles))+" attr files.")
 
     def updateData(self,numFrame):
+        """ reads and sets up the data file needed to plot the next frame """
+        
         idx = START + self.increment*(numFrame-1-START) # numFrame starts at 1, not 0!
 
         if not self.fDumpFrame:
@@ -293,8 +305,15 @@ class interSheet:
         #print("contact:", (self.data==1).sum()/(NX*NY))
         #print("attract:", (self.data==-1).sum()/(NX*NY))
 
-# Check directory
+
+
+
+
+#%% ----- Initialization ----- %%#
+
 def checkDir(path):
+    """ Checks <path> directory for "frames" subfolder and "params.out". """
+
     if path[-1] != "/": path += "/"
     if (not os.path.isdir(path+"frames")):
         sys.exit("[ERROR] Could not find the subdirectory 'frames'.")
@@ -304,9 +323,14 @@ def checkDir(path):
         sys.exit("[ERROR] Could not find 'params.out'.")
 
 
-
-# Read params.out
 def initParams(path):
+    """ initialize params.out
+        
+        reads <path>/params.out to recreate sheet and interaction setup,
+        initializes them and checks corresponding files and data to determine
+        optimal plot parameters.
+    """
+
     global XLIM, YLIM, ZLIM, NX, NY, NFRAMES, SHEET, RAMP
     if path[-1] != "/": path += "/"
     paramsfile = open(path + "params.out","r")
@@ -388,6 +412,8 @@ def initParams(path):
 
 
 def animate2D():
+    """ run animation from 2D files """
+
     global MODE, XLIM, YLIM, ZLIM, RAMP
 
     # Setup figure and axes
@@ -465,8 +491,13 @@ def animate2D():
         plt.tight_layout() # looks better with wide plot
 
     
-    # Actual animator function
+
     def updateFrame(iFrame):
+        """ actual animator function
+
+        goes through all sheet and inter objects and reads in an updates 
+        corresponding data for the next frame.
+        """
 
         # Update objects
         if MODE[:4]=="Cont": INTER[IID].updateData(iFrame)
@@ -515,16 +546,18 @@ def animate2D():
             return lines1
     
     
-    # Generator object for looping frame numbers
     def updateTime():
+        """ counts up and loops frame index """
+
         t = 0
         while t<NFRAMES:
             t += animObj.direction
             yield (t%NFRAMES)+1+START
     
     
-    # Add Pause/Play and reverse/forward playback        
     def keyPress(event):
+        """ adds pause/play and reverse/forward during animation playback """
+
         if event.key.isspace():
             if animObj.running: animObj.event_source.stop()
             else: animObj.event_source.start()
@@ -548,6 +581,8 @@ def animate2D():
 
 
 def animate3D():
+    """ run animation from 3D files """
+
     global MODE
 
     fig = plt.figure()
@@ -563,6 +598,12 @@ def animate3D():
     if MODE!="Cont3D": plt.colorbar()
     
     def updateFrame(iFrame):
+        """ actual animator function
+
+        goes through all sheet objects and reads in an updates 
+        corresponding data for the next frame.
+        """
+
         for iSheet in range(len(SHEET)): SHEET[iSheet].updateData(iFrame)
         #TODO check if array has to be transposed or rot90 is correct
         if MODE=="Cont3D": array = np.rot90( SHEET[0].data <= SHEET[1].data )
@@ -571,15 +612,19 @@ def animate3D():
         im.set_array(array)
         return im,
     
-    # Generator object for looping frame numbers
+    
     def updateTime():
+        """ counts up and loops frame index """
+
         t = START
         while t<NFRAMES:
             t += animObj.direction
             yield t%NFRAMES+1+START
     
-    # Add Pause/Play and back/forward functionality        
+
     def keyPress(event):
+        """ adds pause/play and reverse/forward during animation playback """
+
         if event.key.isspace():
             if animObj.running:
                 animObj.event_source.stop()
@@ -605,6 +650,8 @@ def animate3D():
     
 
 def dataReset(): 
+    """ hard reset """
+
     global SHEET, NX, NY, XLIM,YLIM, ZLIM, NFRAMES
     del SHEET[:], INTER[:]
     NX = 0; NY = 0;
@@ -615,11 +662,19 @@ def dataReset():
 
 
 def save(animation, filename):
+    """ save animation to file """
+
     animation.save(filename, writer='imagemagick', fps=FPS)
 
 
 
 def initGlobals(paths):
+    """ initializes global parameters
+    
+    goes through all simulation directories in <paths> and tries to find optimal 
+    parameters to plot all simulations into one animation
+    """
+
     global SHOW, FPS, LINESTYLE, MARKERSTYLE, MODE, VERSION, UNITS, NX, NY, XLIM, YLIM, ZLIM, XRAMP, YRAMP, INCREMENT, START, END, NFRAMES, RAMP, IID
 
     # Init prams file: TODO: before or after the rest of this function?
@@ -672,6 +727,8 @@ def initGlobals(paths):
 
 
 def dumpGlobals(path):
+    """ shows automatically adjusted parameters for user to check """
+
     print("\nPath:", str(path), "\n")
 
     print("SHOW =", str(SHOW))
@@ -723,54 +780,100 @@ def main(paths):
 
 
 def runDispX(path=".",*morepaths):
+    """ animates displacement along X direction
+
+    with stress-displacement curve if applicable.
+    """
+
     global MODE; MODE = "DispX"
     return( main([path]+list(morepaths)) )
 
 def runDispY(path=".",*morepaths):
+    """ animates displacement along Y direction
+
+    with stress-displacement curve if applicable.
+    """
+    
     global MODE; MODE = "DispY"
     return( main([path]+list(morepaths)) )
 
 def runDispD(path=".",*morepaths):
+    """ animates displacement along diagonal direction
+
+    with stress-displacement curve if applicable.
+    """
+    
     global MODE; MODE = "DispD"
     return( main([path]+list(morepaths)) )
 
 def runCont2D(path=".",*morepaths):
+    """ animates contact movie from interSheet frames
+
+    with stress-displacement curve if applicable.
+    """
+    
     global MODE; MODE = "Cont2D"
     return( main([path]+list(morepaths)) )
 
 def runCont3D(path=".",*morepaths):
+    """ animates contact movie from sheet configs """
+
     global MODE; MODE = "Cont3D"
     return( main([path]+list(morepaths)) )
 
 def runDisp3D(path=".",*morepaths):
+    """ animates displacement movie from elastic sheet config """
+
     global MODE; MODE = "Disp3D"
     return( main([path]+list(morepaths)) )
 
 def runDist3D(path=".",*morepaths):
+    """ animates surface distance movie from sheet configs """
+
     global MODE; MODE = "Dist3D"
     return( main([path]+list(morepaths)) )
 
 
 
 def runPressX(path=".",*morepaths):
+    """ animates pressure along X direction
+
+    with stress-displacement curve if applicable.
+    """
+
     global MODE; MODE = "PressX"
     print("[WARNING] Pressure animation supported as of contMech version March 2021.")
     return( main([path]+list(morepaths)) )
     
 
 def runPressY(path=".",*morepaths):
+    """ animates displacement along Y direction
+
+    with stress-displacement curve if applicable.
+    """
+
     global MODE; MODE = "PressY"
     print("[WARNING] Pressure animation supported as of contMech version March 2021.")
     return( main([path]+list(morepaths)) )
     
 
 def runPressD(path=".",*morepaths):
+    """ animates displacement along diagonal direction
+
+    with stress-displacement curve if applicable.
+    """
+
     global MODE; MODE = "PressD"
     print("[WARNING] Pressure animation supported as of contMech version March 2021.")
     return( main([path]+list(morepaths)) )
 
 
 def reanimate():
+    """ runs the previous animation again.
+
+    helpful after manually changing parameters
+    """
+
     initGlobals(["."])
     animation = animate2D()
     if SHOW: plt.show()
