@@ -21,7 +21,7 @@ cmanim.py
 An easy-to-use library for animating simulation results.
 The focus is on fully automatic usage, where the best possible parameters are read from params.out. 
 
-Example:
+Example:  
 `import cmanim`  
 `animation1 = cmanim.runDispX()`  
 `cmanim.save(animation1, "movie.gif")`  
