@@ -22,7 +22,7 @@ LINESTYLE = "-"
 MARKERSTYLE = ""
 MODE = "DispX"
 VERSION = "new" # "new" or "dev"
-UNITS = ["m","Pa"]
+UNITS = ["m","mN"]
 
 # Data parameters
 NX = 0; NY = 0;
@@ -37,12 +37,19 @@ START = 0
 END = -1
 SHEET = []
 INTER = []
+LABELS = []
 RAMP = False
 
 IID = 0 # TODO: now always plots inter class with ID 0
 
 fATTRACT = True # TODO: read this in?
 
+# Add another arbitrary ramp file to be plotted
+ADDRAMP = {"plot"   : False,
+           "x"      : [],
+           "y"      : [],
+           "ls"     : "k--",
+           "lab"    : [] }
 
 
 
@@ -61,7 +68,8 @@ class gfmdSheet:
     # Defaults: should match contMech code
     ID = 0
     nx = 0; ny = 0;
-    fRough = 0; nElast = 0
+    lengthX = 0; lengthY = 0;
+    fRough = 0; nElast = 0; fKelvinVoigt = 0
     f3dMovie = 0
     # compatibility parameters to join multiple paths
     nTime = 0; nFrames = 0; increment = 1
@@ -160,6 +168,10 @@ class gfmdSheet:
         """ reads and sets up the data file needed to plot the next frame """
 
         idx = START + self.increment*(numFrame-1-START) # numFrame starts at 1, not 0!
+        
+        if idx > self.nFrames:
+            print("[WARNING] no further frames found for sheet")
+            return()
 
         if MODE[-2:] == "3D":
             #import cmutils as cm
@@ -331,15 +343,20 @@ def initParams(path):
         optimal plot parameters.
     """
 
-    global XLIM, YLIM, ZLIM, NX, NY, NFRAMES, SHEET, RAMP
+    global XLIM, YLIM, ZLIM, NX, NY, NFRAMES, SHEET, RAMP, LABELS
     if path[-1] != "/": path += "/"
     paramsfile = open(path + "params.out","r")
     freqFrame = 1; nTime = 2; dTime = 0; nSheet = 0;
+    lengthX = 0; lengthY = 0
     for line in paramsfile:
         val = line.split("\t")[0]
         # Read global parameters
-        if   ("# lengthX" in line): XLIM[1] = max(XLIM[1],float(val)/2)
-        elif ("# lengthY" in line): YLIM[1] = max(YLIM[1],float(val)/2)
+        if ("# lengthX" in line): 
+            lengthX = float(val)
+            XLIM[1] = max(XLIM[1],float(val)/2)
+        elif ("# lengthY" in line): 
+            lengthY = float(val)
+            YLIM[1] = max(YLIM[1],float(val)/2)
         elif ("# nxGlobal" in line): NX = max(NX,int(val))
         elif ("# nyGlobal" in line): NY = max(NY,int(val))
         elif ("# nTime" in line): nTime = int(val)
@@ -359,6 +376,7 @@ def initParams(path):
         elif ("# dzRamp" in line): SHEET[-1].dzRamp = float(val)
         elif ("# rampSteps" in line): SHEET[-1].rampPeriod += int(val)
         elif ("# rampRelax" in line): SHEET[-1].rampPeriod += int(val)
+        elif ("# fKelvinVoigt" in line): SHEET[-1].fKelvinVoigt = int(val)
         # Read inter parameters
         elif ("# inter start" in line): INTER.append(interSheet(int(val)))
         elif ("# fDumpFrame" in line): INTER[-1].fDumpFrame += int(val)
@@ -367,6 +385,7 @@ def initParams(path):
     
     # Update global params
     if NY == 0: NY = NX
+    if lengthY == 0: lengthY = lengthX
     nFrames = int(nTime/freqFrame)
     NFRAMES = nFrames # TODO: this needs to be adjusted if joining multiple paths
     if YLIM[1] == 0: YLIM[1] = XLIM[1]
@@ -379,6 +398,8 @@ def initParams(path):
     for iSheet in range(-nSheet,0):
         SHEET[iSheet].dTime = dTime
         SHEET[iSheet].nTime = nTime
+        SHEET[iSheet].lengthX = lengthX
+        SHEET[iSheet].lengthY = lengthY
         SHEET[iSheet].nFrames = nFrames
         SHEET[iSheet].updateNxNy()
         SHEET[iSheet].updateFiles(path)
@@ -388,10 +409,11 @@ def initParams(path):
         if (MODE[-2:]=="3D") or SHEET[iSheet].nElast > 0:
             minima.append(SHEET[iSheet].minmaxZ[0])
             maxima.append(SHEET[iSheet].minmaxZ[1])
-    
+
     # Update inter params
-    for iInter in range(-len(INTER),0):
-        INTER[iInter].updateFiles(path)
+    if MODE=="Cont2D":
+        for iInter in range(-len(INTER),0):
+            INTER[iInter].updateFiles(path)
 
     # Update ZLIM
     if MODE[-2:]=="3D":
@@ -405,6 +427,10 @@ def initParams(path):
     if (MODE[-2:]=="3D") and len(SHEET)>2:
         sys.exit("[ERROR] 3D currently only supported for 2 sheets.")
 
+    # Update labels
+    for iSheet in range(nSheet):
+        if SHEET[iSheet].nElast: LABELS.append("Elastic surface "+str(iSheet))
+        else: LABELS.append("Rigid surface "+str(iSheet))
     #WIP
     if RESMOVIE[0] == 0: RESMOVIE[0] = range(NX)
     if RESMOVIE[1] == 0: RESMOVIE[1] = range(NY)
@@ -420,8 +446,9 @@ def animate2D():
     if RAMP: 
         fig, axes = plt.subplots(1,2,figsize=[10, 4.2])
         ax1 = axes[0]; ax2 = axes[1]
-        ax2.set_xlabel("Z coordinate ("+UNITS[0]+")")
-        ax2.set_ylabel("Pressure ("+UNITS[1]+")")
+        ax2.set_xlabel("normal displacement ("+UNITS[0]+")")
+        if UNITS[1][-1] == "N": ax2.set_ylabel("force ("+UNITS[1]+")")
+        else: ax2.set_ylabel("pressure ("+UNITS[1]+")")
         ax2.grid(True)
         if XRAMP != None: ax2.set_xlim(XRAMP[0], XRAMP[1])
         if YRAMP != None: ax2.set_ylim(YRAMP[0], YRAMP[1])
@@ -438,9 +465,9 @@ def animate2D():
             axlim = [0, np.sqrt(XLIM[1]**2 + YLIM[1]**2)]
             axlim[0] = -axlim[1]
         ax1.set_xlim(1.1*axlim[0], 1.1*axlim[1])
-        ax1.set_xlabel("Lateral coordinate " + MODE[-1] + " ("+UNITS[0]+")")
+        ax1.set_xlabel("lateral coordinate " + MODE[-1] + " ("+UNITS[0]+")")
         if MODE[:4] == "Disp": 
-            ax1.set_ylabel("Displacement Z ("+UNITS[0]+")")
+            ax1.set_ylabel("normal displacement ("+UNITS[0]+")")
             ax1.set_ylim(ZLIM[0], ZLIM[1])
         elif MODE[:4] == "Pres": ax1.set_ylabel("Pressure Z ("+UNITS[1]+")")
 
@@ -461,9 +488,9 @@ def animate2D():
     else:
         for iSheet in range(len(SHEET)):
             if(SHEET[iSheet].nElast == 0):
-                pobj, = ax1.plot(SHEET[iSheet].data[:,0], SHEET[iSheet].data[:,1], label="Rigid surface "+str(iSheet))
+                pobj, = ax1.plot(SHEET[iSheet].data[:,0], SHEET[iSheet].data[:,1], label=LABELS[iSheet])
             else:
-                pobj, = ax1.plot([],[], ls=LINESTYLE, marker=MARKERSTYLE, label="Elastic surface "+str(iSheet))
+                pobj, = ax1.plot([],[], ls=LINESTYLE, marker=MARKERSTYLE, label=LABELS[iSheet])
             lineColor[iSheet] = pobj.get_color()
             lines1[iSheet] = pobj
     
@@ -472,19 +499,38 @@ def animate2D():
         for iSheet in range(len(SHEET)):
             if (SHEET[iSheet].fSteppedRamp != 0):
                 SHEET[iSheet].ramp = np.loadtxt(SHEET[iSheet].rampName, usecols=(0,1))
+                if UNITS[1][-1]=="N":
+                    SHEET[iSheet].ramp[:,1] = SHEET[iSheet].ramp[:,1]*SHEET[iSheet].lengthX*SHEET[iSheet].lengthY
+                if UNITS[1][0]=="m":
+                    SHEET[iSheet].ramp[:,1] = SHEET[iSheet].ramp[:,1]*1000
+                if UNITS[1][0]=="k":
+                    SHEET[iSheet].ramp[:,1] = SHEET[iSheet].ramp[:,1]/1000
                 #print("-> loaded ramp") #DEBUG
             elif (SHEET[iSheet].vzConstCOM != 0):
                 SHEET[iSheet].ramp = np.loadtxt(SHEET[iSheet].rampName, usecols=(1,6))
                 #print("-> loaded moni") #DEBUG
+                #if SHEET[iSheet].fKelvinVoigt: SHEET[iSheet].ramp[:,0] = SHEET[iSheet].ramp[:,0] - 0.3e-6#QUICKFIX_KV
+                if UNITS[1][-1]=="N":
+                    area = SHEET[iSheet].lengthX*SHEET[iSheet].lengthY
+                    SHEET[iSheet].ramp[:,1] = SHEET[iSheet].ramp[:,1]*area
+                #else: "Pa"
+                if UNITS[1][0]=="m":
+                    SHEET[iSheet].ramp[:,1] = SHEET[iSheet].ramp[:,1]*1000
+                if UNITS[1][0]=="k":
+                    SHEET[iSheet].ramp[:,1] = SHEET[iSheet].ramp[:,1]/1000
+                #SHEET[iSheet].ramp[:,1] = 0.853*SHEET[iSheet].ramp[:,1]#QUICKFIX_KV_DIRTY
             else:
                 lines2[iSheet] = 0 
                 #print("-> loaded nothing") #DEBUG
                 continue
             ax2.plot(SHEET[iSheet].ramp[:,0], SHEET[iSheet].ramp[:,1], 
-                     label="Elastic surface "+str(iSheet), color=lineColor[iSheet])
+                     label=LABELS[iSheet], color=lineColor[iSheet])
             pobj, = ax2.plot(SHEET[iSheet].ramp[START,0], SHEET[iSheet].ramp[START,1], 
                             marker="o", color=lineColor[iSheet])
             lines2[iSheet] = pobj
+    if ADDRAMP["plot"]:
+        ax2.plot(ADDRAMP["x"],ADDRAMP["y"],ADDRAMP["ls"],label=ADDRAMP["lab"])
+
 
     if RAMP:
         ax2.legend()
@@ -735,6 +781,7 @@ def dumpGlobals(path):
     print("FPS =", FPS)
     print("LINESTYLE = \"%s\"" % LINESTYLE)
     print("MARKERSTYLE = \"%s\"" % MARKERSTYLE)
+    print("LABELS = \"%s\"" % LABELS)
     print("MODE = \"%s\"" % MODE)
     print("VERSION = \"%s\"" % VERSION)
     print("UNITS = %s\n" % str(UNITS))
@@ -759,14 +806,17 @@ def dumpGlobals(path):
         #    print("SHEET["+str(iSheet)+"] increment: ", SHEET[iSheet].increment)
 
 
-def main(paths):
-    global MODE
+def init(mode,paths):
+    global MODE; MODE = mode
     dataReset()
     for path in paths:
         checkDir(path)
         initParams(path)
     initGlobals(paths)
     dumpGlobals(paths)
+
+def run():
+    global MODE
     if MODE[-2:] == "3D": animation = animate3D()
     else: animation = animate2D()
     if SHOW: plt.show()
@@ -785,8 +835,8 @@ def runDispX(path=".",*morepaths):
     with stress-displacement curve if applicable.
     """
 
-    global MODE; MODE = "DispX"
-    return( main([path]+list(morepaths)) )
+    init("DispX",[path]+list(morepaths))
+    return( run() )
 
 def runDispY(path=".",*morepaths):
     """ animates displacement along Y direction
@@ -794,8 +844,8 @@ def runDispY(path=".",*morepaths):
     with stress-displacement curve if applicable.
     """
     
-    global MODE; MODE = "DispY"
-    return( main([path]+list(morepaths)) )
+    init("DispY",[path]+list(morepaths))
+    return( run() )
 
 def runDispD(path=".",*morepaths):
     """ animates displacement along diagonal direction
@@ -803,8 +853,8 @@ def runDispD(path=".",*morepaths):
     with stress-displacement curve if applicable.
     """
     
-    global MODE; MODE = "DispD"
-    return( main([path]+list(morepaths)) )
+    init("DispD",[path]+list(morepaths))
+    return( run() )
 
 def runCont2D(path=".",*morepaths):
     """ animates contact movie from interSheet frames
@@ -812,26 +862,26 @@ def runCont2D(path=".",*morepaths):
     with stress-displacement curve if applicable.
     """
     
-    global MODE; MODE = "Cont2D"
-    return( main([path]+list(morepaths)) )
+    init("Cont2D",[path]+list(morepaths))
+    return( run() )
 
 def runCont3D(path=".",*morepaths):
     """ animates contact movie from sheet configs """
 
-    global MODE; MODE = "Cont3D"
-    return( main([path]+list(morepaths)) )
+    init("Cont3D",[path]+list(morepaths))
+    return( run() )
 
 def runDisp3D(path=".",*morepaths):
     """ animates displacement movie from elastic sheet config """
 
-    global MODE; MODE = "Disp3D"
-    return( main([path]+list(morepaths)) )
+    init("Disp3D",[path]+list(morepaths))
+    return( run() )
 
 def runDist3D(path=".",*morepaths):
     """ animates surface distance movie from sheet configs """
 
-    global MODE; MODE = "Dist3D"
-    return( main([path]+list(morepaths)) )
+    init("Dist3D",[path]+list(morepaths))
+    return( run() )
 
 
 
@@ -841,9 +891,9 @@ def runPressX(path=".",*morepaths):
     with stress-displacement curve if applicable.
     """
 
-    global MODE; MODE = "PressX"
     print("[WARNING] Pressure animation supported as of contMech version March 2021.")
-    return( main([path]+list(morepaths)) )
+    init("PressX",[path]+list(morepaths))
+    return( run() )
     
 
 def runPressY(path=".",*morepaths):
@@ -852,9 +902,9 @@ def runPressY(path=".",*morepaths):
     with stress-displacement curve if applicable.
     """
 
-    global MODE; MODE = "PressY"
     print("[WARNING] Pressure animation supported as of contMech version March 2021.")
-    return( main([path]+list(morepaths)) )
+    init("PressY",[path]+list(morepaths))
+    return( run() )
     
 
 def runPressD(path=".",*morepaths):
@@ -863,9 +913,9 @@ def runPressD(path=".",*morepaths):
     with stress-displacement curve if applicable.
     """
 
-    global MODE; MODE = "PressD"
     print("[WARNING] Pressure animation supported as of contMech version March 2021.")
-    return( main([path]+list(morepaths)) )
+    init("PressD",[path]+list(morepaths))
+    return( run() )
 
 
 def reanimate():

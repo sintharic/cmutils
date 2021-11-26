@@ -192,7 +192,7 @@ def Server():
     rcp['font.family'] = 'serif'
 
 
-def Publ(num=1):
+def Publ(num=1,ylabel=False):
     """ Settings that look good in publications
 
     <num> is the number of figures that need to fit side by side.
@@ -200,7 +200,7 @@ def Publ(num=1):
     """
 
     if num == 1: rcp['figure.figsize'] = [5.2, 3.4] # single
-    elif num==2: rcp['figure.figsize'] = [3.0, 2.6] # double
+    elif num==2: rcp['figure.figsize'] = [2.6, 2.2] # double
     rcp['figure.dpi'] = 180
     # Space
     if num==1:
@@ -209,9 +209,10 @@ def Publ(num=1):
         rcp['figure.subplot.right'] = 0.90
         rcp['figure.subplot.bottom'] = 0.12
     elif num==2:
-        rcp['figure.subplot.top'] = 0.95
-        rcp['figure.subplot.left'] = 0.05 # TODO: this is for no ylabel
-        rcp['figure.subplot.right'] = 0.95
+        rcp['figure.subplot.top'] = 0.98
+        if ylabel: rcp['figure.subplot.left'] = 0.21
+        else: rcp['figure.subplot.left'] = 0.1
+        rcp['figure.subplot.right'] = 0.97
         rcp['figure.subplot.bottom'] = 0.16
     # Font
     rcp['text.usetex'] = True

@@ -31,19 +31,21 @@ import matplotlib.pyplot as plt
 def show(): plt.show()
 
 
-def plotImg(array, clim=ZLIM, title=False):
+def plotImg(array, clim=ZLIM, title=False, aspect="true"):
     """ plot array as an image
     
     plots 2D numpy.ndarray <array> as a colored image, similar to gnuplot's 
     "splot ... with pm3d".
-    <clim> must be of form (v_min,v_max) to set the color range.
+    <clim> must be of form (v_min,v_max), the value range to which colors are mapped.
 
     returns: matplotlib.axes.Axes object containing the plot
     """
 
     if SHOW: plt.ion(); plt.show()
     plt.figure()
-    plt.imshow(array,cmap="jet")
+    plt.grid(False)
+    if aspect == "true": aspect = (XLIM[1]-XLIM[0])/(YLIM[1]-YLIM[0])
+    plt.imshow(array,cmap="jet",aspect=aspect)
     if clim!="auto": plt.clim(clim[0],clim[1])
     plt.colorbar()
     if title: plt.title(title)
@@ -76,8 +78,8 @@ def plotLines(array, lines, axis=None, dim=0, ls="-", **kwargs):
             z = array[:,line]
             x = np.linspace(XLIM[0],XLIM[1],z.size)
         
-        if axis: axis.plot(x,z,ls,label="line "+str(line),**kwargs)
-        else: plt.plot(x,z,ls,label="line "+str(line),**kwargs)
+        if axis: axis.plot(x,z,ls,label="line "+str(line),lw=0.9,**kwargs)
+        else: plt.plot(x,z,ls,label="line "+str(line),lw=0.9,**kwargs)
     if not axis:
         plt.xlabel(xlab)
         plt.ylabel("Height")
@@ -105,7 +107,7 @@ def plotSurf(array, title=False, clim=ZLIM):
     Y = np.arange(0,array.shape[1],1)
     X, Y = np.meshgrid(X,Y)
     if clim=="auto": clim = (array.min(), array.max())
-    surf = ax.plot_surface(X,Y, np.transpose(array), cmap=cm.jet, 
+    surf = ax.plot_surface(X,Y, np.transpose(array), cmap=cm.jet, rstride=4, cstride=4,
                            vmin=clim[0], vmax=clim[1], linewidth=0, antialiased=False)
     plt.axis("off")
     ax.set_zlim(clim[0],clim[1])
@@ -151,7 +153,6 @@ def readConfig(filepath, usecols=2):
         array = array.reshape((nx,ny))
     
     # Update YLIM using first 2 lines
-    if WARN: print("[Warn:Dimens] Updating XLIM and YLIM to fit imported data.",flush=True)
     dummy = np.loadtxt(filepath, usecols=(0,1), max_rows=2)
     dyH = (dummy[1,1] - dummy[0,1])/2
     YLIM = (-dyH*ny, dyH*ny)
@@ -167,6 +168,11 @@ def readConfig(filepath, usecols=2):
     XLIM = (-lengthX/2, lengthX/2)
     fid.close()
     #array = np.rot90(array)
+
+    if WARN: 
+        print("[Warn:Dimens] Updating XLIM and YLIM to fit imported data:",flush=True)
+        print("  lengthX  = ",lengthX,flush=True)
+        print("  lengthY  = ",2*dyH*ny,flush=True)
     return(array)
     
 
