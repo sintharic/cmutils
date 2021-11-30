@@ -23,20 +23,21 @@ cmanim.py
 An easy-to-use library for animating simulation results.
 The focus is on fully automatic usage, where the best possible parameters are read from params.out. 
 
-Example:  
+Example to create and save a contact movie:  
 `import cmanim`  
-`animation1 = cmanim.runDispX()`  
-`cmanim.save(animation1, "movie.gif")`
+`animation = cmanim.runCont2D()`  
+`cmanim.save(animation, "movie.gif")`
 
-Specifying custom parameters is possible by calling individual functions one after the other. 
-E.g. if you only want to animate frames 40 to 100 and change the xrange:  
-`cmanim.init("DispX",[path_to_data])`  
+Specifying custom parameters is possible by calling individual initialization functions one after the other. 
+E.g. you can animate the cross-sections along x-direction from two different simulations in one figure, limit it to frames 40 to 100, and zoom in to a certain xrange:  
+`cmanim.init("DispX", [path1, path2] )`  
 `cmanim.XLIM = [xmin, xmax]`  
 `cmanim.START = 40`  
 `cmanim.END = 100`  
 `cmanim.NFRAMES = 60`  
-`a = cmanim.run()`  
+`animation = cmanim.run()`  
 
+Essentially, the previously mentioned `runCont2D()`is just a wrapper for `cmanim.init("Cont2D",paths="."); cmanim.run()`, where `init(...)` automatically determines plot parameters, which you can (but most of the time don't need to) overwrite.  
 
 mpl.py
 ------
