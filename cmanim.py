@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+-------------------------------------
+  Animation of contMech Simulations
+-------------------------------------
+
 Created on Thu Dec  3 12:14:42 2020
-
 @author: christian
-
-#TODO:
-- clean up global parameters
-- check for more elegant solutions for updateFrame functions
-- test animate3D() and/or come up with a better solution
-
 """
+
+
+
+#%% ----- Global settings ----- %%#
 
 # For testing
 testpath = "/home/chris/src8fix/run2"
@@ -18,6 +19,7 @@ testpath = "/home/chris/src8fix/run2"
 # Input
 SHOW = True
 FPS = 5
+DPI = 180 #TODO: dumpGlobal
 LINESTYLE = "-"
 MARKERSTYLE = ""
 MODE = "DispX"
@@ -39,6 +41,7 @@ SHEET = []
 INTER = []
 LABELS = []
 RAMP = False
+GRID = True
 
 IID = 0 # TODO: now always plots inter class with ID 0
 
@@ -70,6 +73,7 @@ class gfmdSheet:
     nx = 0; ny = 0;
     lengthX = 0; lengthY = 0;
     fRough = 0; nElast = 0; fKelvinVoigt = 0
+    stiffness0 = 0
     f3dMovie = 0
     # compatibility parameters to join multiple paths
     nTime = 0; nFrames = 0; increment = 1
@@ -93,7 +97,7 @@ class gfmdSheet:
     def updateNxNy(self):
         global NX, NY
         if self.nx == 0: self.nx = NX
-        if self.ny == 0: self.ny = self.nx
+        if self.ny == 0: self.ny = NY
 
     def updateFiles(self, path):#, numFrames):
         """ sets up list of frame files belonging to this object """
@@ -161,6 +165,9 @@ class gfmdSheet:
         elif self.nElast>0 and MODE == "PressD": self.usecols = [5,7]
         elif (MODE=="Dist3D") or (MODE=="Cont3D"): self.usecols = [2]
         elif (MODE=="Disp3D"): self.usecols = [2]
+        elif (MODE=="Press3D"):
+            if self.nElast>0: self.usecols = [3]
+            else: self.usecols = [2]
         elif self.nElast == 0: self.usecols = [0,1]
         else: print("[WARNING] sheet["+str(self.ID)+"] cannot update cols according to MODE.")
         
@@ -176,6 +183,7 @@ class gfmdSheet:
         if MODE[-2:] == "3D":
             #import cmutils as cm
             cm.WARN = False
+
             if (self.nElast > 0):
                 self.data = cm.readConfig(self.files[idx], usecols=self.usecols)
             elif (self.data.size == 1):
@@ -184,6 +192,12 @@ class gfmdSheet:
             # TODO: What if elast sheet was downsampled to be smaller than 512x512?
             if (self.nx!=NX) or (self.ny!=NY) or (self.nx>512) or (self.ny>512): 
                 self.data = cm.resample(self.data,(NX,NY))
+            #WIP
+            if (self.data.shape[0]!=len(RESMOVIE[0])):
+                self.data = self.data[RESMOVIE[0],:]
+                self.data = self.data[:,RESMOVIE[1]]
+                #print(numFrame,"elast sheet",self.ID,"after: ", self.data.shape)#DEBUG
+
         else: 
             if (self.nElast > 0):
                 try: self.data = np.loadtxt(self.files[idx], usecols=self.usecols)
@@ -216,7 +230,7 @@ class gfmdSheet:
 class interSheet:
     # Defaults: should match contMech code
     ID = 0
-    nx = 0; ny = 0;
+    nx = 0; ny = 0; resolMovie = 0
     fPotential = 0;
     fDumpFrame = 0
     nTime = 0; nFrames = 0; increment = 1
@@ -286,7 +300,7 @@ class interSheet:
             print("Nothing to do in inter"+str(ID))
             return
 
-        self.data = np.zeros((NX,NY),dtype=np.int16)
+        self.data = np.zeros((self.nx,self.ny),dtype=np.int16)
         try: 
             #Adjust: CONVERSION!!!!
             #f = np.loadtxt(self.contFiles[idx]) 
@@ -343,11 +357,12 @@ def initParams(path):
         optimal plot parameters.
     """
 
-    global XLIM, YLIM, ZLIM, NX, NY, NFRAMES, SHEET, RAMP, LABELS
+    global XLIM, YLIM, ZLIM, NX, NY, NFRAMES, SHEET, RAMP, LABELS, RESMOVIE
     if path[-1] != "/": path += "/"
     paramsfile = open(path + "params.out","r")
     freqFrame = 1; nTime = 2; dTime = 0; nSheet = 0;
     lengthX = 0; lengthY = 0
+    reading = "global"
     for line in paramsfile:
         val = line.split("\t")[0]
         # Read global parameters
@@ -364,10 +379,13 @@ def initParams(path):
         elif ("# freqFrame" in line): freqFrame = int(val)
         elif ("# nSheet" in line): nSheet = int(val)
         # Read sheet parameters
-        elif ("# sheet start" in line): SHEET.append(gfmdSheet(int(val)))
+        elif ("# sheet start" in line): 
+            SHEET.append(gfmdSheet(int(val)))
+            reading = "sheet"
         elif ("# nx #" in line): SHEET[-1].nx = int(val)
         elif ("# ny #" in line): SHEET[-1].ny = int(val)
         elif ("# nElast" in line): SHEET[-1].nElast = int(val)
+        elif ("# stiffness0" in line): SHEET[-1].stiffness0 = float(val)
         elif ("# fRough" in line): SHEET[-1].fRough = int(val) # works for fRoughAdd and fRoughRead
         elif ("# f3dMovie" in line): SHEET[-1].f3dMovie = int(val)
         elif ("# nVeloTurnStep" in line): SHEET[-1].nVeloTurnStep = int(val)
@@ -378,13 +396,19 @@ def initParams(path):
         elif ("# rampRelax" in line): SHEET[-1].rampPeriod += int(val)
         elif ("# fKelvinVoigt" in line): SHEET[-1].fKelvinVoigt = int(val)
         # Read inter parameters
-        elif ("# inter start" in line): INTER.append(interSheet(int(val)))
+        elif ("# inter start" in line): 
+            INTER.append(interSheet(int(val)))
+            reading = "inter"
         elif ("# fDumpFrame" in line): INTER[-1].fDumpFrame += int(val)
         elif ("# fPotential" in line): INTER[-1].fPotential += int(val)
+        elif ("# resolMovie" in line) and (reading=="inter"): INTER[-1].resolMovie += int(val)
 
     
     # Update global params
     if NY == 0: NY = NX
+    #WIP
+    if RESMOVIE[0] == 0: RESMOVIE[0] = range(NX)
+    if RESMOVIE[1] == 0: RESMOVIE[1] = range(NY)
     if lengthY == 0: lengthY = lengthX
     nFrames = int(nTime/freqFrame)
     NFRAMES = nFrames # TODO: this needs to be adjusted if joining multiple paths
@@ -414,7 +438,14 @@ def initParams(path):
     if MODE=="Cont2D":
         for iInter in range(-len(INTER),0):
             INTER[iInter].updateFiles(path)
-
+            if INTER[iInter].resolMovie < NX:
+                INTER[iInter].nx = NX // ( (NX-1)//INTER[iInter].resolMovie + 1 )
+            else: INTER[iInter].nx = NX
+            if INTER[iInter].resolMovie < NY:
+                INTER[iInter].ny = NY // ( (NY-1)//INTER[iInter].resolMovie + 1 )
+            else: INTER[iInter].ny = NY
+        RESMOVIE[0] = range(INTER[IID].nx)
+        RESMOVIE[1] = range(INTER[IID].ny)
     # Update ZLIM
     if MODE[-2:]=="3D":
         ZLIM[0] = max(maxima) - min(minima) # TODO: what about joining paths in 3D?
@@ -431,9 +462,6 @@ def initParams(path):
     for iSheet in range(nSheet):
         if SHEET[iSheet].nElast: LABELS.append("Elastic surface "+str(iSheet))
         else: LABELS.append("Rigid surface "+str(iSheet))
-    #WIP
-    if RESMOVIE[0] == 0: RESMOVIE[0] = range(NX)
-    if RESMOVIE[1] == 0: RESMOVIE[1] = range(NY)
 
 
 
@@ -444,20 +472,21 @@ def animate2D():
 
     # Setup figure and axes
     if RAMP: 
-        fig, axes = plt.subplots(1,2,figsize=[10, 4.2])
+        fig, axes = plt.subplots(1,2,figsize=[10, 4.2],dpi=DPI)
         ax1 = axes[0]; ax2 = axes[1]
         ax2.set_xlabel("normal displacement ("+UNITS[0]+")")
         if UNITS[1][-1] == "N": ax2.set_ylabel("force ("+UNITS[1]+")")
         else: ax2.set_ylabel("pressure ("+UNITS[1]+")")
-        ax2.grid(True)
+        ax2.grid(GRID)
         if XRAMP != None: ax2.set_xlim(XRAMP[0], XRAMP[1])
         if YRAMP != None: ax2.set_ylim(YRAMP[0], YRAMP[1])
-    else: fig, ax1 = plt.subplots(figsize=[5.6, 4.2])
+    else: fig, ax1 = plt.subplots(figsize=[5.6, 4.2],dpi=DPI)
 
     # Setup coordinate labels and ranges
     if MODE[:4] == "Cont":
         ax1.set_xlabel("X")
         ax1.set_ylabel("Y")
+        ax1.grid(False)
     else:
         if   MODE[-1] == "X": axlim = XLIM
         elif MODE[-1] == "Y": axlim = YLIM
@@ -478,7 +507,8 @@ def animate2D():
     
     # ax1: Contact movie
     if MODE[:4] == "Cont":
-        im = ax1.imshow(np.zeros((NX,NY)), cmap="jet",vmin=-1,vmax=1)
+        aspect = SHEET[1].lengthX / SHEET[1].lengthY# * len(RESMOVIE[1]) / len(RESMOVIE[0])
+        im = ax1.imshow(np.zeros((INTER[IID].nx,INTER[IID].ny)), cmap="jet",vmin=-1,vmax=1, aspect=aspect)
         ax1.get_images()[0].set_clim(-1, 1)
         lines1 = im,
         for iSheet in range(len(SHEET)):
@@ -631,11 +661,13 @@ def animate3D():
 
     global MODE
 
-    fig = plt.figure()
+    fig = plt.figure(dpi=DPI)
     plt.xlabel("X")
     plt.ylabel("Y")
-    im = plt.imshow(np.zeros((NX,NY)), cmap="jet")
+    aspect = SHEET[1].lengthX / SHEET[1].lengthY# * len(RESMOVIE[1]) / len(RESMOVIE[0])
+    im = plt.imshow(np.zeros((len(RESMOVIE[0]),len(RESMOVIE[1]))), cmap="jet", aspect=aspect)
     if MODE=="Cont3D": plt.clim(0,1)
+    elif MODE=="Press3D": plt.clim(-SHEET[1].stiffness0/4, SHEET[1].stiffness0/40)
     else: plt.clim(ZLIM[0], ZLIM[1])
     #ax.set_xticks(np.arange(5)*NX/4)
     #ax.set_xticklabels([str((XLIM[1]-XLIM[0])*val/4) for val in range(5)])
@@ -651,10 +683,11 @@ def animate3D():
         """
 
         for iSheet in range(len(SHEET)): SHEET[iSheet].updateData(iFrame)
-        #TODO check if array has to be transposed or rot90 is correct
-        if MODE=="Cont3D": array = np.rot90( SHEET[0].data <= SHEET[1].data )
+        #TODO might want to be transposed or rot90 is correct
+        if MODE=="Cont3D": array = SHEET[0].data <= SHEET[1].data
+        elif MODE=="Press3D": array = SHEET[1].data # != 0 # < -SHEET[1].stiffness0/100
         elif MODE=="Dist3D": array = SHEET[0].data - SHEET[1].data
-        elif MODE=="Disp3D": array = np.rot90(SHEET[1].data)
+        elif MODE=="Disp3D": array = SHEET[1].data
         im.set_array(array)
         return im,
     
@@ -708,9 +741,21 @@ def dataReset():
 
 
 def save(animation, filename):
-    """ save animation to file """
+    """ save animation to file 
 
-    animation.save(filename, writer='imagemagick', fps=FPS)
+    For mp4 files, make sure ffmpg and h264 are installed correctly:
+    conda install -c conda-forge ffmpeg
+    conda install -c conda-forge x264=20131218
+
+    (see: https://stackoverflow.com/questions/13316397/matplotlib-animation-no-moviewriters-available)
+    (see: https://github.com/sigsep/sigsep-mus-db/issues/14)
+    """
+
+    if filename[-3:]=="mp4": 
+        from matplotlib.animation import FFMpegWriter
+        ffmpeg = FFMpegWriter(fps=FPS)
+        animation.save(filename, writer=ffmpeg)
+    else: animation.save(filename, writer='imagemagick', fps=FPS)
 
 
 
@@ -750,24 +795,25 @@ def initGlobals(paths):
         return
 
     # Only relevant for joining multiple paths:
-    travelPerFrame = []
-    for iSheet in range(len(SHEET)):
-        if SHEET[iSheet].nElast == 0: travelPerFrame.append(0)
-        elif SHEET[iSheet].vzConstCOM != 0:
-            travelPerFrame.append( abs(SHEET[iSheet].vzConstCOM*SHEET[iSheet].dTime*
-                                       SHEET[iSheet].nTime/SHEET[iSheet].nFrames) )
-        else: travelPerFrame.append( abs(1.*SHEET[iSheet].nTime * SHEET[iSheet].dzRamp / 
-                                        (SHEET[iSheet].rampPeriod * SHEET[iSheet].nFrames)) )
-    travelRef = max(travelPerFrame)
-    nFrames = []
-    for iSheet in range(len(SHEET)):
-        if travelPerFrame[iSheet] > 0:
-            SHEET[iSheet].increment = INCREMENT*int(travelRef/travelPerFrame[iSheet])
-            nFrames.append( SHEET[iSheet].nFrames/SHEET[iSheet].increment )
-    
-    # Update NFRAMES
-    if END > 0: NFRAMES = int(min(nFrames+[END]) - START)
-    else: NFRAMES = int(min(nFrames) - START)
+    if len(paths) > 1:
+        travelPerFrame = []
+        for iSheet in range(len(SHEET)):
+            if SHEET[iSheet].nElast == 0: travelPerFrame.append(0)
+            elif SHEET[iSheet].vzConstCOM != 0:
+                travelPerFrame.append( abs(SHEET[iSheet].vzConstCOM*SHEET[iSheet].dTime*
+                                           SHEET[iSheet].nTime/SHEET[iSheet].nFrames) )
+            else: travelPerFrame.append( abs(1.*SHEET[iSheet].nTime * SHEET[iSheet].dzRamp / 
+                                            (SHEET[iSheet].rampPeriod * SHEET[iSheet].nFrames)) )
+        travelRef = max(travelPerFrame)
+        nFrames = []
+        for iSheet in range(len(SHEET)):
+            if travelPerFrame[iSheet] > 0:
+                SHEET[iSheet].increment = INCREMENT*int(travelRef/travelPerFrame[iSheet])
+                nFrames.append( SHEET[iSheet].nFrames/SHEET[iSheet].increment )
+        
+        # Update NFRAMES
+        if END > 0: NFRAMES = int(min(nFrames+[END]) - START)
+        else: NFRAMES = int(min(nFrames) - START)
 
 
 
@@ -779,6 +825,7 @@ def dumpGlobals(path):
 
     print("SHOW =", str(SHOW))
     print("FPS =", FPS)
+    print("GRID = %s\n" % str(GRID))
     print("LINESTYLE = \"%s\"" % LINESTYLE)
     print("MARKERSTYLE = \"%s\"" % MARKERSTYLE)
     print("LABELS = \"%s\"" % LABELS)
@@ -809,6 +856,7 @@ def dumpGlobals(path):
 def init(mode,paths):
     global MODE; MODE = mode
     dataReset()
+    if type(paths)==str: paths = [paths]
     for path in paths:
         checkDir(path)
         initParams(path)

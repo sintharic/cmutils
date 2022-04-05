@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jul  9 11:24:54 2020
+------------------------------------
+  Post-Processing of contMech Data
+------------------------------------
 
+Created on Thu Jul  9 11:24:54 2020
 @author: thescientist
 """
+
 
 
 #%% ----- User settings ----- %%#
@@ -31,7 +35,7 @@ import matplotlib.pyplot as plt
 def show(): plt.show()
 
 
-def plotImg(array, clim=ZLIM, title=False, aspect="true"):
+def plotImg(array, clim=ZLIM, title=False, aspect="true",cmap="turbo",alpha=1.0,axis=None,pad=0.01,cba=0.85):
     """ plot array as an image
     
     plots 2D numpy.ndarray <array> as a colored image, similar to gnuplot's 
@@ -42,12 +46,19 @@ def plotImg(array, clim=ZLIM, title=False, aspect="true"):
     """
 
     if SHOW: plt.ion(); plt.show()
-    plt.figure()
-    plt.grid(False)
     if aspect == "true": aspect = (XLIM[1]-XLIM[0])/(YLIM[1]-YLIM[0])
-    plt.imshow(array,cmap="jet",aspect=aspect)
-    if clim!="auto": plt.clim(clim[0],clim[1])
-    plt.colorbar()
+    if axis==None:
+        plt.figure()
+        plt.grid(False)
+        plt.imshow(array,cmap=cmap,aspect=aspect,alpha=alpha)
+        if clim!="auto": plt.clim(clim[0],clim[1])
+        cbar = plt.colorbar(shrink=cba,aspect=20*cba,pad=0.01)
+        cbar.formatter.set_powerlimits((-3, 3))
+        cbar.ax.yaxis.set_offset_position('left')
+    else:
+        im = axis.imshow(array,cmap=cmap,aspect=aspect,alpha=alpha)
+        if clim!="auto": im.set_clim(clim[0],clim[1])
+    
     if title: plt.title(title)
     if SHOW: plt.pause(0.001)
     return(plt.gca())
@@ -88,31 +99,47 @@ def plotLines(array, lines, axis=None, dim=0, ls="-", **kwargs):
     return(plt.gca())
 
 
-def plotSurf(array, title=False, clim=ZLIM):
+def plotSurf(array, kind="color", title=False, clim=ZLIM, axis=None, stride=4, cmap="jet",lw=0.5,lc="gray",aa=False,alpha=1):
     """ plot 3D view of surface
     
     plots 2D numpy.ndarray <array>, using the data as z values, in a 3D view.
-    <clim> must be of form (v_min,v_max) to set the color range.
+    
+    for <kind>="color", the color map <cmap> can be specified, as well as the
+    color range <clim> in the form (v_min,v_max).
+    <stride> specifies the discretization increment, lower being higher quality.
+
+    for <kind>="wire", the linewidth <lw> and linecolor <lc> can be specified.
 
     returns: matplotlib.axes.Axes object containing the plot
     """
     
     from mpl_toolkits.mplot3d import Axes3D # noqa: F401 unused import
-    from matplotlib import cm
 
     if SHOW: plt.ion(); plt.show()
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
+    if axis==None:
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
+    else: ax = axis
     X = np.arange(0,array.shape[0],1)
     Y = np.arange(0,array.shape[1],1)
     X, Y = np.meshgrid(X,Y)
     if clim=="auto": clim = (array.min(), array.max())
-    surf = ax.plot_surface(X,Y, np.transpose(array), cmap=cm.jet, rstride=4, cstride=4,
-                           vmin=clim[0], vmax=clim[1], linewidth=0, antialiased=False)
+    if kind=="color": 
+        if type(cmap) != str: 
+            col = cmap
+            cmap = None
+        else: 
+            col = None
+        surf = ax.plot_surface(X,Y, np.transpose(array), cmap=cmap, color=col,
+                               rstride=stride, cstride=stride, vmin=clim[0], vmax=clim[1], 
+                               linewidth=lw, antialiased=aa, alpha=alpha)
+    elif kind=="wire": surf = ax.plot_wireframe(X,Y, np.transpose(array), rstride=stride, cstride=stride,
+                              linewidth=lw, color=lc, antialiased=aa, alpha=alpha)
     plt.axis("off")
+    #ax.set_box_aspect((np.ptp(X), np.ptp(Y), np.ptp(array)))
     ax.set_zlim(clim[0],clim[1])
     if title: plt.title(title)
-    fig.colorbar(surf, shrink=0.8, aspect=8)
+    if kind=="color" and axis==None: fig.colorbar(surf, shrink=0.8, aspect=8)
     if SHOW: plt.pause(0.001)
     return(ax)
     
@@ -139,7 +166,7 @@ def readConfig(filepath, usecols=2):
     line1 = fid.readline().decode('UTF-8')
     line1 = line1[1:].split()
     nx, ny = ( int(line1[0]), int(line1[1]) )
-    if ( (array.shape[0] == (nx+1)*(ny+1)) & (array[0] == array[ny]) ): # additional lines
+    if ( (array.shape[0] == (nx+1)*(ny+1)) ):# & (array[0] == array[ny]) ): # additional lines
         lXfac = 1
         array = array.reshape((nx+1,ny+1))
         array = array[:nx,:ny]
@@ -317,7 +344,7 @@ def dumpLines(array, lines, filename="", dim=0):
         label = ["X","Y"]
     if filename=="": filename = "lineScans%i.dat"%dim
     out = open(filename,"w")
-    out.write(label[0])
+    out.write("# "+label[0])
     for iLine in lines: out.write("\tZ("+label[1]+str(iLine)+")")
     out.write("\n")
     for i in range(x.size):
@@ -340,6 +367,30 @@ def circularMask(w, h, center=None, rMax=None, rMin=None):
     return mask
 
 
+def untilt(array,avg=None):
+    """ subtract the tilt from a 2D surface
+
+    subtract the macroscopic tilt from np.ndarray <array>, assuming it to be 
+    linear in both directions.
+
+    returns: the untilted numpy.ndarray
+    """
+    nx,ny = array.shape
+    nmin = min(nx,ny)
+    if avg==None: avg = nmin//32
+    if avg < 1: avg = 1
+    X, Y = np.ogrid[:nx, :ny]
+    tl = array[:avg,:avg].mean()
+    tr = array[:avg,-avg:].mean()
+    bl = array[-avg:,:avg].mean()
+    br = array[-avg:,-avg:].mean()
+    slopeX = (bl-tl + br-tr)/2
+    slopeY = (tr-tl + br-bl)/2
+    X = X*slopeX/nx
+    Y = Y*slopeY/ny
+    return(array - X - Y)
+
+
 def psd(array, output=""):
     """ compute Power Spectral Density (PSD) of an array
     
@@ -358,13 +409,19 @@ def psd(array, output=""):
     result = np.zeros((len(idx)-1,2))
     result[:,0] = np.pi/(YLIM[1]-YLIM[0]) * (idx[:-1] + idx[1:])
     
-    abs2F = arrayF*np.conjugate(arrayF)
+    abs2F = np.real(arrayF*np.conjugate(arrayF))
     for ir in range(0,len(idx)-1):
         rMax = idx[ir+1]; rMin = idx[ir]
         mask = circularMask(nyF, nxF, (0,0), rMax, rMin)
         mask = np.logical_or(mask, circularMask(nyF, nxF, (0,nxF), rMax, rMin))
-        result[ir,1] = np.mean(abs2F[mask]).real
-    if output: np.savetxt(output, result, fmt="%.5e", header="#q\tPSD-2D")
+        result[ir,1] = np.mean(abs2F[mask])
+
+    # normalization: Tevis D B Jacobs et al 2017 Surf. Topogr.: Metrol. Prop. 5 013001
+    area = (XLIM[1]-XLIM[0])*(YLIM[1]-YLIM[0])
+    nxny = array.shape[0]*array.shape[1]
+    result[:,1] = result[:,1]*area/(nxny**2) 
+
+    if output: np.savetxt(output, result, fmt="%.5e", header="q\tPSD(2D-iso)(q)")
     return(result)
 
 
@@ -421,9 +478,9 @@ def createBorder(array,nxNew,nyNew):
 
 #%% ----- Other: mostly for legacy contMech versions ----- %%#
     
-def logsmooth(infilename, outfilename="", nbin=100):
+def logsmooth(infilename, outfilename="", nbin=100, usecols=(0,1)):
     if outfilename == "": outfilename = infilename + "-log"
-    psd = np.loadtxt(infilename)
+    psd = np.loadtxt(infilename,usecols=usecols)
     fid = open(outfilename,"w")
     q = psd[:,0]
     # logarithmically spaced bin edges for equally spaced log plot
@@ -432,12 +489,16 @@ def logsmooth(infilename, outfilename="", nbin=100):
     # linearly spaced bin edges
     #counts,binedge = np.histogram(q,nbin)
     qval = 0.5*(binedge[0:nbin] + binedge[1:(nbin+1)])
-    spec = np.zeros((nbin,))
+    spec = np.zeros((nbin,len(usecols)-1))
     for ibin in range(1,nbin+1):
         mask = np.logical_and(q>binedge[ibin-1],q<binedge[ibin])
-        if mask.sum() > 0: spec[ibin-1] = np.mean(psd[mask,1])
-        else: spec[ibin-1] = 0
-        fid.write("%.5e\t%.5e\n" % (qval[ibin-1], spec[ibin-1]))
+        if mask.sum() > 0: 
+            for iCol in range(1,len(usecols)):
+                spec[ibin-1,iCol-1] = np.mean(psd[mask,iCol])
+        else: spec[ibin-1,1:] = 0
+        fid.write("%.5e" % qval[ibin-1])
+        for iCol in range(1,len(usecols)): fid.write("\t%.5e" % spec[ibin-1,iCol-1])
+        fid.write("\n")
     fid.close()
     #return(spec)
 

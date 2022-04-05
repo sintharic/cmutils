@@ -15,7 +15,7 @@ or
 
 cmutils.py
 ----------
-Miscellaneous functions for input, output, manipulation and plotting.
+Miscellaneous functions for input, output, manipulation and plotting of config files.
 Very powerful in combinations with numpy's and scipy's standard manipulation and statistics tools.
 
 cmanim.py
@@ -23,24 +23,34 @@ cmanim.py
 An easy-to-use library for animating simulation results.
 The focus is on fully automatic usage, where the best possible parameters are read from params.out. 
 
-Example:  
+Example to create and save a contact movie:  
 `import cmanim`  
-`animation1 = cmanim.runDispX()`  
-`cmanim.save(animation1, "movie.gif")`
+`animation = cmanim.runCont2D()`  
+`cmanim.save(animation, "movie.gif")`
 
-Specifying custom parameters is possible by calling individual functions one after the other. 
-E.g. if you only want to animate frames 40 to 100 and change the xrange:  
-`cmanim.init("DispX",[path_to_data])`  
+Specifying custom parameters is possible by calling individual initialization functions one after the other. 
+E.g. you can animate the cross-sections along x-direction from two different simulations in one figure, limit it to frames 40 to 100, and zoom in to a certain xrange:  
+`cmanim.init("DispX", [path1, path2] )`  
 `cmanim.XLIM = [xmin, xmax]`  
 `cmanim.START = 40`  
 `cmanim.END = 100`  
 `cmanim.NFRAMES = 60`  
-`a = cmanim.run()`  
+`animation = cmanim.run()`  
 
+Essentially, the previously mentioned `runCont2D()`is just a wrapper for `cmanim.init("Cont2D",paths="."); cmanim.run()`, where `init(...)` automatically determines plot parameters, which you can (but most of the time don't need to) overwrite.  
+
+cmjobs.py
+---------
+Scans for currently running contMech processes and estimates time remaining based on nTime and length of moni file.
+
+stlutils.py
+-----------
+Conversion of Python arrays and contMech configs to .stl files for 3D printing.
+Requires the 3rd party module numpy-stl (https://pypi.org/project/numpy-stl/).
 
 mpl.py
 ------
-contains presets etc. for plotting with matplotlib. It is really useful to ensure consistent visuals in publications and working with matplotlib's rcParams in general, giving access to very advanced functionality.
+Contains presets etc. for plotting with matplotlib. It is really useful to ensure consistent visuals in publications and working with matplotlib's rcParams in general, giving access to very advanced functionality.
 
 Recommendations
 ---------------
@@ -48,6 +58,8 @@ To permanently add these modules to your Anaconda path, you have the options des
 
 If you are often using modules in the IPython console, consider importing them by default. 
 Any .py file in the folder `~/.ipython/profile_default/startup` will automatically be loaded at IPython startup.
+
+Furthermore, you can define aliases in your .bashrc file, e.g. `alias cmjobs='python3 ~/git/cmutils/cmjobs.py'`.
 
 --------------------------------------------------------------------------------
 

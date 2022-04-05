@@ -13,7 +13,7 @@
 
 using namespace std;
 
-string version = "V1.0 (2020-09-15)";
+string version = "V1.1 (2021-11-30)";
 
 typedef ptrdiff_t Lint;
 typedef std::complex<double> Complex;
@@ -284,6 +284,9 @@ void dumpImage(double* array, const string& fileName, int nxExp, int nyExp) {
   int prog = 0;
   tStart = (double) clock();
   cout << "Exporting image file:\n";
+
+  output << "# Lx = " << lengthX << "\n";
+  output << "# Ly = " << lengthY << "\n";
   for (int ix=0; ix<nxExp; ++ix) {
     // NEW1 DEBUG
     std::string msg;
