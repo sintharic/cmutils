@@ -118,7 +118,7 @@ params:
 	@$(COMPILER) $(CPPFLAGS) statsParams.cpp $(LFFTW) -o params.exe
 
 
-extract:
+range:
 	@echo " Building range.exe..."
 	@$(COMPILER) $(CPPFLAGS) extractRange.cpp -o range.exe
 

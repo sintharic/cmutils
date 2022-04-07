@@ -60,7 +60,7 @@ for proc in ps.process_iter():
       # since iTime starts at 0, the header is automatically neglected
       monifile.close()
 
-    # gather time started
+    # determine time started and time remaining
     if iTime <= 3: tRemain = " unknown "
     else:
       tRunning = t0 - os.path.getmtime(pcwd+"/params.out")
@@ -75,6 +75,10 @@ for proc in ps.process_iter():
     nFound += 1
     num = str(pPID).rjust(7)
     #"%7i / %7i"%(iTime,nTime)
+
+    # shorten directory path
+    pcwd = pcwd.replace("/home/"+user, "~")
+    pcwd = pcwd.replace("/Users/"+user, "~")
     print(num, "| %.2f"%(iTime/nTime), "|", tRemain, "|", pcwd)
 
 print(nFound, executable, "process(es) running.")
