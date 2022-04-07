@@ -59,7 +59,7 @@ Furthermore, you can define aliases in your .bashrc or .zshrc file, e.g. `alias 
 C++ usage and installation
 --------------------------
 See list of programs below and compile them with the respective make command.
-Most of the contained C++ programs require a working FFTW3 installation. 
+Most of these require a working FFTW3 installation. 
 A very brief instruction on how to install FFTW on Windows is written in the Makefile.
 The Makefile automatically checks the most common FFTW installation paths. 
 If you encounter problems, specify your individual installation paths manually.
@@ -73,7 +73,7 @@ Green's functions (GF2D.exe and GF3D.exe):
 ------------------------------------------
 Comile with `make green`.
 
-Compute 2D/3D displacement fields from the Fourier coefficients of Green's functions, as given e.g. by Menga, N. IJSOLSTR 164 (2019) 212–220.
+Computes 2D/3D displacement fields from the Fourier coefficients of Green's functions, as given e.g. by Menga, N. IJSOLSTR 164 (2019) 212–220.
 
 convertImg (convert.exe):
 -------------------------
