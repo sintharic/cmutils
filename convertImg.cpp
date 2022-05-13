@@ -13,7 +13,7 @@
 
 using namespace std;
 
-string version = "V1.1 (2021-11-30)";
+string version = "V1.2 (2022-04-05)";
 
 typedef ptrdiff_t Lint;
 typedef std::complex<double> Complex;
