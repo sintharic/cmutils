@@ -11,12 +11,19 @@ As of 2022, the `contMech` repository is *not* public.
 Python usage and installation
 -----------------------------
 These Python modules require a scientific Python3 environment like e.g. Anaconda (https://www.anaconda.com/products/individual-d). 
-Assuming the files are in your working directory or Anaconda/Python path (see Recommendations below), you can import them like any other Python module (e.g. `import cmutils`)  
+Assuming the files are in your working directory or Anaconda/Python path (see Recommendations below), you can import them like any Python module (e.g. `import cmutils`)  
 
 cmutils.py
 ----------
-Miscellaneous functions for input, output, manipulation and plotting of config files.
+Miscellaneous functions for input, output, manipulation and plotting of `contMech` config files.
 Very powerful in combinations with numpy's and scipy's standard manipulation and statistics tools.
+
+Example to import, view, rotate and save a `contMech` config file:  
+`import numpy as np`  
+`import cmutils as cm`  
+`dat0 = cm.readConfig("konfig0E.dat")`  
+`cm.plotImg(dat0)`  
+`cm.dumpConfig(np.rot90(dat0),"konfig0E.real")`  
 
 cmanim.py
 ---------
@@ -37,24 +44,49 @@ E.g. you can animate the cross-sections along x-direction from two different sim
 `cmanim.NFRAMES = 60`  
 `animation = cmanim.run()`  
 
-Essentially, the previously mentioned `runCont2D()`is just a wrapper for `cmanim.init("Cont2D",paths="."); cmanim.run()`, where `init(...)` automatically determines plot parameters, which you can (but most of the time don't need to) overwrite.  
+Essentially, the previously mentioned `runCont2D()` is just a wrapper for `cmanim.init("Cont2D",paths="."); cmanim.run()`, where `init(...)` automatically determines plot parameters, which you can (but most of the time don't need to) overwrite.  
 
 cmjobs.py
 ---------
 Scans for currently running `contMech` processes and estimates time remaining based on nTime and line count of the gMoni.dat file.
+
+Usage from terminal:  
+`python3 cmjobs.py`  
 
 stlutils.py
 -----------
 Converts numpy arrays and `contMech` configs to .stl files for CAD software and 3D printers.
 Requires the 3rd party module numpy-stl (https://pypi.org/project/numpy-stl/).
 
+Example to convert a blurred random array to stl:  
+`import stlutils`  
+`import numpy as np`  
+`import scipy.ndimage as ndi`  
+`data = np.random.default_rng(1234).uniform(0,1,(128,128))`  
+`data = ndi.gaussian_filter(data,2)`  
+`stlutils.convertArray(data,"random.stl")`  
+
 cmparams.py
 -----------
 Reads all the parameters a given `contMech` simulation uses as indicated by its params file.
 
+Example to find out whether sheet with ID=0 is elastic:  
+`import cmparams as cp`  
+`sim = cp.read("params.in")`  
+`print(sim.SHEET[1].nElast)`  
+
 modparams.py
 ------------
 Modifies `contMech` params files, changing individual parameters by a certain factor. Typically used to write large job scripts. 
+
+Example to reduce the time step size in all subfolders in the current directory:  
+`import modparams as mp`  
+`import os`  
+`mp.paramNames = ['dTime', 'nTime']`  
+`mp.paramFacs  = [2, 1./2]`  
+`mp.paramFacs  = [1./2, 2]`  
+`files = [folder+'/params.in' for folder in os.listdir('.') if os.path.isfile(folder+'/params.in')]`  
+`for file in files: mp.run(file)`  
 
 Recommendations
 ---------------
