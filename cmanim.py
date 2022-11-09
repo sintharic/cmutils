@@ -5,7 +5,6 @@
   Animation of contMech Simulations
 -------------------------------------
 
-Created on Thu Dec  3 12:14:42 2020
 @author: christian
 """
 

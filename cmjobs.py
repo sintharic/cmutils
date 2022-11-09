@@ -1,3 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+-------------------------------------
+  Overview of running contMech Jobs
+-------------------------------------
+
+@author: thescientist
+"""
+
 executable = "contMech"
 
 DEBUG = False

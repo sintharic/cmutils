@@ -48,6 +48,14 @@ stlutils.py
 Converts numpy arrays and `contMech` configs to .stl files for CAD software and 3D printers.
 Requires the 3rd party module numpy-stl (https://pypi.org/project/numpy-stl/).
 
+cmparams.py
+-----------
+Reads all the parameters a given `contMech` simulation uses as indicated by its params file.
+
+modparams.py
+------------
+Modifies `contMech` params files, changing individual parameters by a certain factor. Typically used to write large job scripts. 
+
 Recommendations
 ---------------
 To permanently add these modules to your Anaconda path, you have the options described here: https://stackoverflow.com/questions/37006114/anaconda-permanently-include-external-packages-like-in-pythonpath
