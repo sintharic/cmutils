@@ -70,7 +70,7 @@ cmparams.py
 -----------
 Reads all the parameters a given `contMech` simulation uses as indicated by its params file.
 
-Example to find out whether sheet with ID=0 is elastic:  
+Example to find out whether sheet with ID=1 is elastic:  
 `import cmparams as cp`  
 `sim = cp.read("params.in")`  
 `print(sim.SHEET[1].nElast)`  
