@@ -1,4 +1,3 @@
-#user = "christian"
 executable = "contMech"
 
 DEBUG = False
@@ -13,6 +12,7 @@ user = getpass.getuser()
 if DEBUG: print("USERNAME:", user)
 
 nFound = 0
+wFire = False
 t0 = time.time()
 
 print("-----------------------------------------------")
@@ -36,6 +36,7 @@ for proc in ps.process_iter():
     
     # gather info from params file
     nTime = 0; nx = 0; ny = 0
+    fFire = 0; fLogMeasure = 0; dTime = 0;
     paramsfile = open(pcwd+"/params.out","r")
     for line in paramsfile:
       if "# nxGlobal" in line: nx = int(line.split("#")[0])
@@ -43,38 +44,56 @@ for proc in ps.process_iter():
       elif ("# nTime" in line): 
         if not (("# nTimeOn" in line) or ("# nTimeOff" in line)): 
           nTime = int(line.split("#")[0])
+      elif "# fFire" in line: fFire = int(line.split("#")[0])
+      elif "# dTime" in line: dTime = float(line.split("#")[0])
+      elif "# fLogMeasure" in line: fLogMeasure = int(line.split("#")[0])
     if ny == 0: ny = nx
     paramsfile.close()
 
     # count lines of moni file
-    readMoni = True
     iTime = 0
-    try: monifile = open(pcwd+"/moni1-"+str(ny).zfill(4)+".dat","r")
-    except IOError:
-      try: monifile = open(pcwd+"/moni0-"+str(ny).zfill(4)+".dat","r")
-      except:
-        if WARN: print("[Warn:Moni] No moni file found for", pcwd, ny)
-        readMoni = False
-    if readMoni: 
-      for iTime,_ in enumerate(monifile): pass
-      # since iTime starts at 0, the header is automatically neglected
-      monifile.close()
+    if not fLogMeasure:
+      try: 
+        with open(pcwd+"/gMoni.dat","r") as monifile:
+          for iTime,_ in enumerate(monifile): pass
+          iTime = iTime - 1
+          # since iTime starts at 0, the header is automatically neglected, however time step 0 is not
+      except FileNotFoundError: iTime = -nTime
+      except BaseException as e: raise e
+    else:
+      if not fFire:
+        try:
+          with open(pcwd+"/gMoni.dat","rb") as monifile:
+            monifile.seek(-2, 2) # 2nd arg = 2 --> relative to EOF
+            while monifile.read(1) == b"\n": monifile.seek(-2, 1) # skip trailing empty lines
+            monifile.seek(-1, 1) # 2nd arg = 1 --> relative to current position
+            while monifile.read(1) != b"\n": monifile.seek(-2, 1)
+            lineN = monifile.read().decode('UTF-8')
+            idx = lineN.find("\t")
+            time = float(lineN[:idx])
+            iTime = int(round(time/dTime))
+        except FileNotFoundError: iTime = -nTime
+        except BaseException as e: raise e
+      else: iTime = -nTime
 
     # determine time started and time remaining
-    if iTime <= 3: tRemain = " unknown "
+    if iTime <= 3: tRemain = "unknown"
     else:
       tRunning = t0 - os.path.getmtime(pcwd+"/params.out")
       tRemain = int(tRunning*(nTime-iTime)/iTime)
-      if tRemain < 0: tRemain = " unknown "
+      if tRemain < 0: tRemain = "unknown"
       elif tRemain > 24*60*60: 
         tRemain = str(round(tRemain/(24*60*60),1))+" days"
       else:
         tRemain = str(datetime.timedelta(seconds=tRemain))
-      tRemain = tRemain.rjust(9)
+    if fFire: 
+      tRemain = "*" + tRemain
+      wFire = True
+    tRemain = tRemain.rjust(9)
       
     nFound += 1
     num = str(pPID).rjust(7)
-    #"%7i / %7i"%(iTime,nTime)
+    #"%7i / %7i"%(iTime,nTime)x
 
     # shorten directory path
     pcwd = pcwd.replace("/home/"+user, "~")
@@ -82,3 +101,4 @@ for proc in ps.process_iter():
     print(num, "| %.2f"%(iTime/nTime), "|", tRemain, "|", pcwd)
 
 print(nFound, executable, "process(es) running.")
+if wFire: print("* simulations using FIRE may finish early.")

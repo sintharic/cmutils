@@ -19,7 +19,7 @@ testpath = "/home/chris/src8fix/run2"
 # Input
 SHOW = True
 FPS = 5
-DPI = 180 #TODO: dumpGlobal
+DPI = 180
 LINESTYLE = "-"
 MARKERSTYLE = ""
 MODE = "DispX"
@@ -43,7 +43,7 @@ LABELS = []
 RAMP = False
 GRID = True
 
-IID = 0 # TODO: now always plots inter class with ID 0
+IID = 0 # TODO: now always plots inter class with ID 0. Generalize this.
 
 fATTRACT = True # TODO: read this in?
 
@@ -155,12 +155,15 @@ class gfmdSheet:
     def updateCols(self):
         """ determines which columns in the data files must be imported """
 
-        if MODE == "DispX": self.usecols = [0,1]
+        if (MODE == "DispX") or (self.nx==1 and (MODE == "DispY")): 
+            self.usecols = [0,1]
         elif MODE == "DispY": self.usecols = [0,2]
         elif MODE == "DispD": 
             if self.nElast: self.usecols = [5,6]
             else: self.usecols = [3,4]
         elif self.nElast>0 and MODE == "PressX": self.usecols = [0,3]
+        elif self.nElast>0 and self.nx==1 and (MODE in ["PressX","PressY"]): 
+            self.usecols = [0,2]
         elif self.nElast>0 and MODE == "PressY": self.usecols = [0,4]
         elif self.nElast>0 and MODE == "PressD": self.usecols = [5,7]
         elif (MODE=="Dist3D") or (MODE=="Cont3D"): self.usecols = [2]
@@ -202,9 +205,17 @@ class gfmdSheet:
             if (self.nElast > 0):
                 try: self.data = np.loadtxt(self.files[idx], usecols=self.usecols)
                 except: print("[WARNING] Konfig file #"+str(numFrame)+" not found")
+                if UNITS[0][0]=="µ":
+                    self.data = 1e6*self.data
+                if UNITS[0]=="mm":
+                    self.data = 1e3*self.data
             elif (self.data.size == 1):
                 # rigid sheet only updates once
                 self.data = np.loadtxt(self.files[0], usecols=self.usecols)
+                if UNITS[0][0]=="µ":
+                    self.data = 1e6*self.data
+                if UNITS[0]=="mm":
+                    self.data = 1e3*self.data
                 
     
     def updateDims(self,path):
@@ -222,8 +233,13 @@ class gfmdSheet:
                 sys.exit("[ERROR] "+monipath+" does not exist.")
             #monifile = open(monipath,"r")
             if MODE[:4] in ["Disp","Cont","Dist"]: monidata = np.loadtxt(monipath, usecols=1)
-            elif MODE[:4] == "Pres": monidata = np.loadtxt(monipath, usecols=6)
-            #print("moni:", monidata.min(), monidata.max()) # DEBUG
+            elif MODE[:4] == "Pres": 
+                if self.fSteppedRamp or self.vzConstCOM != 0:
+                    monidata = np.loadtxt(monipath, usecols=6)
+                    #print("moni:", monidata.min(), monidata.max()) # DEBUG
+                else: 
+                    monidata = self.stiffness0 * np.array([-1, 1])
+                    print("maxStiff:", monidata.min(), monidata.max()) # DEBUG
             self.minmaxZ = [monidata.min(), monidata.max()]
 
 
@@ -377,6 +393,7 @@ def initParams(path):
         elif ("# nTime" in line): nTime = int(val)
         elif ("# dTime" in line): dTime = float(val)
         elif ("# freqFrame" in line): freqFrame = int(val)
+        elif ("# frameInterval" in line): freqFrame = int(val)
         elif ("# nSheet" in line): nSheet = int(val)
         # Read sheet parameters
         elif ("# sheet start" in line): 
@@ -387,6 +404,7 @@ def initParams(path):
         elif ("# nElast" in line): SHEET[-1].nElast = int(val)
         elif ("# stiffness0" in line): SHEET[-1].stiffness0 = float(val)
         elif ("# fRough" in line): SHEET[-1].fRough = int(val) # works for fRoughAdd and fRoughRead
+        elif ("# fTopo" in line): SHEET[-1].fRough = int(val) # works for fRoughAdd and fRoughRead
         elif ("# f3dMovie" in line): SHEET[-1].f3dMovie = int(val)
         elif ("# nVeloTurnStep" in line): SHEET[-1].nVeloTurnStep = int(val)
         elif ("# fSteppedRamp" in line): SHEET[-1].fSteppedRamp = int(val)
@@ -517,11 +535,14 @@ def animate2D():
     # ax1: Profile animation
     else:
         for iSheet in range(len(SHEET)):
-            if(SHEET[iSheet].nElast == 0):
-                pobj, = ax1.plot(SHEET[iSheet].data[:,0], SHEET[iSheet].data[:,1], label=LABELS[iSheet])
+            if (SHEET[iSheet].nElast == 0):
+                #pobj, = ax1.plot(SHEET[iSheet].data[:,0], SHEET[iSheet].data[:,1], label=LABELS[iSheet])
+                #lineColor[iSheet] = pobj.get_color()
+                pobj = ax1.fill_between(SHEET[iSheet].data[:,0], SHEET[iSheet].data[:,1], ZLIM[1], facecolor=(0.8,0.8,0.8), linewidth=0)#FILL
+                lineColor[iSheet] = (0.8, 0.8, 0.8)
             else:
                 pobj, = ax1.plot([],[], ls=LINESTYLE, marker=MARKERSTYLE, label=LABELS[iSheet])
-            lineColor[iSheet] = pobj.get_color()
+                lineColor[iSheet] = pobj.get_color()
             lines1[iSheet] = pobj
     
     # ax2: Ramp animation
@@ -529,6 +550,10 @@ def animate2D():
         for iSheet in range(len(SHEET)):
             if (SHEET[iSheet].fSteppedRamp != 0):
                 SHEET[iSheet].ramp = np.loadtxt(SHEET[iSheet].rampName, usecols=(0,1))
+                if UNITS[0][0]=="µ":
+                    SHEET[iSheet].ramp[:,0] = SHEET[iSheet].ramp[:,0]*1e6
+                if UNITS[0]=="mm":
+                    SHEET[iSheet].ramp[:,0] = SHEET[iSheet].ramp[:,0]*1e3
                 if UNITS[1][-1]=="N":
                     SHEET[iSheet].ramp[:,1] = SHEET[iSheet].ramp[:,1]*SHEET[iSheet].lengthX*SHEET[iSheet].lengthY
                 if UNITS[1][0]=="m":
@@ -588,18 +613,19 @@ def animate2D():
         # Profile animation
         else:
             #Adjust: offset so that rigid body is moving, elastic one is still
+            """
             offset = 0; numElast = 0
             for iSheet in range(len(SHEET)):
                 if SHEET[iSheet].nElast: 
                     numElast += 1
                     offset += SHEET[iSheet].data[0,1]
             offset /= numElast
-            #Adjust end
+            #Adjust end """
             for iSheet,line in enumerate(lines1):
-                #if not SHEET[iSheet].nElast: continue #Adjust
-                line.set_xdata(SHEET[iSheet].data[:,0])
-                line.set_ydata(SHEET[iSheet].data[:,1] - offset) #Adjust
                 if not SHEET[iSheet].nElast: continue #Adjust
+                line.set_xdata(SHEET[iSheet].data[:,0])
+                line.set_ydata(SHEET[iSheet].data[:,1])# - offset) #Adjust
+                #if not SHEET[iSheet].nElast: continue #Adjust
                 line.set_label("Elastic surface "+str(iSheet)+" Frame "+str(iFrame))
 
         # Ramp animation
@@ -825,6 +851,7 @@ def dumpGlobals(path):
 
     print("SHOW =", str(SHOW))
     print("FPS =", FPS)
+    print("DPI =", DPI)
     print("GRID = %s\n" % str(GRID))
     print("LINESTYLE = \"%s\"" % LINESTYLE)
     print("MARKERSTYLE = \"%s\"" % MARKERSTYLE)

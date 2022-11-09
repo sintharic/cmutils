@@ -17,7 +17,7 @@ XLIM = (-0.5,0.5)   # default xrange
 YLIM = (-0.5,0.5)   # default yrange
 ZLIM = "auto"       # default zrange
 SHOW = True         # show plot windows
-FMT = "%.6g"        # number format used to write data to files
+FMT  = "%.6g"       # number format used to write data to files
 
 WARN = True         # display non-critical warnings and reminders
 
@@ -28,6 +28,7 @@ WARN = True         # display non-critical warnings and reminders
 #%% ----- Plotting ----- %%#
 
 import numpy as np
+from numba import njit, double
 import matplotlib.pyplot as plt
 #from tqdm import tqdm # tqdm 3rdPartyModule
 
@@ -35,7 +36,8 @@ import matplotlib.pyplot as plt
 def show(): plt.show()
 
 
-def plotImg(array, clim=ZLIM, title=False, aspect="true",cmap="turbo",alpha=1.0,axis=None,pad=0.01,cba=0.85):
+def plotImg(array, clim=ZLIM, title=False, aspect="true", cmap="turbo", 
+            alpha=1.0, axis=None, pad=0.01, cba=0.85, rot=False, **kwargs):
     """ plot array as an image
     
     plots 2D numpy.ndarray <array> as a colored image, similar to gnuplot's 
@@ -44,19 +46,25 @@ def plotImg(array, clim=ZLIM, title=False, aspect="true",cmap="turbo",alpha=1.0,
 
     returns: matplotlib.axes.Axes object containing the plot
     """
+    if rot: 
+        origin = "lower"
+        arrayLoc = array.transpose()
+    else: 
+        origin = "upper"
+        arrayLoc = array
 
     if SHOW: plt.ion(); plt.show()
     if aspect == "true": aspect = (XLIM[1]-XLIM[0])/(YLIM[1]-YLIM[0])
     if axis==None:
         plt.figure()
         plt.grid(False)
-        plt.imshow(array,cmap=cmap,aspect=aspect,alpha=alpha)
+        plt.imshow(arrayLoc,cmap=cmap,aspect=aspect,alpha=alpha,origin=origin,**kwargs)
         if clim!="auto": plt.clim(clim[0],clim[1])
         cbar = plt.colorbar(shrink=cba,aspect=20*cba,pad=0.01)
-        cbar.formatter.set_powerlimits((-3, 3))
+        cbar.formatter.set_powerlimits((-2, 2))
         cbar.ax.yaxis.set_offset_position('left')
     else:
-        im = axis.imshow(array,cmap=cmap,aspect=aspect,alpha=alpha)
+        im = axis.imshow(arrayLoc,cmap=cmap,aspect=aspect,alpha=alpha,origin=origin,**kwargs)
         if clim!="auto": im.set_clim(clim[0],clim[1])
     
     if title: plt.title(title)
@@ -99,7 +107,9 @@ def plotLines(array, lines, axis=None, dim=0, ls="-", **kwargs):
     return(plt.gca())
 
 
-def plotSurf(array, kind="color", title=False, clim=ZLIM, axis=None, stride=4, cmap="jet",lw=0.5,lc="gray",aa=False,alpha=1):
+def plotSurf(array, kind="color", title=False, clim=ZLIM, axis=None, 
+             figsize=None, stride=4, cmap="turbo", lw=0.5, lc="gray", aa=False,
+             alpha=1, label=None):
     """ plot 3D view of surface
     
     plots 2D numpy.ndarray <array>, using the data as z values, in a 3D view.
@@ -117,7 +127,8 @@ def plotSurf(array, kind="color", title=False, clim=ZLIM, axis=None, stride=4, c
 
     if SHOW: plt.ion(); plt.show()
     if axis==None:
-        fig = plt.figure()
+        if figsize: fig = plt.figure(figsize=figsize)
+        else: fig = plt.figure(figsize=figsize)
         ax = fig.gca(projection='3d')
     else: ax = axis
     X = np.arange(0,array.shape[0],1)
@@ -132,14 +143,19 @@ def plotSurf(array, kind="color", title=False, clim=ZLIM, axis=None, stride=4, c
             col = None
         surf = ax.plot_surface(X,Y, np.transpose(array), cmap=cmap, color=col,
                                rstride=stride, cstride=stride, vmin=clim[0], vmax=clim[1], 
-                               linewidth=lw, antialiased=aa, alpha=alpha)
-    elif kind=="wire": surf = ax.plot_wireframe(X,Y, np.transpose(array), rstride=stride, cstride=stride,
-                              linewidth=lw, color=lc, antialiased=aa, alpha=alpha)
-    plt.axis("off")
+                               linewidth=0, antialiased=aa, alpha=alpha)
+    elif kind=="wire": 
+        surf = ax.plot_wireframe(X,Y, np.transpose(array), rstride=stride, cstride=stride,
+                                 linewidth=lw, color=lc, antialiased=aa, alpha=alpha)
+    ax.axis("off")
     #ax.set_box_aspect((np.ptp(X), np.ptp(Y), np.ptp(array)))
     ax.set_zlim(clim[0],clim[1])
     if title: plt.title(title)
-    if kind=="color" and axis==None: fig.colorbar(surf, shrink=0.8, aspect=8)
+    if kind=="color" and axis==None: 
+        cb = fig.colorbar(surf, shrink=0.8, aspect=8)
+        if label: 
+            cb.ax.set_title(label)
+            cb.ax.xaxis.set_label_position('top')
     if SHOW: plt.pause(0.001)
     return(ax)
     
@@ -235,21 +251,74 @@ def resample(array, resol):
     
     from scipy import signal
 
-    if WARN: print("[Warn:Period] Resampling uses Fourier filter, which assumes periodicity.",flush=True)
+    if WARN: 
+        print("[Warn:Period] Resampling uses Fourier filter, which assumes periodicity.",flush=True)
+        print("              For non-periodic arrays, use bilin_resample() instead.",flush=True)
     if type(resol)==int: newShape = tuple([resol*iShape for iShape in array.shape])
     else: newShape = resol
     if len(newShape) != len(array.shape):
         print("[ERROR] 1st and 2nd argument must have same number of dimensions.")
         return(array)
     result = np.copy(array)
-    for dim in range(len(newShape)): result = signal.resample(result,newShape[dim],axis=dim)
+    for dim in range(len(newShape)): result = signal.resample(result, newShape[dim], axis=dim)
+    return(result)
+
+
+@njit
+def bilin_resample(array, resol):
+    """ resample / change array resolution through bilinear interpolation
+
+    resamples the (nx,ny) numpy.ndarray <array> to the new resolution <resol>.
+    <resol> can be of form (nx_new, ny_new) or a single int, 
+    which is translated to <resol> = (round(nx/<resol>), round(ny/<resol>)).
+
+    returns: resampled numpy.ndarray
+    """
+    nxNew = resol[0]
+    nyNew = resol[1]
+    resolX = array.shape[0]/nxNew
+    resolY = array.shape[1]/nyNew
+  
+    result = np.zeros((nxNew,nyNew),dtype=double)
+    
+    if (array.shape[0]/nxNew == int(array.shape[0]/nxNew)) and (array.shape[1]/nyNew == int(array.shape[1]/nyNew)):
+        xIdx = np.arange(nxNew+1)*resolX
+        xIdx = xIdx.astype(np.uint16)
+        yIdx = np.arange(nyNew+1)*resolY
+        yIdx = yIdx.astype(np.uint16)
+        
+        for ix in range(nxNew):
+            for iy in range(nyNew):
+                result[ix,iy] = np.median(array[xIdx[ix]:xIdx[ix+1], yIdx[iy]:yIdx[iy+1]])
+    
+    else:
+        xIdx = np.arange(nxNew)*resolX
+        yIdx = np.arange(nyNew)*resolY
+    
+        for ix in range(nxNew):
+            for iy in range(nyNew):
+                # neighbors
+                xL = int(xIdx[ix])
+                xR = xL + 1
+                yB = int(yIdx[iy])
+                yT = yB + 1
+        
+                # weights: bilinear interpolation
+                dx = xIdx[ix] - xL
+                dy = yIdx[iy] - yB
+                wTR = dx*dy
+                wTL = (1-dx)*dy
+                wBR = dx*(1-dy)
+                wBL = (1-dx)*(1-dy)
+                val = wBL*array[xL,yB] + wBR*array[xR,yB] + wTL*array[xL,yT] + wTR*array[xR,yT]
+        
+                result[ix,iy] = val
+  
     return(result)
 
 
 def reduce(array, resol):
     """ resample / change array resolution
-    
-    USE resample() INSTEAD FOR PERIODIC ARRAYS!
 
     resamples the (nx,ny) numpy.ndarray <array> to the new resolution <resol>.
     <resol> can be of form (nx_new, ny_new) or a single int, 
@@ -258,54 +327,54 @@ def reduce(array, resol):
     returns: resampled numpy.ndarray
     """
 
-    if WARN: print("[Warn:Deprec] reduce() is deprecated. Use resample() instead.",flush=True)
+    if WARN: print("[Warn:Deprec] reduce() is deprecated and will be removed in a future release. Use bilin_resample() instead.",flush=True)
     if type(resol)==int:
         nxNew = round(array.shape[0]/resol)
         nyNew = round(array.shape[1]/resol)
-        resolX, resolY = (resol, resol)
+        return resample(array, (nxNew,nyNew))
     else:
         nxNew, nyNew = resol
-        resolX = array.shape[0]/nxNew
-        resolY = array.shape[1]/nyNew
-    
-    result = np.zeros((nxNew,nyNew),dtype=float)
-    xIdx = np.arange(nxNew+1)*resolX
-    xIdx = xIdx.astype(np.uint16)
-    yIdx = np.arange(nyNew+1)*resolY
-    yIdx = yIdx.astype(np.uint16)
-    
-    #for ix in tqdm(range(nxNew)): # tqdm 3rdPartyModule
-    for ix in range(nxNew):
-        for iy in range(nyNew):
-            result[ix,iy] = np.median(array[xIdx[ix]:xIdx[ix+1], yIdx[iy]:yIdx[iy+1]])
-    return(result)
+        return resample(array, (nxNew,nyNew))
 
 
-def dumpConfig(array,filepath="konfig0py.real",Lx=None,Ly=None):
-    """ dump array as contMech konfig
+def slopeX(array):
+    dx = (XLIM[1]-XLIM[0])/array.shape[0]
+    return ( np.diff(array, append=array[:1,:], axis=0) + np.diff(array, prepend=array[-1:,:], axis=0) ) / (2*dx)
 
-    writes numpy.ndarray <array> in the typical format that can be plotted in gnuplot
-    or imported into the contMech simulation.
+def slopeY(array):
+    dy = (YLIM[1]-YLIM[0])/array.shape[1]
+    return ( np.diff(array, append=array[:,:1], axis=1) + np.diff(array, prepend=array[:,-1:], axis=1) ) / (2*dy)
+
+
+def dumpConfig(arrays, filepath="konfig0py.real", Lx=None, Ly=None):
+    """ dump arrays as contMech konfig
+
+    writes list <arrays> of numpy.ndarrays to a file in the typical format 
+    that can be plotted in gnuplot or imported into a contMech simulation.
     """
+    if type(arrays)==np.ndarray: arrays = [arrays]
 
     if WARN: print("[Warn:Format] for imported microscope images, use img2config() first.",flush=True)
-    (nx,ny)=array.shape
+    (nx,ny)=arrays[0].shape #array.shape
     if not Lx: dx = (XLIM[1]-XLIM[0])/nx
     else: dx = Lx/nx
     if not Ly: dy = (YLIM[1]-YLIM[0])/ny
     else: dy = Ly/ny
     out = open(filepath,"w")
-    (nxH,nyH)=(nx/2,ny/2)
     out.write("#%i\t%i\n\n" % (nx,ny))
     #for ix in tqdm(range(nx)): # tqdm 3rdPartyModule
     for ix in range(nx+1):
         for iy in range(ny+1):
-            out.write( (FMT+"\t"+FMT+"\t"+FMT+"\n") % (ix*dx, iy*dy, array[ix%nx,iy%ny]) )
+            s = (FMT+"\t"+FMT) % (ix*dx, iy*dy)
+            for array in arrays: s += ("\t"+FMT) % array[ix%nx,iy%ny]
+            s += "\n"
+            out.write(s)
+            #out.write( (FMT+"\t"+FMT+"\t"+FMT+"\n") % (ix*dx, iy*dy, array[ix%nx,iy%ny]) )
         out.write("\n") # divider for gnuplot
     out.close()
 
 
-def dumpImg(array,filename):
+def dumpImg(array, filename):
     """ dump array as image text file
 
     writes 2D (nx, ny) numpy.ndarray <array> to a text file with ny values per
@@ -367,7 +436,19 @@ def circularMask(w, h, center=None, rMax=None, rMin=None):
     return mask
 
 
-def untilt(array,avg=None):
+def XY(shape, dtype=np.uint16):
+    y = np.arange(shape[1],dtype=dtype)
+    x = np.arange(shape[0],dtype=dtype)
+    return np.tile(x,(shape[1],1)).transpose(), np.tile(y,(shape[0],1))
+
+def center(array):
+    x,y = XY(array.shape)
+    norm = array.sum()
+    xCOM = (x*array).sum()/norm
+    yCOM = (y*array).sum()/norm
+    return((xCOM,yCOM))
+
+def untilt(array, avg=None):
     """ subtract the tilt from a 2D surface
 
     subtract the macroscopic tilt from np.ndarray <array>, assuming it to be 
@@ -425,7 +506,7 @@ def psd(array, output=""):
     return(result)
 
 
-def plotPSD(array,axis=None):
+def plotPSD(array, axis=None):
     """ plot PSD of array
     
     plots the PSD of numpy.ndarray <array>.
@@ -445,7 +526,7 @@ def plotPSD(array,axis=None):
     return(axis)
 
 
-def createBorder(array,nxNew,nyNew):
+def createBorder(array, nxNew, nyNew):
     """ create border around surface 
 
     generates a (<nxNew>, <nyNew>) numpy.ndarray that contains the (nx, ny) 
@@ -503,7 +584,7 @@ def logsmooth(infilename, outfilename="", nbin=100, usecols=(0,1)):
     #return(spec)
 
 
-def contStats(filepath="",nbin=100):
+def contStats(filepath="", nbin=100):
     global SHOW
     if filepath != "":
         import os
