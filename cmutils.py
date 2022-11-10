@@ -345,6 +345,54 @@ def slopeY(array):
     return ( np.diff(array, append=array[:,:1], axis=1) + np.diff(array, prepend=array[:,-1:], axis=1) ) / (2*dy)
 
 
+def corners(array, N=256):
+    """ meeting point of <array>'s corners
+
+    constructs the 2<N> x 2<N> area around the point where the four corners meet 
+    if np.ndarray <array> is periodically repeated in the plane.
+
+    returns: np.ndarray
+    """
+
+    result = np.zeros((2*N,2*N))
+    result[:N,:N] = array[-N:,-N:]
+    result[N:,N:] = array[:N,:N]
+    result[N:,:N] = array[:N,-N:]
+    result[:N,N:] = array[-N:,:N]
+    return(result)
+
+
+def smoothPBC(array, overlap=None):
+    """ make non-periodic image smooth at periodic boundaries
+
+    all points within <overlap> from the edges of np.ndarray <array> are 
+    reassigned values that gradually approach the value of the opposite edge.
+
+    returns: np.ndarray
+    """
+
+    if overlap is None: overlap = min(array.shape)//10
+    result = np.copy(array)
+
+    # array axis 0: use original edges 
+    for idx in range(overlap):
+        wt_idx = 0.75 - 0.25*np.cos(np.pi*idx/overlap)
+        wt_edge = 1 - wt_idx # 0.25 + 0.25*np.cos(np.pi*idx/overlap)
+        result[idx,:] = wt_idx*array[idx,:] + wt_edge*array[-1,:]
+        result[-(idx+1),:] = wt_idx*array[-(idx+1),:] + wt_edge*array[0,:]
+
+    # array axis 1: use current edges
+    edge0 = result[:,0]
+    edge1 = result[:,-1]
+    for idx in range(overlap):
+        wt_idx = 0.75 - 0.25*np.cos(np.pi*idx/overlap)
+        wt_edge = 1 - wt_idx # 0.25 + 0.25*np.cos(np.pi*idx/overlap)
+        result[:,idx] = wt_idx*result[:,idx] + wt_edge*edge1
+        result[:,-(idx+1)] = wt_idx*result[:,-(idx+1)] + wt_edge*edge0
+
+    return(result)
+
+
 def dumpConfig(arrays, filepath="konfig0py.real", Lx=None, Ly=None):
     """ dump arrays as contMech konfig
 
