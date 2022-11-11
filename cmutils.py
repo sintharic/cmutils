@@ -165,6 +165,42 @@ def plotSurf(array, kind="color", title=False, clim=ZLIM, axis=None,
 #%% ----- Data input / output / manipulation ----- %%#
 
 def readConfig(filepath, usecols=2):
+    global XLIM, YLIM
+
+    with open(filepath) as file:
+        line1 = file.readline()[1:].split()
+        lines = [line for line in file.readlines() if line[0].isalnum()]
+    
+    nx, ny = ( int(line1[0]), int(line1[1]) )
+    array = np.array([float(line.split()[usecols]) for line in lines])
+    lengthX = float(lines[-1].split()[0])
+    lengthY = 2*float(lines[ny//2].split()[1])
+
+    # default: reshape the (nx+1)*(ny+1) flat array to a (nx, ny) ndarray
+    if (array.shape[0] == (nx+1)*(ny+1)):
+        array = array.reshape((nx+1,ny+1))[:nx,:ny]
+    # frames: might have been downsampled to 512x512
+    elif ( (array.shape[0] == 513*513) & (array[0] == array[512]) ):
+        nx, ny = (512, 512)
+        array = array.reshape((nx+1,ny+1))[:nx,:ny]
+    # legacy: cmutils used to export nx*ny flat array rather than (nx+1)*(ny+1)
+    else: 
+        array = array.reshape((nx,ny))
+        lengthX = lengthX*nx/(nx-1)
+
+    # update XLIM, YLIM
+    XLIM = (-lengthX/2, lengthX/2)
+    YLIM = (-lengthY/2, lengthY/2)
+    if WARN: 
+        print("[Warn:Dimens] Updating XLIM and YLIM to fit imported data:",flush=True)
+        print("  lengthX  = ", lengthX, flush=True)
+        print("  lengthY  = ", lengthY, flush=True)
+
+    return(array)
+    
+    
+
+def readConfigOld(filepath, usecols=2):
     """ read contMech konfig file
     
     reads column <usecols> from file <filepath>, and converts it to an (nx,ny)
@@ -174,7 +210,7 @@ def readConfig(filepath, usecols=2):
     """
 
     global XLIM, YLIM
-    array = np.loadtxt(filepath,usecols=usecols)
+    array = np.loadtxt(filepath, usecols=usecols)
     
     # Read nx, ny and reshape array accordingly
     fid = open(filepath,"rb")
@@ -213,8 +249,8 @@ def readConfig(filepath, usecols=2):
 
     if WARN: 
         print("[Warn:Dimens] Updating XLIM and YLIM to fit imported data:",flush=True)
-        print("  lengthX  = ",lengthX,flush=True)
-        print("  lengthY  = ",2*dyH*ny,flush=True)
+        print("  lengthX  = ", lengthX, flush=True)
+        print("  lengthY  = ", 2*dyH*ny, flush=True)
     return(array)
     
 
