@@ -5,6 +5,7 @@ Utilities for analyzing, plotting, animating and manipulating data from and for 
 
 `contMech` is a continuum mechanical contact simulation program developed in the group of Prof. Dr. Martin Müser at Saarland University, Germany.
 As of 2022, the `contMech` repository is *not* public.
+Hence, this repository is probably useless to anyone who is not using `contMech`.
 
 --------------------------------------------------------------------------------
 
@@ -68,7 +69,7 @@ Example to convert a blurred random array to stl:
 
 cmparams.py
 -----------
-Reads all the parameters a given `contMech` simulation uses as indicated by its params file.
+Reads all the parameters used in a `contMech` simulation, as indicated by its params file.
 
 Example to find out whether sheet with ID=1 is elastic:  
 `import cmparams as cp`  
@@ -83,16 +84,16 @@ Example to reduce the time step size in all subfolders in the current directory:
 `import modparams as mp`  
 `import os`  
 `mp.paramNames = ['dTime', 'nTime']`  
-`mp.paramFacs  = [2, 1./2]`  
 `mp.paramFacs  = [1./2, 2]`  
 `files = [folder+'/params.in' for folder in os.listdir('.') if os.path.isfile(folder+'/params.in')]`  
 `for file in files: mp.run(file)`  
 
 Recommendations
 ---------------
-To permanently add these modules to your Anaconda path, you have the options described here: https://stackoverflow.com/questions/37006114/anaconda-permanently-include-external-packages-like-in-pythonpath
+To permanently add these modules to your Anaconda path, you have the options described here: https://stackoverflow.com/questions/37006114/anaconda-permanently-include-external-packages-like-in-pythonpath.
+My recommendation is `conda develop ~/git/cmutils`.
 
-If you are often using modules in the IPython console, consider importing them by default. 
+If you are often using modules in the IPython console, also consider importing them by default. 
 Any .py file in the folder `~/.ipython/profile_default/startup` will automatically be loaded at IPython startup.
 
 Furthermore, you can define aliases in your .bashrc or .zshrc file, e.g. `alias cmjobs='python3 ~/git/cmutils/cmjobs.py'`.
