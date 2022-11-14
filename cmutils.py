@@ -165,6 +165,14 @@ def plotSurf(array, kind="color", title=False, clim=ZLIM, axis=None,
 #%% ----- Data input / output / manipulation ----- %%#
 
 def readConfig(filepath, usecols=2):
+    """ read contMech konfig file
+    
+    reads column <usecols> from file <filepath>, and converts it to an (nx,ny)
+    numpy.ndarray, assuming the first line in the file is of the form "#nx ny"
+
+    returns: numpy.ndarray
+    """
+
     global XLIM, YLIM
 
     with open(filepath) as file:
@@ -201,7 +209,7 @@ def readConfig(filepath, usecols=2):
     
 
 def readConfigOld(filepath, usecols=2):
-    """ read contMech konfig file
+    """ LEGACY VERSION: read contMech konfig file
     
     reads column <usecols> from file <filepath>, and converts it to an (nx,ny)
     numpy.ndarray, assuming the first line in the file is of the form "#nx ny"
