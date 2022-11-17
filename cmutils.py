@@ -282,6 +282,10 @@ def img2config(array): return(array.max() - array)
 def config2img(array): return(-array)
 
 
+def rot90(array): return array.transpose()[::-1,:]
+def rot270(array): return array.transpose()[:,::-1]
+def rot180(array): return array[::-1,::-1]
+
 def resample(array, resol):
     """ resample / change array resolution
     
