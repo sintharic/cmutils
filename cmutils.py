@@ -36,15 +36,19 @@ def show(): plt.show()
 
 
 def plotImg(array, clim=ZLIM, title=False, aspect="true", cmap="turbo", 
-            alpha=1.0, axis=None, pad=0.01, cba=0.85, rot=False, **kwargs):
+            alpha=1.0, axis=None, pad=0.01, cba=0.85, rot=False, figsize=(3.3,3), **kwargs):
     """ plot array as an image
     
     plots 2D numpy.ndarray <array> as a colored image, similar to gnuplot's 
     "splot ... with pm3d".
     <clim> must be of form (v_min,v_max), the value range to which colors are mapped.
 
-    returns: matplotlib.axes.Axes object containing the plot
+    Returns
+    -------
+    matplotlib.axes.Axes object containing the plot
+
     """
+    
     if rot: 
         origin = "lower"
         arrayLoc = array.transpose()
@@ -55,7 +59,7 @@ def plotImg(array, clim=ZLIM, title=False, aspect="true", cmap="turbo",
     if SHOW: plt.ion(); plt.show()
     if aspect == "true": aspect = (XLIM[1]-XLIM[0])/(YLIM[1]-YLIM[0])
     if axis==None:
-        plt.figure()
+        plt.figure(figsize=figsize)
         plt.grid(False)
         plt.imshow(arrayLoc,cmap=cmap,aspect=aspect,alpha=alpha,origin=origin,**kwargs)
         if clim!="auto": plt.clim(clim[0],clim[1])
@@ -71,7 +75,7 @@ def plotImg(array, clim=ZLIM, title=False, aspect="true", cmap="turbo",
     return(plt.gca())
 
 
-def plotLines(array, lines, axis=None, dim=0, ls="-", **kwargs):
+def plotLines(array, lines, axis=None, dim=0, ls="-", figsize=None, **kwargs):
     """ plot line scan(s)
     
     plots line(s) along dimension <dim> from numpy.ndarray <array>.
@@ -79,7 +83,10 @@ def plotLines(array, lines, axis=None, dim=0, ls="-", **kwargs):
     <axis>, the matplotlib.axes.Axes object on which to plot, can be specified.
     as well as typical kwargs for plots.
 
-    returns: matplotlib.axes.Axes object containing the plot
+    Returns
+    -------
+    matplotlib.axes.Axes object containing the plot
+
     """
 
     if dim==0: xlab="Y"
@@ -87,7 +94,7 @@ def plotLines(array, lines, axis=None, dim=0, ls="-", **kwargs):
     if type(lines) == int: lines = [lines]
     
     if SHOW: plt.ion(); plt.show()
-    if not axis: plt.figure()
+    if not axis: plt.figure(figsize=figsize)
     for line in lines:
         if dim==0:
             z = array[line,:]
@@ -108,7 +115,7 @@ def plotLines(array, lines, axis=None, dim=0, ls="-", **kwargs):
 
 def plotSurf(array, kind="color", title=False, clim=ZLIM, axis=None, 
              figsize=None, stride=4, cmap="turbo", lw=0.5, lc="gray", aa=False,
-             alpha=1, label=None):
+             alpha=1, label=None, **kwargs):
     """ plot 3D view of surface
     
     plots 2D numpy.ndarray <array>, using the data as z values, in a 3D view.
@@ -119,7 +126,10 @@ def plotSurf(array, kind="color", title=False, clim=ZLIM, axis=None,
 
     for <kind>="wire", the linewidth <lw> and linecolor <lc> can be specified.
 
-    returns: matplotlib.axes.Axes object containing the plot
+    Returns
+    -------
+    matplotlib.axes.Axes object containing the plot
+
     """
     
     from mpl_toolkits.mplot3d import Axes3D # noqa: F401 unused import
@@ -142,10 +152,10 @@ def plotSurf(array, kind="color", title=False, clim=ZLIM, axis=None,
             col = None
         surf = ax.plot_surface(X,Y, np.transpose(array), cmap=cmap, color=col,
                                rstride=stride, cstride=stride, vmin=clim[0], vmax=clim[1], 
-                               linewidth=0, antialiased=aa, alpha=alpha)
+                               linewidth=0, antialiased=aa, alpha=alpha, **kwargs)
     elif kind=="wire": 
         surf = ax.plot_wireframe(X,Y, np.transpose(array), rstride=stride, cstride=stride,
-                                 linewidth=lw, color=lc, antialiased=aa, alpha=alpha)
+                                 linewidth=lw, color=lc, antialiased=aa, alpha=alpha, **kwargs)
     ax.axis("off")
     #ax.set_box_aspect((np.ptp(X), np.ptp(Y), np.ptp(array)))
     ax.set_zlim(clim[0],clim[1])
@@ -170,7 +180,10 @@ def readConfig(filepath, usecols=2):
     reads column <usecols> from file <filepath>, and converts it to an (nx,ny)
     numpy.ndarray, assuming the first line in the file is of the form "#nx ny"
 
-    returns: numpy.ndarray
+    Returns
+    -------
+    numpy.ndarray
+
     """
 
     global XLIM, YLIM
@@ -214,7 +227,10 @@ def readConfigOld(filepath, usecols=2):
     reads column <usecols> from file <filepath>, and converts it to an (nx,ny)
     numpy.ndarray, assuming the first line in the file is of the form "#nx ny"
 
-    returns: numpy.ndarray
+    Returns
+    -------
+    numpy.ndarray
+
     """
 
     global XLIM, YLIM
@@ -268,7 +284,10 @@ def readImg(filepath):
     reads file <filepath> with ny numbers per line and nx lines into a (nx, ny)
     numpy.ndarray.
 
-    returns: numpy.ndarray
+    Returns
+    -------
+    numpy.ndarray
+
     """
 
     if WARN: print("[Warn:Format] contMech format is upside-down! Use img2config() to compare.",flush=True)
@@ -288,12 +307,20 @@ def rot180(array): return array[::-1,::-1]
 
 def resample(array, resol):
     """ resample / change array resolution
-    
-    resamples the (nx,ny) numpy.ndarray <array> to the new resolution <resol>.
-    <resol> can be of form (nx_new, ny_new) or a single float, 
-    which is translated to <resol> = (round(<resol>*nx), round(<resol>*ny)).
 
-    returns: resampled numpy.ndarray
+    Parameters
+    ----------
+    array : np.ndarray with shape (nx, ny)
+        array to be resampled
+    resol : float or 2-tuple/list of int
+        either the new target resolution (nx_new, ny_new) or a single float 
+        representing the new resolution relative to the original according to
+        (nx_new, ny_new) = (round(<resol>*nx), round(<resol>*ny)).
+
+    Returns
+    -------
+    resampled numpy.ndarray
+
     """
     
     from scipy import signal
@@ -312,23 +339,30 @@ def resample(array, resol):
 
 
 @njit
-def bilin_resample(array, resol):
+def bilin_resample(array, new_shape):
     """ resample / change array resolution through bilinear interpolation
 
-    resamples the (nx,ny) numpy.ndarray <array> to the new resolution <resol>.
-    <resol> can be of form (nx_new, ny_new) or a single int, 
-    which is translated to <resol> = (round(nx/<resol>), round(ny/<resol>)).
+    Parameters
+    ----------
+    array : np.ndarray with shape (nx, ny)
+        array to be resampled
+    resol : 2-tuple/list of int
+        new target resolution (nx_new, ny_new)
 
-    returns: resampled numpy.ndarray
+    Returns
+    -------
+    resampled numpy.ndarray
+
     """
-    nxNew = resol[0]
-    nyNew = resol[1]
+
+    nxNew = new_shape[0]
+    nyNew = new_shape[1]
     resolX = array.shape[0]/nxNew
     resolY = array.shape[1]/nyNew
   
     result = np.zeros((nxNew,nyNew),dtype=double)
     
-    if (array.shape[0]/nxNew == int(array.shape[0]/nxNew)) and (array.shape[1]/nyNew == int(array.shape[1]/nyNew)):
+    if (resolX == int(resolX)) and (resolY == int(resolY)):
         xIdx = np.arange(nxNew+1)*resolX
         xIdx = xIdx.astype(np.uint16)
         yIdx = np.arange(nyNew+1)*resolY
@@ -371,7 +405,10 @@ def reduce(array, resol):
     <resol> can be of form (nx_new, ny_new) or a single int, 
     which is translated to <resol> = (round(nx/<resol>), round(ny/<resol>)).
 
-    returns: resampled numpy.ndarray
+    Returns
+    -------
+    resampled numpy.ndarray
+
     """
 
     if WARN: print("[Warn:Deprec] reduce() is deprecated and will be removed in a future release. Use bilin_resample() instead.",flush=True)
@@ -393,15 +430,19 @@ def slopeY(array):
     return ( np.diff(array, append=array[:,:1], axis=1) + np.diff(array, prepend=array[:,-1:], axis=1) ) / (2*dy)
 
 
-def corners(array, N=256):
+def corners(array, N=None):
     """ meeting point of <array>'s corners
 
     constructs the 2<N> x 2<N> area around the point where the four corners meet 
     if np.ndarray <array> is periodically repeated in the plane.
 
-    returns: np.ndarray
+    Returns
+    -------
+    np.ndarray
+
     """
 
+    if N is None: N = min(array.shape)//4
     result = np.zeros((2*N,2*N))
     result[:N,:N] = array[-N:,-N:]
     result[N:,N:] = array[:N,:N]
@@ -410,31 +451,43 @@ def corners(array, N=256):
     return(result)
 
 
-def smoothPBC(array, overlap=None):
+def smoothPBC(array, overlapX=None, overlapY=None):
     """ make non-periodic image smooth at periodic boundaries
 
-    all points within <overlap> from the edges of np.ndarray <array> are 
-    reassigned values that gradually approach the value of the opposite edge.
+    Parameters
+    ----------
+    array : np.ndarray
+        array whose edges are manipulated
+    overlapX : int or None
+        all points within <overlapX> from the edges of <array> along 
+        axis 0 are gradually approach the value of the opposite edge.
+    overlapY : int or None
+        all points within <overlapY> from the edges of <array> along 
+        axis 1 are gradually approach the value of the opposite edge.
 
-    returns: np.ndarray
+    Returns
+    -------
+    np.ndarray
+
     """
 
-    if overlap is None: overlap = min(array.shape)//10
+    if overlapX is None: overlapX = min(array.shape)//16
+    if overlapY is None: overlapY = min(array.shape)//16
     result = np.copy(array)
 
     # array axis 0: use original edges 
-    for idx in range(overlap):
-        wt_idx = 0.75 - 0.25*np.cos(np.pi*idx/overlap)
-        wt_edge = 1 - wt_idx # 0.25 + 0.25*np.cos(np.pi*idx/overlap)
+    for idx in range(overlapX):
+        wt_idx = 0.75 - 0.25*np.cos(np.pi*idx/overlapX)
+        wt_edge = 1 - wt_idx
         result[idx,:] = wt_idx*array[idx,:] + wt_edge*array[-1,:]
         result[-(idx+1),:] = wt_idx*array[-(idx+1),:] + wt_edge*array[0,:]
 
     # array axis 1: use current edges
     edge0 = result[:,0]
     edge1 = result[:,-1]
-    for idx in range(overlap):
-        wt_idx = 0.75 - 0.25*np.cos(np.pi*idx/overlap)
-        wt_edge = 1 - wt_idx # 0.25 + 0.25*np.cos(np.pi*idx/overlap)
+    for idx in range(overlapY):
+        wt_idx = 0.75 - 0.25*np.cos(np.pi*idx/overlapY)
+        wt_edge = 1 - wt_idx
         result[:,idx] = wt_idx*result[:,idx] + wt_edge*edge1
         result[:,-(idx+1)] = wt_idx*result[:,-(idx+1)] + wt_edge*edge0
 
@@ -446,7 +499,9 @@ def dumpConfig(arrays, filepath="konfig0py.real", Lx=None, Ly=None):
 
     writes list <arrays> of numpy.ndarrays to a file in the typical format 
     that can be plotted in gnuplot or imported into a contMech simulation.
+    
     """
+
     if type(arrays)==np.ndarray: arrays = [arrays]
 
     if WARN: print("[Warn:Format] for imported microscope images, use img2config() first.",flush=True)
@@ -474,6 +529,7 @@ def dumpImg(array, filename):
 
     writes 2D (nx, ny) numpy.ndarray <array> to a text file with ny values per
     line and nx lines.
+    
     """
 
     out = open(filename,"w")
@@ -492,6 +548,7 @@ def dumpLines(array, lines, filename="", dim=0):
     into <filename>. 
     <lines> can be an int or a list/tuple of ints with desired line indices to
     be exported.
+    
     """
 
     if type(lines)==int: lines = [lines]
@@ -549,8 +606,12 @@ def untilt(array, avg=None):
     subtract the macroscopic tilt from np.ndarray <array>, assuming it to be 
     linear in both directions.
 
-    returns: the untilted numpy.ndarray
+    Returns
+    -------
+    the untilted numpy.ndarray
+
     """
+
     nx,ny = array.shape
     nmin = min(nx,ny)
     if avg==None: avg = nmin//32
@@ -573,7 +634,10 @@ def psd(array, output=""):
     calculates the PSD of numpy.ndarray <array> with auto quasi-log q space.
     writes the PSD to file <output> if given.
 
-    returns: numpy.ndarray with 2 columns containing q and C(q) values.
+    Returns
+    -------
+    numpy.ndarray with 2 columns containing q and C(q) values.
+
     """
 
     if WARN: print("[Warn:Dimens] Assuming dx=dy and ny<=nx.",flush=True)
@@ -607,7 +671,10 @@ def plotPSD(array, axis=None):
     plots the PSD of numpy.ndarray <array>.
     <axis>, the matplotlib.axes.Axes object on which to plot, can be specified.
 
-    returns: matplotlib.axes.Axes object containing the plot
+    Returns
+    -------
+    matplotlib.axes.Axes object containing the plot
+
     """
 
     psdData = psd(array)
@@ -628,7 +695,10 @@ def createBorder(array, nxNew, nyNew):
     numpy.ndarray <array>.
     <nxNew> must be larger than nx and <nyNew> larger than ny.
 
-    returns: the new numpy.ndarray
+    Returns
+    -------
+    the new numpy.ndarray
+
     """
 
     (nxOld,nyOld) = array.shape
