@@ -86,6 +86,7 @@ paramType = {
 
   # --- SHEET : ON-SITE --- #
   'fOnSitePotential' : 'int',
+  'fOnSitePeriod' : 'float',
   'gammaOnSite' : 'float',
   'frictionCoeffOS' : 'float',
   'vXOnSite' : 'float',
@@ -140,7 +141,8 @@ paramType = {
 
   # --- GLOBAL : OBSERVABLES --- #
   'freqFrame' : 'int',
-  'frameInterval' : 'int'#NEW
+  'frameInterval' : 'int',#NEW
+  'fLogMeasure' : 'int'#NEW
 }
 
 class gfmdSheet:
@@ -213,6 +215,7 @@ class gfmdSheet:
 
   # --- ON-SITE --- #
   fOnSitePotential = 0
+  fOnSitePeriod = 0
   gammaOnSite = 0
   frictionCoeffOS = 0
   vXOnSite = vYOnSite = 0
@@ -278,6 +281,7 @@ class simulation:
 
   # --- OBSERVABLES --- #
   freqFrame = 0
+  fLogMeasure = 0
 
 
 def read(file):
@@ -323,6 +327,7 @@ def read(file):
         # observables
         elif '# freqFrame #' in line: sim.freqFrame = int(line.split()[0])
         elif '# frameInterval #' in line: sim.freqFrame = int(line.split()[0])
+        elif '# fLogMeasure #' in line: sim.fLogMeasure = int(line.split()[0])
 
         
         
@@ -409,6 +414,7 @@ def read(file):
 
         # OnSite
         elif '# fOnSitePotential #' in line: sim.SHEET[sheetID].fOnSitePotential = int(line.split()[0])
+        elif '# fOnSitePeriod #' in line: sim.SHEET[sheetID].fOnSitePeriod = float(line.split()[0])
         elif '# gammaOnSite #' in line: sim.SHEET[sheetID].gammaOnSite = float(line.split()[0])
         elif '# frictionCoeffOS #' in line: sim.SHEET[sheetID].frictionCoeffOS = float(line.split()[0])
         elif '# vXOnSite #' in line: sim.SHEET[sheetID].vXOnSite = float(line.split()[0])
