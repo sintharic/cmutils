@@ -23,7 +23,7 @@ LINESTYLE = "-"
 MARKERSTYLE = ""
 MODE = "DispX"
 VERSION = "new" # "new" or "dev"
-UNITS = ["m","mN"]
+UNITS = ["arb. u.","arb. u."]
 
 # Data parameters
 NX = 0; NY = 0;
@@ -40,7 +40,7 @@ SHEET = []
 INTER = []
 LABELS = []
 RAMP = False
-GRID = True
+GRID = False
 
 IID = 0 # TODO: now always plots inter class with ID 0. Generalize this.
 
@@ -245,8 +245,9 @@ class gfmdSheet:
 class interSheet:
     # Defaults: should match contMech code
     ID = 0
-    nx = 0; ny = 0; resolMovie = 0
-    fPotential = 0;
+    nx = 0; ny = 0 
+    resolMovie = 512
+    fPotential = 0
     fDumpFrame = 0
     nTime = 0; nFrames = 0; increment = 1
 
@@ -312,7 +313,7 @@ class interSheet:
         idx = START + self.increment*(numFrame-1-START) # numFrame starts at 1, not 0!
 
         if not self.fDumpFrame:
-            print("Nothing to do in inter"+str(ID))
+            print("Nothing to do in inter"+str(self.ID))
             return
 
         self.data = np.zeros((self.nx,self.ny),dtype=np.int16)
@@ -455,6 +456,7 @@ def initParams(path):
     if MODE=="Cont2D":
         for iInter in range(-len(INTER),0):
             INTER[iInter].updateFiles(path)
+            print("resolMovie: ", INTER[iInter].resolMovie)#DEBUG
             if INTER[iInter].resolMovie < NX:
                 INTER[iInter].nx = NX // ( (NX-1)//INTER[iInter].resolMovie + 1 )
             else: INTER[iInter].nx = NX

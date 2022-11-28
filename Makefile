@@ -1,5 +1,5 @@
 SHELL = /usr/bin/env bash
-default_target: auto
+default_target: all
 
 COMPILER := g++
 CPPFLAGS := -O2 -std=c++11 
@@ -56,54 +56,6 @@ LFFTW := -lfftw3 -L $(FFTW_LIB) -I $(FFTW_INC)
 
 # ----- Compilation Rules ----- #
 
-contMech.o: globals.h contMech.h contMech.cpp
-	@echo " compiling contMech.o ..."
-	@$(COMPILER) $(CPPFLAGS) $(LFFTW) -c contMech.cpp -o contMech.o > contMech.e 2>&1
-
-gfmdSheet.o: globals.h gfmdSheet.h gfmdSheet.cpp
-	@echo " compiling gfmdSheet.o ..."
-	@$(COMPILER) $(CPPFLAGS) $(LFFTW) -c gfmdSheet.cpp -o gfmdSheet.o > contMech.e 2>&1
-
-interSheet.o: globals.h interSheet.h interSheet.cpp
-	@echo " compiling interSheet.o ..."
-	@$(COMPILER) $(CPPFLAGS) $(LFFTW) -c interSheet.cpp -o interSheet.o > contMech.e 2>&1
-
-atomicSheet.o: globals.h atomicSheet.h atomicSheet.cpp
-	@echo " compiling atomicSheet.o ..."
-	@$(COMPILER) $(CPPFLAGS) $(LFFTW) -c atomicSheet.cpp -o atomicSheet.o > contMech.e 2>&1
-
-auxiliary.o: globals.h auxiliary.cpp
-	@echo " compiling auxiliary.o ..."
-	@$(COMPILER) $(CPPFLAGS) $(LFFTW) -c auxiliary.cpp -o auxiliary.o > contMech.e 2>&1
-
-seq: $(OBJECTS)
-	@echo " ---$(MSG) ---"
-	@echo " FFTW Paths: - $(FFTW_LIB)"
-	@echo "             - $(FFTW_INC)"
-	@echo " compiling contMech.exe ..."
-	@$(COMPILER) $(CPPFLAGS) $(OBJECTS) $(LFFTW) -o contMech.exe > contMech.e 2>&1
-
-
-# Without optMasses.cpp
-old:
-	@rm -f contMech.exe
-	@echo $(MSG)
-	@echo " FFTW Paths: - $(FFTW_LIB)"
-	@echo "             - $(FFTW_INC)"
-	@echo " Building contMech.exe..."
-	@$(COMPILER) $(CPPFLAGS) contMech.cpp gfmdSheet.cpp $(LFFTW) -o contMech.exe > contMech.e 2>&1
-
-
-# With optMasses.cpp
-opt:
-	@rm -f contMech.exe
-	@echo $(MSG)
-	@echo " FFTW Paths: - $(FFTW_LIB)"
-	@echo "             - $(FFTW_INC)"
-	@echo " Building contMech.exe..."
-	@$(COMPILER) $(CPPFLAGS) contMech.cpp gfmdSheet.cpp optMasses.cpp $(LFFTW) -o contMech.exe > contMech.e 2>&1
-
-
 surf:
 	@echo " FFTW Paths: - $(FFTW_LIB)"
 	@echo "             - $(FFTW_INC)"
@@ -137,6 +89,7 @@ green:
 	@$(COMPILER) $(CPPFLAGS) GreensFunc3D.cpp $(LFFTW) -o GF3D.exe
 
 
+all: surf params range convert
 
 # ----- Cleanup and backup rules ----- #
 

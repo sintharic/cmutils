@@ -1,5 +1,15 @@
-#include "header.h"
-string version = "V1.01 (2020-09-18)";
+#include <vector>
+#include <string>
+#include <cmath>
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+using namespace std;
+const double TWOPI = 2*M_PI;
+typedef uint64_t Lint;
+
+
+string version = "V1.02 (2022-11-27)";
 // Default inputs
 int nx = 512, ny = 512;
 double Hurst = 0.8;
@@ -40,12 +50,13 @@ double msStat(double exponent) {
   return(result);
 };
 
-void dumpHelp() {
-  cout << "Usage: ./stats.exe [nx ny Hurst lambdaR lambdaS fRollOff rRoughNorm]\n\n";
+void dumpHelp(string name) {
+  cout << "Usage: "+name+" [nx ny Hurst lambdaR lambdaS fRollOff rRoughNorm]\n\n";
   cout << "Calculates the surface statistics for the given parameters. These \n";
   cout << "include RMS height, gradient and curvature. Parameters have the same \n";
   cout << "meanings and defaults as in the contMech code. Specifying one as '-'\n";
   cout << "(as well as not specifying it at all) sets it to default\n";
+  exit(0);
 };
 
 void statsF() {
@@ -87,7 +98,7 @@ int main(int argc, char **argv) {
   vector<string> args(argc);
   for (int iArg=0; iArg<argc; ++iArg) args[iArg] = argv[iArg];
   if (argc > 1) {
-    if (args[1]=="-h" || args[1]=="--help") {dumpHelp(); return(0);}
+    if (args[1]=="-h" || args[1]=="--help") {dumpHelp(args[0]); return(0);}
     else if (args[1]!="-") nx = stoi(args[1]);
   }
   if (argc > 2 && args[2]!="-") ny = stoi(args[2]);

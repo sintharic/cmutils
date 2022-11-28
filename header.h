@@ -22,7 +22,7 @@ typedef std::complex<double> Complex;
 
 #ifndef _PI_
   #define _PI_
-  const double PI = 4.*atan(1.), TWOPI = 2*PI;
+  const double PI = M_PI, TWOPI = 2*PI;
 #endif
 
 template <class T> int sign(T a){
