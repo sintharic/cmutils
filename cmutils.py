@@ -10,15 +10,16 @@
 
 
 
-#%% ----- User settings ----- %%#
+#%% ----- User presets ----- %%#
 
 XLIM = (-0.5,0.5)   # default xrange
 YLIM = (-0.5,0.5)   # default yrange
 ZLIM = "auto"       # default zrange
 SHOW = True         # show plot windows
 FMT  = "%.6g"       # number format used to write data to files
+ROT  = True         # make imshow orient along real coords rather than indices
 
-WARN = True         # display non-critical warnings and reminders
+WARN = False        # display non-critical warnings and reminders
 
 
 
@@ -36,7 +37,7 @@ def show(): plt.show()
 
 
 def plotImg(array, clim=ZLIM, title=False, aspect="true", cmap="turbo", 
-            alpha=1.0, axis=None, pad=0.01, cba=0.85, rot=False, figsize=(3.3,3), **kwargs):
+            alpha=1.0, axis=None, pad=0.01, cba=0.85, rot=ROT, figsize=(3.3,3), **kwargs):
     """ plot array as an image
     
     plots 2D numpy.ndarray <array> as a colored image, similar to gnuplot's 
@@ -218,8 +219,62 @@ def readConfig(filepath, usecols=2):
         print("  lengthY  = ", lengthY, flush=True)
 
     return(array)
+
+
+
+def readMulti(filepath, usecols=None):
+    """ read contMech konfig file
     
+    reads column <usecols> from file <filepath>, and converts it to an (nx,ny)
+    numpy.ndarray, assuming the first line in the file is of the form "#nx ny"
+
+    Returns
+    -------
+    numpy.ndarray
+
+    """
+
+    global XLIM, YLIM
+
+    with open(filepath) as file:
+        line1 = file.readline()[1:].split()
+        lines = [line for line in file.readlines() if line[0].isalnum()]
     
+    # sanity check on columns
+    nCol = len(lines[0].split())
+    if usecols is None: usecols = range(2,nCol)
+    elif isinstance(usecols,int): usecols = [usecols]
+    for col in usecols: 
+        if col >= nCol: 
+            raise ValueError("column index out of range: %i/%i" % (col, nCol))
+
+    # data shape and lengthX, lengthY
+    nx, ny = ( int(line1[0]), int(line1[1]) )
+    lengthX = float(lines[-1].split()[0])
+    lengthY = 2*float(lines[ny//2].split()[1])
+
+
+    arrays = []
+    for col in usecols:
+        arrays.append(np.array([float(line.split()[col]) for line in lines]))
+
+    # default: reshape the (nx+1)*(ny+1) flat arrays to a (nx, ny) ndarray
+    if (arrays[-1].shape[0] == (nx+1)*(ny+1)):
+        for i in range(len(arrays)):
+            arrays[i] = arrays[i].reshape((nx+1,ny+1))[:nx,:ny]
+    # frames: might have been downsampled to 512x512
+    elif ( (arrays[-1].shape[0] == 513*513) & (arrays[-1][0] == arrays[-1][512]) ):
+        nx, ny = (512, 512)
+        for i in range(len(arrays)):
+            arrays[i] = arrays[i].reshape((nx+1,ny+1))[:nx,:ny]
+    # legacy: cmutils used to export nx*ny flat arrays rather than (nx+1)*(ny+1)
+    else: 
+        for i in range(len(arrays)): arrays[i] = arrays[i].reshape((nx,ny))
+        lengthX = lengthX*nx/(nx-1)
+
+    return arrays
+
+
 
 def readConfigOld(filepath, usecols=2):
     """ LEGACY VERSION: read contMech konfig file
@@ -302,8 +357,108 @@ def config2img(array): return(-array)
 
 
 def rot90(array): return array.transpose()[::-1,:]
-def rot270(array): return array.transpose()[:,::-1]
 def rot180(array): return array[::-1,::-1]
+def rot270(array): return array.transpose()[:,::-1]
+# Li is a 7x7 "image" with "Li" written on it. Used to troubleshoot image transforms
+Li = np.zeros((7,7), dtype=np.int16)
+Li[1,1:6] = 1; Li[1:4,1] = 1 # L
+Li[5,1:4] = -1; Li[5,5] = -1 # i
+
+
+def rot90Multi(arrays):
+    if len(arrays)==6:
+        result = [arrays[0], arrays[1], arrays[4], arrays[5], -arrays[2], -arrays[3]]
+        for i in range(len(result)): result[i] = rot90(result[i])
+    else:
+        result = [rot90(data) for data in arrays]
+    return result
+
+def rot180Multi(arrays):
+    if len(arrays)==6:
+        result = [arrays[0], arrays[1], -arrays[4], -arrays[5], -arrays[2], -arrays[3]]
+        for i in range(len(result)): result[i] = rot180(result[i])
+    else:
+        result = [rot180(data) for data in arrays]
+    return result
+
+def rot270Multi(arrays):
+    if len(arrays)==6:
+        result = [arrays[0], arrays[1], -arrays[4], -arrays[5], arrays[2], arrays[3]]
+        for i in range(len(result)): result[i] = rot270(result[i])
+    else:
+        result = [rot270(data) for data in arrays]
+    return result
+
+
+def flip(array, axis=1, direction=-1):
+    assert axis in [0,1]
+    assert direction in [-1,0,1,2]
+
+    result = np.copy(array)
+    if axis==0:
+        result = result[:,::-1]
+    elif axis==1:
+        result = result[::-1,:]
+    
+    if (direction>=0) and (direction!=axis): return -result
+    else: return result
+
+def flipMulti(arrays, axis=0):
+    """ flips displacements and pressures by rotation around a lateral axis
+
+    assumes that <arrays> is a tuple containing uz, pz(, uy, py, ux, px) in this 
+    order. returns the tuple manipulated as if the simulation was rotated by 
+    180° around the x-axis (<axis>=0) or y-axis (<axis>=1).
+
+    Parameters
+    ----------
+    arrays: tuple/list of np.ndarrays
+        assuming z,y,x ordering, displacement and pressure 
+    axis: int (0,1)
+        axis, around which the system is rotated. 0: x-axis, 1: y-axis.
+
+    Returns
+    -------
+    arrays as represented in the flipped coordinate system
+    """
+
+    if len(arrays)==6: 
+        idcs_disp = [0,2,4]
+        idcs_press = [1,3,5]
+        assert axis in [0,1]
+    elif len(arrays)==4: 
+        idcs_disp = [0,2]
+        idcs_press = [1,3]
+    else: 
+        idcs_disp = [0]
+        idcs_press = [1]
+
+    result = arrays.copy()
+
+    if axis==0:
+        for idx in idcs_disp:
+            result[idx] = result[idx][:,::-1]
+        for idx in idcs_press:
+            result[idx] = result[idx][:,::-1]
+        if len(arrays)==6: 
+            result[0] = -result[0]
+            result[4] = -result[4]
+        else:
+            for idx in idcs_disp: result[idx] = -result[idx]
+        
+    elif axis==1:
+        for idx in idcs_disp:
+            result[idx] = result[idx][::-1,:]
+        for idx in idcs_press:
+            result[idx] = result[idx][::-1,:]
+        if len(arrays)==6: 
+            result[0] = -result[0]
+            result[2] = -result[2]
+        else:
+            for idx in idcs_disp: result[idx] = -result[idx]
+
+    return result
+
 
 def resample(array, resol):
     """ resample / change array resolution

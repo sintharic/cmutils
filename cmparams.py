@@ -20,6 +20,11 @@ paramType = {
   'poisson0' : 'float',
   'thickness0' : 'float',
   'elastExpnt0' : 'float',
+  'stiffness1' : 'float',
+  'fThickness1' : 'int',
+  'poisson1' : 'float',
+  'thickness1' : 'float',
+  'elastExpnt1' : 'float',
   'fDispX' : 'int',
   'fDispY' : 'int',
   # mechanical: viscoelasticity
@@ -27,6 +32,10 @@ paramType = {
   'tauKV' : 'float',
   'scalKV' : 'float',
   'rKV_LPF' : 'int',
+  'fMaxwell' : 'int',#NEW
+  'nMaxwell' : 'int',#NEW
+  'massGFMD' : 'float',#NEW
+  'fDumpMaxwell' : 'int',#NEW
   # mechanical: GFMD dynamics
   'fMassWeightg' : 'int',
   'zeroModeMass' : 'float',
@@ -63,6 +72,11 @@ paramType = {
 
   # --- SHEET : PRESSURE/DISPLACEMENT CONTROL --- #
   'pressInit' : 'float',
+  'pressFinal' : 'float',
+  'forceInit' : 'float',#NEW
+  'forceFinal' : 'float',#NEW
+  'pressPhi' : 'float',#NEW
+  'pressTheta' : 'float',#NEW
   'fConstCOM' : 'int',
   'fzOpposite' : 'int',
   'fExtrapolateInf' : 'int',#NEW
@@ -71,6 +85,7 @@ paramType = {
   'nVeloTurnStep' : 'int',
   'rVeloTurnStep' : 'float',
   'veloTurnPress' : 'float',
+  'nVeloTransition' : 'int',#NEW
   'pressTurnaround' : 'float',#NEW
   'vzConstCOM' : 'float',
   # control: ramp
@@ -78,11 +93,20 @@ paramType = {
   'rampSteps' : 'int',
   'rampRelax' : 'int',
   'dzRamp' : 'float',
+  'dpRamp' : 'float',
   # control: lateral
   'fLateral' : 'int',
   'vX' : 'float',
   'vY' : 'float',
   'frictRelax' : 'int',
+  'fConstCOMx' : 'int',#NEW
+  'xConstCOM' : 'float',#NEW
+  'vxConstCOM' : 'float',#NEW
+  'fConstCOMy' : 'int',#NEW
+  'yConstCOM' : 'float',#NEW
+  'vyConstCOM' : 'float',#NEW
+  # control: steady state sliding
+  'fSteadySlide' : 'int',
 
   # --- SHEET : ON-SITE --- #
   'fOnSitePotential' : 'int',
@@ -91,6 +115,10 @@ paramType = {
   'frictionCoeffOS' : 'float',
   'vXOnSite' : 'float',
   'vYOnSite' : 'float',
+  'xOnSite' : 'float',#NEW
+  'yOnSite' : 'float',#NEW
+  'surfEnergOS' : 'float',
+  'potCurveRelOS' : 'float',
 
   # --- SHEET : OBSERVABLES --- #
   'resolMovie' : 'int',
@@ -103,8 +131,10 @@ paramType = {
   'fPotential' : 'int',
   'surfEnerg' : 'float',
   'potRange' : 'float',
+  'potCurve' : 'float',
   'potCurveRel' : 'float',
   'fPotentialTest' : 'int',
+  'nTimeOn' : 'int', #NEW
   'nTimeOff' : 'int',
   'frictionCoeff' : 'float',
 
@@ -123,6 +153,7 @@ paramType = {
   'nInter' : 'int',
 
   'nTime' : 'int',
+  'nRelax' : 'int',
   'dTime' : 'float',
 
   'randSeed' : 'int',
@@ -152,18 +183,27 @@ class gfmdSheet:
 
   # --- MECHANICAL PROPERTIES --- #
   nElast = 0
-  stiffness0 = 0.5
   contactMod = 1 #OLD
+  stiffness0 = 0.5
   fThickness0 = 0
   poisson0 = 0.25
   thickness0 = 1
   elastExpnt0 = 1
+  #stiffness1 = 0.
+  #fThickness1 = 0
+  #poisson1 = 0.25
+  #thickness1 = 1
+  #elastExpnt1 = 1
   fDispX = fDispY = 0
   # mechanical: viscoelasticity
   fKelvinVoigt = 0
   tauKV = 1
   scalKV = 1000
   rKV_LPF = 4
+  fMaxwell = 0
+  nMaxwell = 1
+  massGFMD = 1.
+  fDumpMaxwell = 0
   # mechanical: GFMD dynamics
   fMassWeightg = 1
   zeroModeMass = 1
@@ -237,10 +277,13 @@ class interSheet:
   fPotential = 0
   surfEnerg = 0
   potRange = 0 
+  potCurve = 0
   potCurveRel = 0
   fPotentialTest = 0
+  nTimeOn = 0 #NEW
   nTimeOff = 0
   frictionCoeff = 0
+  frictRelax = 1 #NEW
 
   # --- OBSERVABLES --- #
   fDumpGap = 0
@@ -251,12 +294,16 @@ class interSheet:
 
 class simulation:
   path = ''
-  SHEET = []
-  INTER = []
-  def __init__(self, file):
-    self.path = file
-    self.SHEET.clear()
-    self.INTER.clear()
+  sheet = []
+  inter = []
+  SHEET = sheet
+  INTER = inter
+  def __init__(self, path):
+    self.path = path
+    self.sheet.clear()
+    self.inter.clear()
+    self.SHEET = self.sheet # old name for compatibility
+    self.INTER = self.inter # old name for compatibility
 
   lengthX = lengthY = 0
   nxGlobal = nyGlobal = 0
@@ -265,6 +312,7 @@ class simulation:
 
   nTime = 0
   dTime = 0
+  nRelax = 0
 
   randSeed = 4712
   dampGlobal = 1.5
@@ -288,179 +336,76 @@ def read(file):
   if not os.path.isfile(file): sys.exit('not a valid params file: '+file)
 
   sim = simulation(file)
+  sheet = gfmdSheet(-1)
+  inter = interSheet(-1)
+  sim_attributes = sim.__dir__()
+  sim_attributes = [a for a in sim_attributes if a[:2]!='__']
+  sheet_attributes = sheet.__dir__()
+  sheet_attributes = [a for a in sheet_attributes if a[:2]!='__']
+  inter_attributes = inter.__dir__()
+  inter_attributes = [a for a in inter_attributes if a[:2]!='__']
 
   with open(file, 'r') as fid:
-    sheetID = 666
-    interID = 666
+    sheetID = -1
+    interID = -1
     
     for iLine,line in enumerate(fid.readlines()):
+      # special lines
+      if '# nSheet #' in line: 
+        sim.nSheet = int(line.split()[0])
+        for i in range(sim.nSheet): sim.sheet.append(gfmdSheet(i))
+        continue
+      if '# nInter #' in line: 
+        sim.nInter = int(line.split()[0])
+        for i in range(sim.nInter): sim.inter.append(interSheet(i))
+        continue
+      if '# sheet start' in line: 
+        sheetID = int(line.split()[0])
+        continue
+      if '# sheet end' in line: 
+        sheetID = -1
+        continue
+      if '# inter start' in line: 
+        interID = int(line.split()[0])
+        continue
+      if '# inter end' in line: 
+        interID = -1
+        continue
 
-      try:
-        # --- GLOBAL --- #
-        
-        # basic
-        if '# nxGlobal #' in line: sim.nxGlobal = int(line.split()[0])
-        elif '# nyGlobal #' in line: sim.nyGlobal = int(line.split()[0])
-        elif '# lengthX #' in line: sim.lengthX = float(line.split()[0])
-        elif '# lengthY #' in line: sim.lengthY = float(line.split()[0])
-        elif '# nSheet #' in line: 
-          sim.nSheet = int(line.split()[0])
-          for i in range(sim.nSheet): sim.SHEET.append(gfmdSheet(i))
-        elif '# nInter #' in line: 
-          sim.nInter = int(line.split()[0])
-          for i in range(sim.nInter): sim.INTER.append(interSheet(i))
+      for attribute in sim_attributes:
+        if f'# {attribute} #' in line:
+          try:
+            if paramType[attribute] == 'int': sim.__setattr__(attribute, int(line.split()[0]))
+            else: sim.__setattr__(attribute, float(line.split()[0]))
+          except:
+            if (interID >= 0) or (sheetID >= 0):
+              msg = '[WARNING] cannot process line %4i (' % iLine
+              msg += ' sheetID='+str(sheetID)+'/'+str(len(sim.sheet))
+              msg += ' interID='+str(interID)+'/'+str(len(sim.inter))
+              print(msg+' ):')
+              print(' '+line[:-1])
 
-        elif '# nTime #' in line: sim.nTime = int(line.split()[0])
-        elif '# dTime #' in line: sim.dTime = float(line.split()[0])
+      if sheetID >=0:
+        for attribute in sheet_attributes:
+          if f'# {attribute} #' in line:
+            if paramType[attribute] == 'int': sim.sheet[sheetID].__setattr__(attribute, int(line.split()[0]))
+            else: sim.sheet[sheetID].__setattr__(attribute, float(line.split()[0]))
 
-        elif '# randSeed #' in line: sim.randSeed = int(line.split()[0])
-        elif '# dampGlobal #' in line: sim.dampGlobal = float(line.split()[0])
-        # FIRE
-        elif '# fFire #' in line: sim.fFire = int(line.split()[0])
-        elif '# fireDecrmt #' in line: sim.fireDecrmt = float(line.split()[0])
-        elif '# fireIncrmt #' in line: sim.fireIncrmt = float(line.split()[0])
-        elif '# fireRedrct #' in line: sim.fireRedrct = float(line.split()[0])
-        # temperature
-        elif '# fLangevin #' in line: sim.fLangevin = int(line.split()[0])
-        elif '# tempInit #' in line: sim.tempInit = float(line.split()[0])
-        elif '# tempFinal #' in line: sim.tempFinal = float(line.split()[0])
-        # observables
-        elif '# freqFrame #' in line: sim.freqFrame = int(line.split()[0])
-        elif '# frameInterval #' in line: sim.freqFrame = int(line.split()[0])
-        elif '# fLogMeasure #' in line: sim.fLogMeasure = int(line.split()[0])
-
-        
-        
-        # --- gfmdSheet --- #
-        
-        elif '# sheet start' in line: sheetID = int(line.split()[0])
-        elif '# sheet end' in line: sheetID = 666
-        
-        # mechanical: basic
-        elif '# nElast #' in line: sim.SHEET[sheetID].nElast = int(line.split()[0])
-        elif '# stiffness0 #' in line: sim.SHEET[sheetID].stiffness0 = float(line.split()[0])
-        elif '# contactMod #' in line: 
-          sim.SHEET[sheetID].contactMod = float(line.split()[0])
-          print('[WARNING] contactMod is deprecated.')
-        elif '# fThickness0 #' in line: sim.SHEET[sheetID].fThickness0 = int(line.split()[0])
-        elif '# poisson0 #' in line: sim.SHEET[sheetID].poisson0 = float(line.split()[0])
-        elif '# thickness0 #' in line: sim.SHEET[sheetID].thickness0 = float(line.split()[0])
-        elif '# elastExpnt0 #' in line: sim.SHEET[sheetID].elastExpnt0 = float(line.split()[0])
-        elif '# fDispX #' in line: sim.SHEET[sheetID].fDispX = int(line.split()[0])
-        elif '# fDispY #' in line: sim.SHEET[sheetID].fDispY = int(line.split()[0])
-        # mechanical: viscoelastic
-        elif '# fKelvinVoigt #' in line: sim.SHEET[sheetID].fKelvinVoigt = int(line.split()[0])
-        elif '# tauKV #' in line: sim.SHEET[sheetID].tauKV = float(line.split()[0])
-        elif '# scalKV #' in line: sim.SHEET[sheetID].scalKV = float(line.split()[0])
-        elif '# rKV_LPF #' in line: sim.SHEET[sheetID].rKV_LPF = int(line.split()[0])
-        # mechanical: GFMD dynamics
-        elif '# fMassWeightg #' in line: sim.SHEET[sheetID].fMassWeightg = int(line.split()[0])
-        elif '# zeroModeMass #' in line: sim.SHEET[sheetID].zeroModeMass = float(line.split()[0])
-        
-        # topography: basic
-        elif '# fRoughRead #' in line: sim.SHEET[sheetID].fRoughRead = int(line.split()[0])
-        elif '# fTopoRead #' in line: sim.SHEET[sheetID].fRoughRead = int(line.split()[0])
-        elif '# fRoughAdd #' in line: sim.SHEET[sheetID].fRoughAdd = int(line.split()[0])
-        elif '# fTopoAdd #' in line: sim.SHEET[sheetID].fRoughAdd = int(line.split()[0])
-        elif '# dzStep #' in line: sim.SHEET[sheetID].dzStep = float(line.split()[0])      
-        # topography: Hertz
-        elif '# rXhertz #' in line: sim.SHEET[sheetID].rXhertz = float(line.split()[0])
-        elif '# rYhertz #' in line: sim.SHEET[sheetID].rYhertz = float(line.split()[0])
-        elif '# hertzExpnt #' in line: sim.SHEET[sheetID].hertzExpnt = float(line.split()[0])
-        # topography: self-affine fractal
-        elif '# hurst #' in line: sim.SHEET[sheetID].hurst = float(line.split()[0])
-        elif '# fRollOff #' in line: sim.SHEET[sheetID].fRollOff = int(line.split()[0])
-        elif '# lambdaR #' in line: sim.SHEET[sheetID].lambdaR = float(line.split()[0])
-        elif '# lambdaS #' in line: sim.SHEET[sheetID].lambdaS = float(line.split()[0])
-        elif '# peklenik #' in line: sim.SHEET[sheetID].peklenik = float(line.split()[0])
-        elif '# fRoughNorm #' in line: sim.SHEET[sheetID].fRoughNorm = int(line.split()[0])
-        elif '# rRoughNorm #' in line: sim.SHEET[sheetID].rRoughNorm = float(line.split()[0])
-        elif '# fBoxMuller #' in line: sim.SHEET[sheetID].fBoxMuller = int(line.split()[0])
-        # topography: single wave roughness
-        elif '# fAddSWR #' in line: sim.SHEET[sheetID].fAddSWR = int(line.split()[0])
-        elif '# nqxAddSWR #' in line: sim.SHEET[sheetID].nqxAddSWR = int(line.split()[0])
-        elif '# nqyAddSWR #' in line: sim.SHEET[sheetID].nqyAddSWR = int(line.split()[0])
-        elif '# heightSWR #' in line: sim.SHEET[sheetID].heightSWR = float(line.split()[0])
-        # topography: flat punch
-        elif '# radiusFlatPunch #' in line: sim.SHEET[sheetID].radiusFlatPunch = float(line.split()[0])
-        elif '# heightFlatPunch #' in line: sim.SHEET[sheetID].heightFlatPunch = float(line.split()[0])
-        # topography: sphere
-        elif '# rSphere #' in line: sim.SHEET[sheetID].rSphere = float(line.split()[0])
-
-        # control: basic
-        elif '# pressInit #' in line: sim.SHEET[sheetID].pressInit = float(line.split()[0])
-        elif '# pressFinal #' in line: sim.SHEET[sheetID].pressFinal = float(line.split()[0])
-        elif '# fConstCOM #' in line: sim.SHEET[sheetID].fConstCOM = int(line.split()[0])
-        elif '# fzOpposite #' in line: sim.SHEET[sheetID].fzOpposite = int(line.split()[0])
-        elif '# fExtrapolateInf #' in line: sim.SHEET[sheetID].fExtrapolateInf = int(line.split()[0])#NEW
-        elif '# zConstCOM #' in line: sim.SHEET[sheetID].zConstCOM = float(line.split()[0])
-        elif '# zOpposite #' in line: sim.SHEET[sheetID].zOpposite = float(line.split()[0])
-        elif '# nVeloTurnStep #' in line: sim.SHEET[sheetID].nVeloTurnStep = int(line.split()[0])
-        elif '# rVeloTurnStep #' in line: sim.SHEET[sheetID].rVeloTurnStep = float(line.split()[0])
-        elif '# veloTurnPress #' in line: sim.SHEET[sheetID].veloTurnPress = float(line.split()[0])#NEW
-        elif '# pressTurnaround #' in line: sim.SHEET[sheetID].veloTurnPress = float(line.split()[0])#NEW
-        elif '# vzConstCOM #' in line: sim.SHEET[sheetID].vzConstCOM = float(line.split()[0])
-        # control: ramp
-        elif '# fSteppedRamp #' in line: sim.SHEET[sheetID].fSteppedRamp = int(line.split()[0])
-        elif '# rampSteps #' in line: sim.SHEET[sheetID].rampSteps = int(line.split()[0])
-        elif '# rampRelax #' in line: sim.SHEET[sheetID].rampRelax = int(line.split()[0])
-        elif '# dzRamp #' in line: sim.SHEET[sheetID].dzRamp = float(line.split()[0])
-        elif '# dpRamp #' in line: sim.SHEET[sheetID].dpRamp = float(line.split()[0])      
-        # control: lateral
-        elif '# fLateral #' in line: sim.SHEET[sheetID].fLateral = int(line.split()[0])
-        elif '# vX #' in line: sim.SHEET[sheetID].vX = float(line.split()[0])
-        elif '# vY #' in line: sim.SHEET[sheetID].vY = float(line.split()[0])
-        elif '# frictRelax #' in line: sim.SHEET[sheetID].frictRelax = int(line.split()[0])      
-
-        # OnSite
-        elif '# fOnSitePotential #' in line: sim.SHEET[sheetID].fOnSitePotential = int(line.split()[0])
-        elif '# fOnSitePeriod #' in line: sim.SHEET[sheetID].fOnSitePeriod = float(line.split()[0])
-        elif '# gammaOnSite #' in line: sim.SHEET[sheetID].gammaOnSite = float(line.split()[0])
-        elif '# frictionCoeffOS #' in line: sim.SHEET[sheetID].frictionCoeffOS = float(line.split()[0])
-        elif '# vXOnSite #' in line: sim.SHEET[sheetID].vXOnSite = float(line.split()[0])
-        elif '# vYOnSite #' in line: sim.SHEET[sheetID].vYOnSite = float(line.split()[0])
-
-        # observables
-        elif ('# resolMovie #' in line) and sheetID != 666: sim.SHEET[sheetID].resolMovie = int(line.split()[0])
-        elif '# f3dMovie #' in line: sim.SHEET[sheetID].f3dMovie = int(line.split()[0])      
-
-
-
-        # --- interSheet --- #
-        
-        elif '# inter start' in line: interID = int(line.split()[0])
-        elif '# inter end' in line: interID = 666
-
-        # basic
-        elif '# sheetID0 #' in line: sim.INTER[interID].sheetID0 = int(line.split()[0])
-        elif '# sheetID1 #' in line: sim.INTER[interID].sheetID1 = int(line.split()[0])
-        # interactions
-        elif '# fConstraint #' in line: sim.INTER[interID].fConstraint = int(line.split()[0])
-        elif '# fPotential #' in line: sim.INTER[interID].fPotential = int(line.split()[0])
-        elif '# surfEnerg #' in line: sim.INTER[interID].surfEnerg = float(line.split()[0])
-        elif '# potRange #' in line: sim.INTER[interID].potRange = float(line.split()[0])
-        elif '# potCurveRel #' in line: sim.INTER[interID].potCurveRel = float(line.split()[0])
-        elif '# fPotentialTest #' in line: sim.INTER[interID].fPotentialTest = int(line.split()[0])
-        elif '# nTimeOff #' in line: sim.INTER[interID].nTimeOff = int(line.split()[0])
-        elif '# frictionCoeff #' in line: sim.INTER[interID].frictionCoeff = float(line.split()[0])
-        # observables
-        elif '# fDumpGap #' in line: sim.INTER[interID].fDumpGap = int(line.split()[0])
-        elif '# fDumpFrame #' in line: sim.INTER[interID].fDumpFrame = int(line.split()[0])
-        elif '# fDumpLateral #' in line: sim.INTER[interID].fDumpLateral = int(line.split()[0])
-        elif ('# resolMovie #' in line) and interID != 666: sim.INTER[interID].resolMovie = int(line.split()[0])
-
-      except:
-        if (interID != 666) or (sheetID != 666):
-          msg = '[WARNING] cannot process line %4i (' % iLine
-          msg += ' sheetID='+str(sheetID)+'/'+str(len(sim.SHEET))
-          msg += ' interID='+str(interID)+'/'+str(len(sim.INTER))
-          print(msg+' ):')
-          print(' '+line[:-1])
+      if interID >=0:
+        for attribute in inter_attributes:
+          if f'# {attribute} #' in line:
+            if paramType[attribute] == 'int': sim.inter[interID].__setattr__(attribute, int(line.split()[0]))
+            else: sim.inter[interID].__setattr__(attribute, float(line.split()[0]))
 
   # update defaults
   for iSheet in range(sim.nSheet):
-    if sim.SHEET[iSheet].rYhertz == -1: sim.SHEET[iSheet].rYhertz = sim.SHEET[iSheet].rXhertz
+    if sim.sheet[iSheet].rYhertz == -1: 
+      sim.sheet[iSheet].rYhertz = sim.sheet[iSheet].rXhertz
   if sim.lengthY == 0: sim.lengthY = sim.lengthX
   if sim.nyGlobal == 0: sim.nyGlobal = sim.nxGlobal
+
+  # old name for compatibility
+  sim.SHEET = sim.sheet
+  sim.INTER = sim.inter
   
   return sim

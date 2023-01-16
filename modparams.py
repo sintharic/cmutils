@@ -8,69 +8,150 @@
 @author: thescientist
 """
 
-SED = 'gsed'
+DEBUG = False
+SED = 'sed'
 
 import os, sys
-import cmparams as cp
-
-paramNames = ['vzConstCOM', 'dTime']
-paramFacs  = [3./4.75, 4.75/3]
+from cmparams import paramType
+from subprocess import run as call
 
 
-def checkParams():
-  if len(paramNames) != len(paramFacs): 
-    sys.exit('paramNames, paramFacs and paramTypes must have the same length!')
+
+# check the installed version of sed/gsed
+testfile = "_modparams_test_"
+with open(testfile, "w") as fid: fid.write("original")
+proc = call(["gsed", "-i", r"/original/c\modified", testfile], capture_output=True)
+if proc.returncode:
+  print(proc.stderr)
+  proc = call(["sed", "-i", r"/original/c\modified", testfile], capture_output=True)
+  if proc.returncode:
+    print(proc.stderr)
+    os.remove(testfile)
+    raise OSError("sed/gsed not working as intended.")
+  else: 
+    with open(testfile, "r") as fid: content = fid.read()
+    if content == "modified\n": SED = "sed"
+    else: 
+      if DEBUG: print(content)
+      os.remove(testfile)
+      raise OSError("sed/gsed not working as intended.")
+else: 
+  with open(testfile, "r") as fid: content = fid.read()
+  if content == "modified\n": SED = "gsed"
+  else: 
+    if DEBUG: print(content)
+    os.remove(testfile)
+    raise OSError("sed/gsed not working as intended.")
+os.remove(testfile)
 
 
-def modify(file):
-  # determine file name
-  if not file:
-    if len(sys.argv) > 1: file = sys.argv[1]
-    elif os.path.isfile('params.in'): file = 'params.in'
-    else: sys.exit('no params file name was given.')
-  elif not os.path.isfile(file): 
-    sys.exit('invalid params file name.')
+def sed(command, file):
+  proc = call([SED, "-i", command, file], capture_output=True)
+  if proc.returncode:
+    print(proc.stderr)
+    raise proc.check_returncode()
 
-  # read old param values
-  paramValue = [0]*len(paramNames)
+
+def check(params, values=None):
+  if isinstance(params, str): params = [params]
+  for i in range(len(params)):
+    if params[i][:2] == '# ': params[i] = params[i][2:]
+    if params[i][-2:] == ' #': params[i] = params[i][:-2]
+
+  if values is not None:
+    if isinstance(values, int) or isinstance(values, float): values = [values]
+    if len(values)==1: values = [values[0]]*len(params)
+    if len(values)!=len(params):
+      raise ValueError(f'parameter names and values must have same length, but have {len(params)} and {len(values)}')
+    return params, values
+  else: 
+    return params
+
+
+def param_type(param):
+  try: ptype = paramType[param]
+  except: 
+    print(f'WARNING: Unknown paramType for _{param}_. Assuming float.')
+    ptype = 'float'
+  return ptype
+
+
+def get_values(params, file):
+  # sanity checks
+  if not os.path.isfile(file): 
+    raise ValueError('invalid params file: %s' % file)
+  params = check(params)
+
+  values = [0]*len(params)
   with open(file,'r') as fid:
     for line in fid.readlines():
-      for i,param in enumerate(paramNames):
-        if param[0] == '#': param = param[2:]
-        if param[-1] == '#': param = param[:-2]
-        try: ptype = cp.paramType[param]
-        except: 
-          print(f'WARNING: invalid paramType for _{param}_')
-          ptype = 'float'
-        param = '# ' + param + ' #'
-        if param in line:
+      for i,param in enumerate(params):
+        ptype = param_type(param)
+        if f'# {param} #' in line:
           #print(line)#DEBUG
-          if ptype == 'int': paramValue[i] = int(line.split()[0])
-          else: paramValue[i] =  float(line.split()[0])
+          if ptype == 'int': values[i] = int(line.split()[0])
+          else: values[i] = float(line.split()[0])
 
-  # calculate and replace with new param values
-  for param,pval,pfac in zip(paramNames,paramValue,paramFacs):
-    if param[0] == '#': param = param[2:]
-    if param[-1] == '#': param = param[:-2]
-    try: ptype = cp.paramType[param]
-    except: 
-      print(f'WARNING: invalid paramType for _{param}_')
-      ptype = 'float'
-    param = '# ' + param + ' #'
+  return values
+
+
+def set(params, values, file='params.in'):
+  # sanity checks
+  if not os.path.isfile(file): 
+    raise ValueError('invalid params file: %s' % file)
+  params, values = check(params, values)
+
+  for param,pval in zip(params,values):
+    ptype = param_type(param)
     if ptype == 'int': 
-      newval = int(round(pfac*pval))
-      command = f"{SED} -i '/{param}/c\\{newval}\\t\\t{param}' {file}"
+      newval = int(round(pval))
+      command = f"/# {param} #/c\\{newval}\\t\\t# {param} #"
     else: 
-      newval = pfac*pval
-      command = f"{SED} -i '/{param}/c\\{newval:g}\\t\\t{param}' {file}"
+      newval = pval
+      command = f"/# {param} #/c\\{newval:g}\\t\\t# {param} #"
 
-    print(command)#DEBUG
-    os.system(command)
+    if DEBUG: print(f"{SED} -i '{command}' {file}")
+    
+    sed(command, file)
 
 
+def add(params, values, after, file='params.in'):
+  # sanity checks
+  if not os.path.isfile(file): 
+    raise ValueError('invalid params file: %s' % file)
+  params, values = check(params, values)
+  if after[:2] == '# ': after = after[2:]
+  if after[-2:] == ' #': after = after[:-2]
+
+  for param,pval in zip(params,values):
+    ptype = param_type(param)
+    if ptype == 'int': 
+      newval = int(round(pval))
+      command = f"/# {after} #/a\\{newval}\\t\\t# {param} #"
+    else: 
+      newval = pval
+      command = f"/# {after} #/a\\{newval:g}\\t\\t# {param} #"
+
+    if DEBUG: print(f"{SED} -i '{command}' {file}")
+    
+    sed(command, file)
+
+
+def multiply(params, factors, file='params.in'):
+  # sanity checks
+  params, factors = check(params, factors)
+
+  old_values = get_values(params, file)
+  new_values = [val*fac for val,fac in zip(old_values, factors)]
+  set(params, new_values, file)
+
+
+# old functions for compatibility
+paramNames = ['nTime']
+paramFacs  = [1]
+def modify(file):
+  multiply(file, paramNames, paramFacs)
 def run(file=None):
-  checkParams()
+  if len(paramNames) != len(paramFacs): 
+    raise ValueError('paramNames, paramFacs and paramTypes must have the same length!')
   modify(file)
-
-
-if __name__=='__main__': run()
