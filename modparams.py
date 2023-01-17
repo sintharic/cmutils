@@ -20,12 +20,20 @@ from subprocess import run as call
 # check the installed version of sed/gsed
 testfile = "_modparams_test_"
 with open(testfile, "w") as fid: fid.write("original")
-proc = call(["gsed", "-i", r"/original/c\modified", testfile], capture_output=True)
-if proc.returncode:
-  print(proc.stderr)
-  proc = call(["sed", "-i", r"/original/c\modified", testfile], capture_output=True)
-  if proc.returncode:
-    print(proc.stderr)
+try: 
+  proc = call(["gsed", "-i", r"/original/c\modified", testfile], capture_output=True)
+  returnval = proc.returncode
+  if returnval: print(proc.stderr)
+except: 
+  returnval = 1
+if returnval:
+  try: 
+    proc = call(["sed", "-i", r"/original/c\modified", testfile], capture_output=True)
+    returnval = proc.returncode
+    if returnval: print(proc.stderr)
+  except: 
+    returnval = 1
+  if returnval:
     os.remove(testfile)
     raise OSError("sed/gsed not working as intended.")
   else: 
