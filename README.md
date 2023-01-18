@@ -53,6 +53,8 @@ Scans for currently running `contMech` processes and estimates time remaining ba
 Usage from terminal:  
 `python3 cmjobs.py`  
 
+It can also be used to list or terminate all processes whose working directory matches a certain pattern. For example, `python3 cmjobs.py kill Hertz`. The program will ask for confirmation before doing so.
+
 stlutils.py
 -----------
 Converts numpy arrays and `contMech` configs to .stl files for CAD software and 3D printers.
@@ -73,19 +75,17 @@ Reads all the parameters used in a `contMech` simulation, as indicated by its pa
 Example to find out whether sheet with ID=1 is elastic:  
 `import cmparams as cp`  
 `sim = cp.read("params.in")`  
-`print(sim.SHEET[1].nElast)`  
+`print(sim.sheet[1].nElast)`  
 
 modparams.py
 ------------
-Modifies `contMech` params files, changing individual parameters by a certain factor. Typically used to write large job scripts. 
+Modifies `contMech` params files by adding, multiplying or setting values of parameters.
 
-Example to reduce the time step size in all subfolders in the current directory:  
+Example to reduce the time step size in all subfolders of the current directory:  
 `import modparams as mp`  
 `import os`  
-`mp.paramNames = ['dTime', 'nTime']`  
-`mp.paramFacs  = [1./2, 2]`  
 `files = [folder+'/params.in' for folder in os.listdir('.') if os.path.isfile(folder+'/params.in')]`  
-`for file in files: mp.run(file)`  
+`for file in files: mp.multiply(['dTime', 'nTime'], [1./2, 2], file)`  
 
 Recommendations
 ---------------
