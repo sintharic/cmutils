@@ -244,8 +244,8 @@ def readMulti(filepath, usecols=None):
     nCol = len(lines[0].split())
     if usecols is None: usecols = range(2,nCol)
     elif isinstance(usecols,int): usecols = [usecols]
-    for col in usecols: 
-        if col >= nCol: 
+    for col in usecols:
+        if col >= nCol:
             raise ValueError("column index out of range: %i/%i" % (col, nCol))
 
     # data shape and lengthX, lengthY

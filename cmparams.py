@@ -177,9 +177,11 @@ paramType = {
 }
 
 class gfmdSheet:
+  konfigName = "konfig"
   ID = 0
   def __init__(self,newID):
     self.ID = newID
+    self.konfigName += str(newID)
 
   # --- MECHANICAL PROPERTIES --- #
   nElast = 0
@@ -296,10 +298,10 @@ class simulation:
   path = ''
   sheet = []
   inter = []
-  SHEET = sheet
-  INTER = inter
+  SHEET = []
+  INTER = []
   def __init__(self, path):
-    self.path = path
+    self.path = os.path.split(path)[0]
     self.sheet.clear()
     self.inter.clear()
     self.SHEET = self.sheet # old name for compatibility
@@ -401,6 +403,12 @@ def read(file):
   for iSheet in range(sim.nSheet):
     if sim.sheet[iSheet].rYhertz == -1: 
       sim.sheet[iSheet].rYhertz = sim.sheet[iSheet].rXhertz
+    if sim.sheet[iSheet].fDispY: sim.sheet[iSheet].nElast = 2
+    if sim.sheet[iSheet].fDispX: sim.sheet[iSheet].nElast = 3
+    if sim.sheet[iSheet].fRoughAdd or sim.sheet[iSheet].fRoughRead:
+      sim.sheet[iSheet].konfigName += "E"
+    disps = {0 : "", 1 : "Dz", 2 : "Dzy", 3 : "Dzyx"}
+    sim.sheet[iSheet].konfigName += disps[sim.sheet[iSheet].nElast] + ".dat"
   if sim.lengthY == 0: sim.lengthY = sim.lengthX
   if sim.nyGlobal == 0: sim.nyGlobal = sim.nxGlobal
 
