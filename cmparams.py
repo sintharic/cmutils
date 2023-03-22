@@ -87,6 +87,7 @@ paramType = {
   'veloTurnPress' : 'float',
   'nVeloTransition' : 'int',#NEW
   'pressTurnaround' : 'float',#NEW
+  'forceTurnaround' : 'float',#NEW
   'vzConstCOM' : 'float',
   # control: ramp
   'fSteppedRamp' : 'int',
@@ -137,6 +138,8 @@ paramType = {
   'nTimeOn' : 'int', #NEW
   'nTimeOff' : 'int',
   'frictionCoeff' : 'float',
+  'relFrictPeak' : 'float',
+  'velFrictThresh' : 'float',
 
   # --- INTERACTION : OBSERVABLES --- #
   'fDumpGap' : 'int',
@@ -213,6 +216,7 @@ class gfmdSheet:
 
   # --- TOPOGRAPHY --- #
   fRoughRead = 0; fRoughAdd = 0
+  fTopoRead = 0; fTopoAdd = 0 #NEW
   dzStep = 0
   # topography: Hertz
   rXhertz = 0
@@ -399,15 +403,19 @@ def read(file):
             if paramType[attribute] == 'int': sim.inter[interID].__setattr__(attribute, int(line.split()[0]))
             else: sim.inter[interID].__setattr__(attribute, float(line.split()[0]))
 
-  # update defaults
+  # update default or derived parameters
   for iSheet in range(sim.nSheet):
+    if (sim.sheet[iSheet].fRoughAdd > 0): sim.sheet[iSheet].fTopoAdd = sim.sheet[iSheet].fRoughAdd
+    if (sim.sheet[iSheet].fRoughRead > 0): sim.sheet[iSheet].fTopoRead = sim.sheet[iSheet].fRoughRead
+    if (sim.sheet[iSheet].fTopoAdd > 0): sim.sheet[iSheet].fRoughAdd = sim.sheet[iSheet].fTopoAdd
+    if (sim.sheet[iSheet].fTopoRead > 0): sim.sheet[iSheet].fRoughRead = sim.sheet[iSheet].fTopoRead
     if sim.sheet[iSheet].rYhertz == -1: 
       sim.sheet[iSheet].rYhertz = sim.sheet[iSheet].rXhertz
     if sim.sheet[iSheet].fDispY: sim.sheet[iSheet].nElast = 2
     if sim.sheet[iSheet].fDispX: sim.sheet[iSheet].nElast = 3
     if sim.sheet[iSheet].fRoughAdd or sim.sheet[iSheet].fRoughRead:
       sim.sheet[iSheet].konfigName += "E"
-    disps = {0 : "", 1 : "Dz", 2 : "Dzy", 3 : "Dzyx"}
+    disps = {0 : "", 1 : "D", 2 : "Dzy", 3 : "Dzyx"}
     sim.sheet[iSheet].konfigName += disps[sim.sheet[iSheet].nElast] + ".dat"
   if sim.lengthY == 0: sim.lengthY = sim.lengthX
   if sim.nyGlobal == 0: sim.nyGlobal = sim.nxGlobal
