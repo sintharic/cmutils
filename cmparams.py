@@ -335,6 +335,7 @@ class simulation:
 
   # --- OBSERVABLES --- #
   freqFrame = 0
+  frameInterval = 0
   fLogMeasure = 0
 
 
@@ -404,6 +405,8 @@ def read(file):
             else: sim.inter[interID].__setattr__(attribute, float(line.split()[0]))
 
   # update default or derived parameters
+  if (sim.freqFrame > 0): sim.frameInterval = sim.freqFrame
+  if (sim.frameInterval > 0): sim.freqFrame = sim.frameInterval
   for iSheet in range(sim.nSheet):
     if (sim.sheet[iSheet].fRoughAdd > 0): sim.sheet[iSheet].fTopoAdd = sim.sheet[iSheet].fRoughAdd
     if (sim.sheet[iSheet].fRoughRead > 0): sim.sheet[iSheet].fTopoRead = sim.sheet[iSheet].fRoughRead
