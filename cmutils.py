@@ -139,7 +139,7 @@ def plotSurf(array, kind="color", title=False, clim=ZLIM, axis=None,
     if axis==None:
         if figsize: fig = plt.figure(figsize=figsize)
         else: fig = plt.figure(figsize=figsize)
-        ax = fig.gca(projection='3d')
+        ax = fig.add_subplot(111, projection='3d')
     else: ax = axis
     X = np.arange(0,array.shape[0],1)
     Y = np.arange(0,array.shape[1],1)
