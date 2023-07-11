@@ -188,40 +188,52 @@ def readConfig(filepath, usecols=2):
     """
 
     global XLIM, YLIM
-
-    with open(filepath) as file:
-        line1 = file.readline()[1:].split()
-        lines = [line for line in file.readlines() if line[0].isalnum()]
+    array = np.loadtxt(filepath, usecols=usecols)
     
+    # Read nx, ny and reshape array accordingly
+    fid = open(filepath,"rb")
+    line1 = fid.readline().decode('UTF-8')
+    line1 = line1[1:].split()
     nx, ny = ( int(line1[0]), int(line1[1]) )
-    array = np.array([float(line.split()[usecols]) for line in lines])
-    lengthX = float(lines[-1].split()[0])
-    lengthY = 2*float(lines[ny//2].split()[1])
-
-    # default: reshape the (nx+1)*(ny+1) flat array to a (nx, ny) ndarray
-    if (array.shape[0] == (nx+1)*(ny+1)):
-        array = array.reshape((nx+1,ny+1))[:nx,:ny]
-    # frames: might have been downsampled to 512x512
-    elif ( (array.shape[0] == 513*513) & (array[0] == array[512]) ):
+    if ( (array.shape[0] == (nx+1)*(ny+1)) ):# and (array[0] == array[ny]) ): # additional lines
+        lXfac = 1
+        array = array.reshape((nx+1,ny+1))
+        array = array[:nx,:ny]
+    elif ( (array.shape[0] == 513*513) & (array[0] == array[512]) ): # frames are downsampled to 512x512
+        lXfac = 1
         nx, ny = (512, 512)
-        array = array.reshape((nx+1,ny+1))[:nx,:ny]
-    # legacy: cmutils used to export nx*ny flat array rather than (nx+1)*(ny+1)
-    else: 
+        array = array.reshape((nx+1,ny+1))
+        array = array[:nx,:ny]
+    else:
+        lXfac = nx/(nx-1)
         array = array.reshape((nx,ny))
-        lengthX = lengthX*nx/(nx-1)
-
-    # update XLIM, YLIM
+    
+    # Update YLIM using first 2 lines
+    with np.warnings.catch_warnings():
+        np.warnings.simplefilter('ignore')
+        dummy = np.loadtxt(filepath, usecols=1, max_rows=2)
+        dyH = (dummy[1] - dummy[0])/2
+        YLIM = (-dyH*ny, dyH*ny)
+    
+    # Update XLIM using first and last line
+    fid.seek(-2, 2) # 2nd arg = 2 --> relative to EOF
+    while fid.read(1) == b"\n": fid.seek(-2, 1) # skip trailing empty lines
+    fid.seek(-1, 1) # 2nd arg = 1 --> relative to current position
+    while fid.read(1) != b"\n": fid.seek(-2, 1)
+    lineN = fid.read().decode('UTF-8')
+    lengthX = float(lineN.split()[0])*lXfac
     XLIM = (-lengthX/2, lengthX/2)
-    YLIM = (-lengthY/2, lengthY/2)
+    fid.close()
+    #array = np.rot90(array)
+
     if WARN: 
         print("[Warn:Dimens] Updating XLIM and YLIM to fit imported data:",flush=True)
         print("  lengthX  = ", lengthX, flush=True)
-        print("  lengthY  = ", lengthY, flush=True)
-
+        print("  lengthY  = ", 2*dyH*ny, flush=True)
     return(array)
 
 
-
+ 
 def readMulti(filepath, usecols=None):
     """ read contMech konfig file
     
@@ -273,65 +285,8 @@ def readMulti(filepath, usecols=None):
         lengthX = lengthX*nx/(nx-1)
 
     return arrays
-
-
-
-def readConfigOld(filepath, usecols=2):
-    """ LEGACY VERSION: read contMech konfig file
     
-    reads column <usecols> from file <filepath>, and converts it to an (nx,ny)
-    numpy.ndarray, assuming the first line in the file is of the form "#nx ny"
 
-    Returns
-    -------
-    numpy.ndarray
-
-    """
-
-    global XLIM, YLIM
-    array = np.loadtxt(filepath, usecols=usecols)
-    
-    # Read nx, ny and reshape array accordingly
-    fid = open(filepath,"rb")
-    line1 = fid.readline().decode('UTF-8')
-    line1 = line1[1:].split()
-    nx, ny = ( int(line1[0]), int(line1[1]) )
-    if ( (array.shape[0] == (nx+1)*(ny+1)) ):# & (array[0] == array[ny]) ): # additional lines
-        lXfac = 1
-        array = array.reshape((nx+1,ny+1))
-        array = array[:nx,:ny]
-    elif ( (array.shape[0] == 513*513) & (array[0] == array[512]) ): # frames are downsampled to 512x512
-        lXfac = 1
-        nx, ny = (512, 512)
-        array = array.reshape((nx+1,ny+1))
-        array = array[:nx,:ny]
-    else:
-        lXfac = nx/(nx-1)
-        array = array.reshape((nx,ny))
-    
-    # Update YLIM using first 2 lines
-    dummy = np.loadtxt(filepath, usecols=(0,1), max_rows=2)
-    dyH = (dummy[1,1] - dummy[0,1])/2
-    YLIM = (-dyH*ny, dyH*ny)
-    
-    # Update XLIM using first and last line
-    fid.seek(-2, 2) # 2nd arg = 2 --> relative to EOF
-    while fid.read(1) == b"\n": fid.seek(-2, 1) # skip trailing empty lines
-    fid.seek(-1, 1) # 2nd arg = 1 --> relative to current position
-    while fid.read(1) != b"\n": fid.seek(-2, 1)
-    lineN = fid.read().decode('UTF-8')
-    idx = lineN.find("\t")
-    lengthX = ( float(lineN[:idx]) - dummy[0,0] )*lXfac
-    XLIM = (-lengthX/2, lengthX/2)
-    fid.close()
-    #array = np.rot90(array)
-
-    if WARN: 
-        print("[Warn:Dimens] Updating XLIM and YLIM to fit imported data:",flush=True)
-        print("  lengthX  = ", lengthX, flush=True)
-        print("  lengthY  = ", 2*dyH*ny, flush=True)
-    return(array)
-    
 
 def readImg(filepath):
     """ read image file (without lateral info)
