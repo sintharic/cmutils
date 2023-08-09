@@ -159,7 +159,7 @@ for proc in processes:
 if do_filt:
   print(nFound, executable, "process(es) matching pattern '%s'."%pattern)
 else: 
-  print(nFound, executable, "process(es) running.")
+  print(f'{nFound} {executable} process(es) running ({datetime.datetime.now().strftime("%Y-%m-%d %H:%M")}).')
 if wFire: print("* simulations using FIRE may finish early.")
 
 
