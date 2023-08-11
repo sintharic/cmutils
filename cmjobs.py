@@ -19,6 +19,7 @@ import psutil as ps
 import getpass
 
 user = getpass.getuser()
+now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 if DEBUG: print("USERNAME:", user)
 
 nFound = 0
@@ -31,26 +32,21 @@ function = ""
 pattern = None
 if len(sys.argv)>1: 
   function = sys.argv[1]
-  if function not in ["list", "kill"]:
+  if function not in ["list", "kill", "finish"]:
     print("ERROR: Unknown option: %s" % function)
-    print("The only valid options are 'list' and 'kill'.")
+    print("Valid options are 'list', 'finish' and 'kill'.")
     sys.exit()
-  elif function=="list": 
+  else:
     do_filt = True
-  elif function=="kill":
-    do_filt = True
-    if len(sys.argv)<3:
-      print("CAUTION: Use 'kill --all' option to kill all running %s processes."%executable)
-      function = ""
 if len(sys.argv)>2: 
   pattern = sys.argv[2]
-  if pattern in ["-a","--all"]: 
+  if pattern in ["-a", "--all", "*"]: 
     do_filt = False
     pattern = None
 
 
 
-def find_processes(name):
+def find_processes(exe):
   # find processes with a given name
 
   result = []
@@ -67,7 +63,7 @@ def find_processes(name):
     pPID = proc.pid
     
     # filter contMech processes
-    if name in pname:
+    if exe in pname:
       result.append(proc)
 
   return result
@@ -159,8 +155,19 @@ for proc in processes:
 if do_filt:
   print(nFound, executable, "process(es) matching pattern '%s'."%pattern)
 else: 
-  print(f'{nFound} {executable} process(es) running ({datetime.datetime.now().strftime("%Y-%m-%d %H:%M")}).')
+  print(f'{nFound} {executable} process(es) running ({now}).')
 if wFire: print("* simulations using FIRE may finish early.")
+
+
+
+# kill processes matching the pattern
+if function=="finish":
+  ans = input("Are you sure you want to finish these processes? (y/n) ")
+  if ans=="y":
+    for proc in processes: 
+      with open(f"{proc.cwd()}/finish", "w") as file:
+        file.write(f"requested {now}\n")
+
 
 
 
