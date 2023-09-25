@@ -59,17 +59,17 @@ def plotImg(array, clim=ZLIM, title=False, aspect="true", cmap="turbo",
 
     if SHOW: plt.ion(); plt.show()
     if aspect == "true": aspect = (XLIM[1]-XLIM[0])/(YLIM[1]-YLIM[0])
-    if axis==None:
+    if axis is None:
         plt.figure(figsize=figsize)
         plt.grid(False)
-        plt.imshow(arrayLoc,cmap=cmap,aspect=aspect,alpha=alpha,origin=origin,**kwargs)
-        if clim!="auto": plt.clim(clim[0],clim[1])
-        cbar = plt.colorbar(shrink=cba,aspect=20*cba,pad=0.01)
+        plt.imshow(arrayLoc, cmap=cmap, aspect=aspect, alpha=alpha, origin=origin, **kwargs)
+        if clim!="auto": plt.clim(clim[0], clim[1])
+        cbar = plt.colorbar(shrink=cba, aspect=20*cba, pad=0.01)
         cbar.formatter.set_powerlimits((-2, 2))
         cbar.ax.yaxis.set_offset_position('left')
     else:
-        im = axis.imshow(arrayLoc,cmap=cmap,aspect=aspect,alpha=alpha,origin=origin,**kwargs)
-        if clim!="auto": im.set_clim(clim[0],clim[1])
+        im = axis.imshow(arrayLoc, cmap=cmap, aspect=aspect, alpha=alpha, origin=origin, **kwargs)
+        if clim!="auto": im.set_clim(clim[0], clim[1])
     
     if title: plt.title(title)
     if SHOW: plt.pause(0.001)
@@ -90,18 +90,18 @@ def plotLines(array, lines, axis=None, dim=0, ls="-", figsize=None, **kwargs):
 
     """
 
-    if dim==0: xlab="Y"
-    else: xlab="X"
+    if dim==0: xlab="X"
+    else: xlab="Y"
     if type(lines) == int: lines = [lines]
     
     if SHOW: plt.ion(); plt.show()
     if not axis: plt.figure(figsize=figsize)
     for line in lines:
         if dim==0:
-            z = array[line,:]
+            z = array[:,line]
             x = np.linspace(YLIM[0],YLIM[1],z.size)
         else:
-            z = array[:,line]
+            z = array[line,:]
             x = np.linspace(XLIM[0],XLIM[1],z.size)
         
         if axis: axis.plot(x,z,ls,label="line "+str(line),lw=0.9,**kwargs)
@@ -209,8 +209,8 @@ def readConfig(filepath, usecols=2):
         array = array.reshape((nx,ny))
     
     # Update YLIM using first 2 lines
-    with np.warnings.catch_warnings():
-        np.warnings.simplefilter('ignore')
+    with np.testing.suppress_warnings() as sup:
+        sup.filter(UserWarning)
         dummy = np.loadtxt(filepath, usecols=1, max_rows=2)
         dyH = (dummy[1] - dummy[0])/2
         YLIM = (-dyH*ny, dyH*ny)
@@ -531,13 +531,19 @@ def reduce(array, resol):
         return resample(array, (nxNew,nyNew))
 
 
-def slopeX(array):
+def slopeX(array, periodic=True):
     dx = (XLIM[1]-XLIM[0])/array.shape[0]
-    return ( np.diff(array, append=array[:1,:], axis=0) + np.diff(array, prepend=array[-1:,:], axis=0) ) / (2*dx)
+    if periodic:
+        return ( np.diff(array, append=array[:1,:], axis=0) + np.diff(array, prepend=array[-1:,:], axis=0) ) / (2*dx)
+    else: 
+        return ( array[2:,1:-1] - array[:-2,1:-1] ) / (2*dx)
 
-def slopeY(array):
+def slopeY(array, periodic=True):
     dy = (YLIM[1]-YLIM[0])/array.shape[1]
-    return ( np.diff(array, append=array[:,:1], axis=1) + np.diff(array, prepend=array[:,-1:], axis=1) ) / (2*dy)
+    if periodic: 
+        return ( np.diff(array, append=array[:,:1], axis=1) + np.diff(array, prepend=array[:,-1:], axis=1) ) / (2*dy)
+    else: 
+        return ( array[1:-1,2:] - array[1:-1,:-2] ) / (2*dy)
 
 
 def corners(array, N=None):
@@ -738,6 +744,70 @@ def untilt(array, avg=None):
     return(array - X - Y)
 
 
+def Ra(array):
+    h_mean = np.mean(array)
+    return np.abs(array-h_mean).mean()
+
+def Rt(array): return (array.max() - array.min())
+
+def Rz(array, norm="DIN", N=5):
+    h_mean = np.mean(array)
+ 
+    dn = len(array)//N
+    result = 0
+    for i in range(N):
+        part = array[(i*dn):(i+1)*dn]
+        result += part.max() - part.min()
+    return result/N
+
+
+def psd1D(array, output="", dim=0):
+    assert len(array.shape) <= 2
+    assert dim in (0,1)
+
+    # for 2D arrays, determine along which axis to calculate the PSD
+    if len(array.shape) > 1:
+        if dim==0: 
+            nReal = array.shape[0]
+            nFour = nReal//2 + 1
+            arrayF = np.zeros(nFour)
+            for iy in range(array.shape[1]):
+                f_height = np.fft.rfft(array[:,iy])
+                arrayF += np.square(f_height.real)+np.square(f_height.imag)
+            arrayF /= array.shape[1]
+        else: 
+            nReal = array.shape[1]
+            nFour = nReal//2 + 1
+            arrayF = np.zeros(nFour)
+            for ix in range(array.shape[0]):
+                f_height = np.fft.rfft(array[ix,:])
+                arrayF += np.square(f_height.real)+np.square(f_height.imag)
+            arrayF /= array.shape[0]
+    else:
+        f_height = np.fft.rfft(array)
+        arrayF = np.square(f_height.real)+np.square(f_height.imag)
+        nReal = len(array)
+        nFour = nReal//2 + 1
+
+    # determine q values
+    if dim==0: L = (XLIM[1]-XLIM[0])
+    else: L = (YLIM[1]-YLIM[0])
+    q = np.arange(nFour)*2*np.pi/L
+
+    # normalization: Tevis D B Jacobs et al 2017 Surf. Topogr.: Metrol. Prop. 5 013001
+    result = np.zeros((nFour,2))
+    result[:,0] = q
+    result[:,1] = arrayF*L/(nReal**2)
+
+    # output to file
+    if output: 
+        if dim==0: header = "q\tPSD(1D)(q_x)"
+        else: header = "q\tPSD(1D)(q_y)"
+        np.savetxt(output, result, fmt="%.5e", header=header)
+
+    return result
+
+
 def psd(array, output=""):
     """ compute Power Spectral Density (PSD) of an array
     
@@ -754,11 +824,14 @@ def psd(array, output=""):
     if WARN: print("[Warn:Period] psd() uses FFT, which assumes periodicity.",flush=True)
     arrayF = np.fft.rfft2(array)
     nxF = arrayF.shape[0]; nyF = arrayF.shape[1]
+
+    # quasi-log indices
     idx = np.linspace(0, np.log(nyF-nyF//8), nyF//8)
     idx = np.exp(idx).astype(int) + np.arange(nyF//8)
     result = np.zeros((len(idx)-1,2))
     result[:,0] = np.pi/(YLIM[1]-YLIM[0]) * (idx[:-1] + idx[1:])
     
+    # average PSD over rings of approximately equal |q|
     abs2F = np.real(arrayF*np.conjugate(arrayF))
     for ir in range(0,len(idx)-1):
         rMax = idx[ir+1]; rMin = idx[ir]
@@ -769,7 +842,7 @@ def psd(array, output=""):
     # normalization: Tevis D B Jacobs et al 2017 Surf. Topogr.: Metrol. Prop. 5 013001
     area = (XLIM[1]-XLIM[0])*(YLIM[1]-YLIM[0])
     nxny = array.shape[0]*array.shape[1]
-    result[:,1] = result[:,1]*area/(nxny**2) 
+    result[:,1] = result[:,1]*area/(nxny**2)
 
     if output: np.savetxt(output, result, fmt="%.5e", header="q\tPSD(2D-iso)(q)")
     return(result)
