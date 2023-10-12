@@ -748,16 +748,27 @@ def Ra(array):
     h_mean = np.mean(array)
     return np.abs(array-h_mean).mean()
 
-def Rt(array): return (array.max() - array.min())
+def Rt(array, D=1): 
+    if (len(array.shape)==1) or (D==2):
+        return (array.max() - array.min())
+    else:
+        nxH = array.shape[0]//2
+        return (array[nxH,:].max() - array[nxH,:].min())
 
-def Rz(array, norm="DIN", N=5):
-    h_mean = np.mean(array)
+def Rz(array, N=5, D=1, norm="deprecated"):
+    if norm!="deprecated": print("[Warn:norm] norm is deprecated.")
  
     dn = len(array)//N
     result = 0
-    for i in range(N):
-        part = array[(i*dn):(i+1)*dn]
-        result += part.max() - part.min()
+    if (len(array.shape)==1) or (D==2):
+        for i in range(N):
+            part = array[(i*dn):(i+1)*dn]
+            result += part.max() - part.min()
+    else:
+        for i in range(N):
+            part = array[i*dn,:]
+            result += part.max() - part.min()
+
     return result/N
 
 
@@ -848,7 +859,7 @@ def psd(array, output=""):
     return(result)
 
 
-def plotPSD(array, axis=None):
+def plotPSD(array, axis=None, **kwargs):
     """ plot PSD of array
     
     plots the PSD of numpy.ndarray <array>.
@@ -867,7 +878,7 @@ def plotPSD(array, axis=None):
         plt.xlabel("q")
         plt.ylabel("PSD")
         axis = plt.gca()
-    axis.plot(psdData[:,0], psdData[:,1])
+    axis.plot(psdData[:,0], psdData[:,1], **kwargs)
     return(axis)
 
 

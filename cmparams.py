@@ -134,6 +134,7 @@ paramType = {
   'potRange' : 'float',
   'potCurve' : 'float',
   'potCurveRel' : 'float',
+  'relRepulsion' : 'float',
   'fPotentialTest' : 'int',
   'nTimeOn' : 'int', #NEW
   'nTimeOff' : 'int',
