@@ -119,6 +119,7 @@ paramType = {
   'xOnSite' : 'float',#NEW
   'yOnSite' : 'float',#NEW
   'surfEnergOS' : 'float',
+  'frictionTauOS' : 'float',#NEW
   'potCurveRelOS' : 'float',
 
   # --- SHEET : OBSERVABLES --- #
@@ -139,6 +140,7 @@ paramType = {
   'nTimeOn' : 'int', #NEW
   'nTimeOff' : 'int',
   'frictionCoeff' : 'float',
+  'frictionTau' : 'float',#NEW
   'relFrictPeak' : 'float',
   'velFrictThresh' : 'float',
 

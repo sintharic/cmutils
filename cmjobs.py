@@ -10,7 +10,6 @@
 
 executable = "contMech"
 
-DEBUG = False
 WARN = False
 
 import time, os, sys
@@ -20,7 +19,7 @@ import getpass
 
 user = getpass.getuser()
 now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-if DEBUG: print("USERNAME:", user)
+# print("USERNAME:", user) #DEBUG
 
 nFound = 0
 wFire = False
@@ -55,10 +54,12 @@ def find_processes(exe):
     # gather basic process info
     pusr = proc.username()
     if pusr != user: continue;
-    pname = proc.name()
-    try: pcwd = proc.cwd()
-    except (ps.AccessDenied, ps.ZombieProcess) as err:
-      if DEBUG: print(pname, ": AccessDenied or ZombieProcess.")
+    try: 
+      pname = proc.name()
+      pcwd = proc.cwd()
+    except Exception as err: 
+      print(f"WARNING: {err.__class__.__name__}: {err}")
+      # non-problematic ones: ps.NoSuchProcess, ps.AccessDenied, ps.ZombieProcess
       continue;
     pPID = proc.pid
     
@@ -108,7 +109,7 @@ for proc in processes:
         iTime = iTime - 1
         # since iTime starts at 0, the header is automatically neglected, however time step 0 is not
     except FileNotFoundError: iTime = -nTime
-    except BaseException as e: raise e
+    except Exception as e: raise e
   else:
     if not fFire:
       try:
@@ -122,7 +123,7 @@ for proc in processes:
           time = float(lineN[:idx])
           iTime = int(round(time/dTime))
       except FileNotFoundError: iTime = -nTime
-      except BaseException as e: raise e
+      except Exception as e: raise e
     else: iTime = -nTime
 
   # determine time started and time remaining
