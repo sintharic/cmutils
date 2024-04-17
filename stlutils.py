@@ -6,10 +6,10 @@
 This is a simple "brute force" conversion resulting in large files.
 Each rectangle in the rastered data is simply converted to two triangles.
 
-The resulting stl file therefore includes:
-- vertices: x-,y- and z-coordinates of all points in the original surface
-- faces: triangles represented by the indices of their corner points
-- vectors: normals of triangle faces
+The resulting stl file therefore includes:  
+- vertices: x-,y- and z-coordinates of all points in the original surface  
+- faces: triangles represented by the indices of their corner points  
+- vectors: normals of triangle faces  
 
 You can reduce the size of the file afterwards in MeshLab using
 "Filters -> Simplification: Quadratic Edge Collapse Decimation",
@@ -27,17 +27,39 @@ nx = ny = 0
 
 
 
-def from_file(inpath,norm=1,flip=True):
+def from_file(inpath:str, flip:bool=True):
+  """
+  Convert 2D height topography to a 3D vertex list assuming uniform lattice spacing.
+
+  Parameters
+  ----------
+  inpath : str
+    Filepath to a contMech config file containing nx*ny points.
+  flip : bool, optional
+    Whether or not to flip the topography upside-down. Default is True.
+
+  Returns
+  -------
+  vertex_list : np.ndarray
+    3D vertex positions as an array of shape (nx*ny, 3).
+
+  Warning
+  -------
+  These files assume that the surface is periodically repeatable!
+
+  Warning
+  -------
+  flip=True is default since these files store the surface upside down!
+  """
+
   # read config file and convert it to 3D vertex list 
-  # CAUTION: These files assume that the surface is periodically repeatable!
-  # CAUTION: flip=True is default since these files store the surface upside down!
   global nx,ny
   print("Reading config file. CAUTION: This assumes periodic boundaries!")
 
   # read file
   fid = open(inpath,"r"); line1 = fid.readline().split(); fid.close()
   nx, ny = [int(line1[0][1:]), int(line1[1])]
-  vertex_list = norm*np.loadtxt(inpath,usecols=[0,1,2],dtype=np.double)
+  vertex_list = np.loadtxt(inpath, usecols=[0,1,2], dtype=np.double)
 
   # print surface stats
   #minX = vertex_list[:,0].min();   maxX = vertex_list[:,0].max()
@@ -58,8 +80,27 @@ def from_file(inpath,norm=1,flip=True):
 
 
 
-def from_array(array,Lx=1,Ly=1,norm=1,flip=False):
-  # convert 2D height array to 3D vertex list
+def from_array(array:np.ndarray, Lx:float=1, Ly:float=1, flip:bool=False):
+  """
+  Convert 2D height topography to a 3D vertex list assuming uniform lattice spacing.
+
+  Parameters
+  ----------
+  array : np.ndarray
+    Array of shape (nx,ny) containing z coordinates.
+  Lx : float, optional
+    Physical dimension of the topography in x direction. Default is 1.
+  Ly : float, optional
+    Physical dimension of the topography in y direction. Default is 1.
+  flip : bool, optional
+    Whether or not to flip the topography upside-down. Default is False.
+
+  Returns
+  -------
+  vertex_list : np.ndarray
+    3D vertex positions as an array of shape (nx*ny, 3).
+  """
+
   global nx,ny
 
   # fill z data
@@ -82,8 +123,25 @@ def from_array(array,Lx=1,Ly=1,norm=1,flip=False):
   
 
 
-def add_border(array, border, flip):
-  # add border around 2D height array
+def add_border(array:np.ndarray, border:int, flip:bool):
+  """
+  Add border around 2D height array assuming uniform lattice spacing.
+
+  Parameters
+  ----------
+  array : np.ndarray
+    Array of shape (nx,ny) containing z coordinates.
+  border : int
+    Width of the border in 'pixels'.
+  flip : bool
+    Whether or not to flip the topography upside-down.
+
+  Returns
+  -------
+  bordered_array : np.ndarray
+    Updated 2D array of shape (nx+2*border, ny+2*border).
+  """
+
   global nx,ny
 
   nx,ny = array.shape
@@ -91,17 +149,30 @@ def add_border(array, border, flip):
   if flip: border_val = array.max()
   else: border_val = array.min()
 
-  result = border_val*np.ones((nx + 2*border,ny + 2*border),dtype=np.double)
-  result[border:-border,border:-border] = array.reshape((nx,ny))
+  bordered_array = border_val*np.ones((nx+2*border, ny+2*border), dtype=np.double)
+  bordered_array[border:-border,border:-border] = array.reshape((nx,ny))
 
   nx += 2*border; ny += 2*border 
 
-  return(result)
+  return(bordered_array)
 
 
 
-def add_foundation(vertex_list):
-  # add to vertex list the vertices representing the bottom foundation of the 3D model
+def add_foundation(vertex_list:np.ndarray):
+  """
+  Add to vertex list the vertices representing the bottom foundation of the 3D model.
+
+  Parameters
+  ----------
+  vertex_list : np.ndarray
+    Array of shape (nx*ny, 3).
+
+  Returns
+  -------
+  new_vertices : np.ndarray
+    Updated vertex list of shape ((nx+2)*(ny+2), 3).
+  """
+
   global nx,ny
   print("Adding foundation...")
 
@@ -139,9 +210,21 @@ def add_foundation(vertex_list):
 
 
 
-def create_faces(foundation=True):
-  # calculate the 2*(nx-1)*(ny-1) triangles contained in a nx*ny surface
-  # if foundation: add 2 triangles representing the bottom of the 3D model
+def create_faces(foundation:bool=True):
+  """
+  Calculate the 2*(nx-1)*(ny-1) triangles contained in a nx*ny surface.
+
+  Parameters
+  ----------
+  foundation : bool, optional
+    Whether or not to add 2 triangles representing the bottom of the 3D model. Default is True.
+
+  Returns
+  -------
+  faces_list : np.ndarray
+    Array of shape (2*(nx-1)*(ny-1) + foundation*2, 3) containing the indices of the 3 vertices of each triangle.
+  """
+
   global nx,ny
   print("Generating triangles...")
 
@@ -170,8 +253,20 @@ def create_faces(foundation=True):
 
 
 
-def save_mesh(vertex_list,faces_list,outpath):
-  # create mesh from vertices and faces and save it to an stl file
+def save_mesh(vertex_list:np.ndarray, faces_list:np.ndarray, outpath:str):
+  """
+  Create mesh from vertices and faces and save it to an stl file.
+
+  Parameters
+  ----------
+  vertex_list : np.ndarray
+    Array of shape (nx*ny, 3).
+  faces_list : np.ndarray
+    Array of 3-tuples of indices, where each of those 3-tuples forms a triangle in vertex_list.
+  outpath : str
+    Filepath to the stl output file.
+  """
+
   print("Generating vectors...")
 
   result = mesh.Mesh(np.zeros(faces_list.shape[0], dtype=mesh.Mesh.dtype))
@@ -184,44 +279,62 @@ def save_mesh(vertex_list,faces_list,outpath):
 
 
 
-def convertFile(inpath,outpath="",norm=1,flip=True,foundation=True):
-  """ create stl file from config file
+def convertFile(inpath:str, outpath:str="", norm=1, flip=True, foundation=True):
+  """ 
+  Create stl file from config file.
 
-  3D periodically repeatable config file <inpath> is saved to stl file <outpath>.
-
-  height values can be renormalized by the factor <norm>.
-  the surface is flipped upside down if <flip>.
-  A foundation with 0.15 times the total topography height is added if <foundation>.
-
+  Parameters
+  ----------
+  inpath : str
+    Filepath to a contMech config file containing nx*ny points.
+  outpath : str, optional
+    Filepath to the stl output file. Default is "".
+  norm : float, optional
+    Factor, by which to multiply coordinates. Default is 1.
+  flip : bool, optional
+    Whether or not to flip the topography upside-down. Default is True.
+  foundation : bool, optional
+    Whether or not to add 2 triangles representing the bottom of the 3D model. Default is True.
   """
 
   if outpath=="": outpath = path.splitext(inpath)[0] + ".stl"
-  vertices = from_file(inpath,norm,flip)
+  vertices = from_file(inpath, flip)
+  vertices = norm*vertices
   if foundation: vertices = add_foundation(vertices)
   faces = create_faces(foundation)
   save_mesh(vertices, faces, outpath)
 
 
 
-def convertArray(array,outpath,Lx=1,Ly=0,norm=1,flip=False,foundation=True,border=0):
-  """ create stl file from numpy array
+def convertArray(array:np.ndarray, outpath:str, Lx:float=1, Ly:float=0, flip:bool=False, foundation:bool=True, border:int=0):
+  """ 
+  Create stl file from 2D numpy array.
 
-  2-dimensional numpy.ndarray <array> is interpreted as surface height values.
-  The surface is saved to stl file <outpath> assuming lateral dimensions <Lx>*<Ly>.
-
-  height values can be renormalized by the factor <norm>.
-  the surface is flipped upside down if <flip>.
-  A border of <border> pixels on each side is created if <border> > 0.
-  A foundation with 0.15 times the total topography height is added if <foundation>.
-
+  Parameters
+  ----------
+  array : np.ndarray
+    Array of shape (nx,ny) containing z coordinates.
+  outpath : str
+    Filepath to the stl output file.
+  Lx : float, optional
+    Physical dimension of the topography in x direction. Default is 1.
+  Ly : float, optional
+    Physical dimension of the topography in y direction. Default is 0.
+  flip : bool, optional
+    Whether or not to flip the topography upside-down. Default is False.
+  foundation : bool, optional
+    Whether or not to add 2 triangles representing the bottom of the 3D model. Default is True.
+  border : int, optional
+    Width of the border in 'pixels'. Default is 0.
   """
-  
+
   if Ly==0: Ly=Lx
   if border > 0: 
-    array = add_border(array,border,flip)
+    array = add_border(array, border, flip)
     Lx *= (nx-1)/(nx-2*border-1)
     Ly *= (ny-1)/(ny-2*border-1)
-  vertices = from_array(array,Lx,Ly,norm,flip)
+  vertices = from_array(array,Lx,Ly,flip)
   if foundation: vertices = add_foundation(vertices)
   faces = create_faces(foundation)
   save_mesh(vertices, faces, outpath)
+

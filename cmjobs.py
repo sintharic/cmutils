@@ -58,7 +58,7 @@ def find_processes(exe):
       pname = proc.name()
       pcwd = proc.cwd()
     except Exception as err: 
-      print(f"WARNING: {err.__class__.__name__}: {err}")
+      if WARN: print(f"[WARNING] {err.__class__.__name__}: {err}")
       # non-problematic ones: ps.NoSuchProcess, ps.AccessDenied, ps.ZombieProcess
       continue;
     pPID = proc.pid
