@@ -1,5 +1,5 @@
-cmutils
-=======
+contMech utilities
+==================
 
 .. toctree::
    :maxdepth: 4
