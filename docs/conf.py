@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'stlutils'
+project = 'cmutils'
 copyright = '2024, Christian Mueller'
 author = 'Christian Mueller'
 
