@@ -6,6 +6,8 @@ Utilities for analyzing, plotting, animating and manipulating data from and for 
 `contMech` is a continuum mechanical contact simulation program developed in the group of Prof. Dr. Martin Müser at Saarland University, Germany.
 As of 2022, the `contMech` repository is *not* public. Only this `cmutils` repository was made public to grant access to any `contMech` users who do not have a GitHub account.
 
+Documentation can be found at https://sintharic.github.io/cmutils/.
+
 --------------------------------------------------------------------------------
 
 Python usage and installation
