@@ -8,13 +8,15 @@ Each rectangle in the rastered data is simply converted to two triangles.
 
 The resulting stl file therefore includes:
 
-- vertices: x-, y-, and z-coordinates of all points in the original surface  
-- faces: triangles represented by the indices of their corner points  
-- vectors: normals of triangle faces  
+- vertex list: x-, y-, and z-coordinates of all points in the original surface  
+- faces: triangles represented by the indices of their corners in the vertex list
+- vectors: normals of these triangle faces  
 
-You can reduce the size of the file afterward in MeshLab using
+You can reduce the size of the file afterwards.
+In MeshLab, for example, you can use 
 "Filters -> Simplification: Quadratic Edge Collapse Decimation",
 where "Percentage reduction" is the target mesh size relative to the original.
+
 
 ------------
   Examples
@@ -33,7 +35,7 @@ with an added border around it:
     data = ndi.gaussian_filter(data, 2)
     stlutils.convertArray(data, 'random.stl', Lx=1., Ly=1., border=8)
 
-Save the same array to a config file and convert it without the border around it:
+Save the same array to a config file and convert it to stl without the border around it:
 
 .. code-block:: python
 
@@ -47,8 +49,6 @@ The resulting stl file (with border) looks like this:
 .. image:: snapshot.png
     :alt: The generated stl file viewed in MeshLab.
     :align: center
-
-
 
 
 ---------------------
