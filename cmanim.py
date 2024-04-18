@@ -5,7 +5,41 @@
   Animation of contMech Simulations
 -------------------------------------
 
-@author: christian
+An easy-to-use library for animating simulation results.
+The focus is on fully automatic usage, where the best possible parameters are read from params.out. 
+
+
+------------
+  Examples
+------------
+
+Example to create and save a contact movie:  
+
+.. code-block:: python
+
+    import cmanim
+
+    animation = cmanim.runCont2D()
+    cmanim.save(animation, "movie.gif")
+
+Specifying custom parameters is possible by calling individual initialization functions one after the other. 
+E.g. you can animate the cross-sections along x-direction from two different simulations in one figure, limit it to frames 40 to 100, and zoom in to a certain xrange:  
+
+.. code-block:: python
+
+    cmanim.init("DispX", [path1, path2] )
+    cmanim.XLIM = [xmin, xmax]
+    cmanim.START = 40
+    cmanim.END = 100
+    cmanim.NFRAMES = 60
+    animation = cmanim.run()
+
+Essentially, the previously mentioned `runCont2D()` is just a wrapper for `cmanim.init("Cont2D",paths="."); cmanim.run()`, where `init(...)` automatically determines plot parameters, which you can (but most of the time don't need to) overwrite.  
+
+
+---------------------
+  API documentation
+---------------------
 """
 
 

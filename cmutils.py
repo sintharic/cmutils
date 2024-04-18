@@ -1,11 +1,35 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-------------------------------------
-  Post-Processing of contMech Data
-------------------------------------
+-----------------------------------------
+  Pre-/Post-Processing of contMech Data
+-----------------------------------------
 
-@author: thescientist
+Miscellaneous functions for input, output, manipulation and plotting of `contMech` config files.
+Very powerful in combinations with numpy's and scipy's standard manipulation and statistics tools.
+
+
+------------
+  Examples
+------------
+
+Generate, view, export, import and rotate a `contMech` config file:
+
+.. code-block:: python
+
+    import numpy as np  
+    import cmutils as cm  
+
+    dat0 = cm.readConfig("konfig0E.dat")  
+    cm.plotImg(dat0)  
+    cm.dumpConfig(np.rot90(dat0),"konfig0E.real")
+
+
+---------------------
+  API documentation
+---------------------
+
+
 """
 
 
@@ -40,9 +64,9 @@ def plotImg(array, clim=ZLIM, title=False, aspect="true", cmap="turbo",
             alpha=1.0, axis=None, pad=0.01, cba=0.85, rot=ROT, figsize=(3.3,3), **kwargs):
     """ plot array as an image
     
-    plots 2D numpy.ndarray <array> as a colored image, similar to gnuplot's 
+    plots 2D numpy.ndarray `array` as a colored image, similar to gnuplot's 
     "splot ... with pm3d".
-    <clim> must be of form (v_min,v_max), the value range to which colors are mapped.
+    `clim` must be of form (v_min,v_max), the value range to which colors are mapped.
 
     Returns
     -------
@@ -79,9 +103,9 @@ def plotImg(array, clim=ZLIM, title=False, aspect="true", cmap="turbo",
 def plotLines(array, lines, axis=None, dim=0, ls="-", figsize=None, **kwargs):
     """ plot line scan(s)
     
-    plots line(s) along dimension <dim> from numpy.ndarray <array>.
-    <lines> can be an int or a list/tuple of ints with desired line indices.
-    <axis>, the matplotlib.axes.Axes object on which to plot, can be specified.
+    plots line(s) along dimension `dim` from numpy.ndarray `array`.
+    `lines` can be an int or a list/tuple of ints with desired line indices.
+    `axis`, the matplotlib.axes.Axes object on which to plot, can be specified.
     as well as typical kwargs for plots.
 
     Returns
@@ -119,13 +143,13 @@ def plotSurf(array, kind="color", title=False, clim=ZLIM, axis=None,
              alpha=1, label=None, **kwargs):
     """ plot 3D view of surface
     
-    plots 2D numpy.ndarray <array>, using the data as z values, in a 3D view.
+    plots 2D numpy.ndarray `array`, using the data as z values, in a 3D view.
     
-    for <kind>="color", the color map <cmap> can be specified, as well as the
-    color range <clim> in the form (v_min,v_max).
-    <stride> specifies the discretization increment, lower being higher quality.
+    for `kind`="color", the color map `cmap` can be specified, as well as the
+    color range `clim` in the form (v_min,v_max).
+    `stride` specifies the discretization increment, lower being higher quality.
 
-    for <kind>="wire", the linewidth <lw> and linecolor <lc> can be specified.
+    for `kind`="wire", the linewidth `lw` and linecolor `lc` can be specified.
 
     Returns
     -------
@@ -178,7 +202,7 @@ def plotSurf(array, kind="color", title=False, clim=ZLIM, axis=None,
 def readConfig(filepath, usecols=2):
     """ read contMech konfig file
     
-    reads column <usecols> from file <filepath>, and converts it to an (nx,ny)
+    reads column `usecols` from file `filepath`, and converts it to an (nx,ny)
     numpy.ndarray, assuming the first line in the file is of the form "#nx ny"
 
     Returns
@@ -237,7 +261,7 @@ def readConfig(filepath, usecols=2):
 def readMulti(filepath, usecols=None):
     """ read contMech konfig file
     
-    reads column <usecols> from file <filepath>, and converts it to an (nx,ny)
+    reads column `usecols` from file `filepath`, and converts it to an (nx,ny)
     numpy.ndarray, assuming the first line in the file is of the form "#nx ny"
 
     Returns
@@ -291,12 +315,12 @@ def readMulti(filepath, usecols=None):
 def readImg(filepath):
     """ read image file (without lateral info)
     
-    reads file <filepath> with ny numbers per line and nx lines into a (nx, ny)
-    numpy.ndarray.
+    reads file `filepath` with ny numbers per line and nx lines into a (nx, ny)
+    np.ndarray.
 
     Returns
     -------
-    numpy.ndarray
+    np.ndarray
 
     """
 
@@ -429,7 +453,8 @@ def resample(array, resol):
 
     Returns
     -------
-    resampled numpy.ndarray
+    result : np.ndarray
+        resampled version of `array`
 
     """
     
@@ -454,14 +479,15 @@ def bilin_resample(array, new_shape):
 
     Parameters
     ----------
-    array : np.ndarray with shape (nx, ny)
-        array to be resampled
-    resol : 2-tuple/list of int
+    array : np.ndarray 
+        array of shape (nx, ny) to be resampled into shape `new_shape`
+    new_shape : iterable containing two int values
         new target resolution (nx_new, ny_new)
 
     Returns
     -------
-    resampled numpy.ndarray
+    result : np.ndarray
+        resampled version of `array`
 
     """
 
@@ -511,9 +537,9 @@ def bilin_resample(array, new_shape):
 def reduce(array, resol):
     """ resample / change array resolution
 
-    resamples the (nx,ny) numpy.ndarray <array> to the new resolution <resol>.
-    <resol> can be of form (nx_new, ny_new) or a single int, 
-    which is translated to <resol> = (round(nx/<resol>), round(ny/<resol>)).
+    resamples the (nx,ny) numpy.ndarray <array> to the new resolution `resol`.
+    `resol` can be of form (nx_new, ny_new) or a single int, 
+    which is translated to `resol` = (round(nx/`resol`), round(ny/`resol`)).
 
     Returns
     -------

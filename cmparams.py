@@ -5,7 +5,14 @@
   Interface for contMech Parameters
 -------------------------------------
 
-@author: thescientist
+This module mimicks the objects defined in a `contMech` simulation and their 
+attributes, which can be derived from the corresponding params file.
+
+
+---------------------
+  API documentation
+---------------------
+
 """
 
 import os, sys
@@ -343,6 +350,20 @@ class simulation:
 
 
 def read(file):
+  """
+  Read parameters from a `params.in` or `params.out` file of a `contMech` simulation.
+
+  Parameters
+  ----------
+  file : str
+    Filepath to a contMech params file.
+  
+  Returns
+  -------
+  sim : simulation
+    object containing the same objects and attributes as a `contMech` simulation
+    using the same params file.
+  """
   if not os.path.isfile(file): sys.exit('not a valid params file: '+file)
 
   sim = simulation(file)

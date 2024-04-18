@@ -5,7 +5,17 @@
   Modification of contMech params files
 -----------------------------------------
 
-@author: thescientist
+A collection of functions allowing to modify a `contMech` params file in-place.
+
+.. warning::
+    This module uses system calls to `sed` or `gsed`. 
+    Importing it will immediately raise an error if none of them is installed.
+
+
+---------------------
+  API documentation
+---------------------
+
 """
 
 DEBUG = False
