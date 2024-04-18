@@ -6,16 +6,57 @@
 This is a simple "brute force" conversion resulting in large files.
 Each rectangle in the rastered data is simply converted to two triangles.
 
-The resulting stl file therefore includes:  
-- vertices: x-,y- and z-coordinates of all points in the original surface  
+The resulting stl file therefore includes:
+
+- vertices: x-, y-, and z-coordinates of all points in the original surface  
 - faces: triangles represented by the indices of their corner points  
 - vectors: normals of triangle faces  
 
-You can reduce the size of the file afterwards in MeshLab using
+You can reduce the size of the file afterward in MeshLab using
 "Filters -> Simplification: Quadratic Edge Collapse Decimation",
-where "Percentage reduction" is the target mesh size relative to original.
+where "Percentage reduction" is the target mesh size relative to the original.
+
+------------
+  Examples
+------------
+
+Generate a blurred uniform random surface profile and save it to an stl file 
+with an added border around it:
+
+.. code-block:: python
+
+    import numpy as np
+    import stlutils
+    import scipy.ndimage as ndi
+    
+    data = np.random.default_rng(1234).uniform(0, 1, (128,128))
+    data = ndi.gaussian_filter(data, 2)
+    stlutils.convertArray(data, 'random.stl', Lx=1., Ly=1., border=8)
+
+Save the same array to a config file and convert it without the border around it:
+
+.. code-block:: python
+
+    import cmutils as cm
+    
+    cm.dumpConfig(data, 'random.dat')
+    stlutils.convertFile('random.dat', 'random2.stl')
+
+The resulting stl file (with border) looks like this:
+
+.. image:: snapshot.png
+    :alt: The generated stl file viewed in MeshLab.
+    :align: center
+
+
+
+
+---------------------
+  API documentation
+---------------------
 
 """
+
 
 
 import numpy as np
@@ -337,4 +378,3 @@ def convertArray(array:np.ndarray, outpath:str, Lx:float=1, Ly:float=0, flip:boo
   if foundation: vertices = add_foundation(vertices)
   faces = create_faces(foundation)
   save_mesh(vertices, faces, outpath)
-
