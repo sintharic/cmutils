@@ -1,5 +1,5 @@
-contMech utilities
-==================
+Python utilities
+================
 
 .. toctree::
    :maxdepth: 4

@@ -8,8 +8,9 @@
 A collection of functions allowing to modify a `contMech` params file in-place.
 
 .. warning::
-    This module uses system calls to `sed` or `gsed`. 
-    Importing it will immediately raise an error if none of them is installed.
+    This module uses system calls to `sed` (on GNU/Linux) or `gsed` (on Mac).
+    Note that the Mac version of `sed` is fundamentally different to GNU's. 
+    Importing the module raises an error if GNU `sed` is not installed properly.
 
 
 ---------------------

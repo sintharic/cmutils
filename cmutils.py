@@ -17,12 +17,12 @@ Generate, view, export, import and rotate a `contMech` config file:
 
 .. code-block:: python
 
-    import numpy as np  
-    import cmutils as cm  
-
-    dat0 = cm.readConfig("konfig0E.dat")  
-    cm.plotImg(dat0)  
-    cm.dumpConfig(np.rot90(dat0),"konfig0E.real")
+    x,y = cm.XY((64,64), Lx=2., Ly=2.)
+    z = x**2 - y**2
+    cm.plotImg(z)
+    cm.dumpConfig(z, 'konfig.dat')
+    z2 = cm.rot90(cm.readConfig('konfig.dat'))
+    cm.plotImg(z2)
 
 
 ---------------------
@@ -145,11 +145,11 @@ def plotSurf(array, kind="color", title=False, clim=ZLIM, axis=None,
     
     plots 2D numpy.ndarray `array`, using the data as z values, in a 3D view.
     
-    for `kind`="color", the color map `cmap` can be specified, as well as the
+    for `kind` = "color", the color map `cmap` can be specified, as well as the
     color range `clim` in the form (v_min,v_max).
     `stride` specifies the discretization increment, lower being higher quality.
 
-    for `kind`="wire", the linewidth `lw` and linecolor `lc` can be specified.
+    for `kind` = "wire", the linewidth `lw` and linecolor `lc` can be specified.
 
     Returns
     -------
@@ -383,11 +383,12 @@ def flip(array, axis=1, direction=-1):
     else: return result
 
 def flipMulti(arrays, axis=0):
-    """ flips displacements and pressures by rotation around a lateral axis
+    """ 
+    flips displacements and pressures by rotation around a lateral axis
 
-    assumes that <arrays> is a tuple containing uz, pz(, uy, py, ux, px) in this 
-    order. returns the tuple manipulated as if the simulation was rotated by 
-    180° around the x-axis (<axis>=0) or y-axis (<axis>=1).
+    assumes that `arrays` is a tuple containing uz, pz(, uy, py, ux, px) in this 
+    order. Returns the tuple manipulated as if the simulation was rotated by 
+    180° around the x-axis (`axis` = 0) or y-axis (`axis` = 1).
 
     Parameters
     ----------
@@ -449,7 +450,7 @@ def resample(array, resol):
     resol : float or 2-tuple/list of int
         either the new target resolution (nx_new, ny_new) or a single float 
         representing the new resolution relative to the original according to
-        (nx_new, ny_new) = (round(<resol>*nx), round(<resol>*ny)).
+        (nx_new, ny_new) = (round(`resol` * nx), round(`resol` * ny)).
 
     Returns
     -------
@@ -537,7 +538,7 @@ def bilin_resample(array, new_shape):
 def reduce(array, resol):
     """ resample / change array resolution
 
-    resamples the (nx,ny) numpy.ndarray <array> to the new resolution `resol`.
+    resamples the (nx,ny) numpy.ndarray `array` to the new resolution `resol`.
     `resol` can be of form (nx_new, ny_new) or a single int, 
     which is translated to `resol` = (round(nx/`resol`), round(ny/`resol`)).
 
@@ -573,10 +574,10 @@ def slopeY(array, periodic=True):
 
 
 def corners(array, N=None):
-    """ meeting point of <array>'s corners
+    """ meeting point of `array`'s corners
 
-    constructs the 2<N> x 2<N> area around the point where the four corners meet 
-    if np.ndarray <array> is periodically repeated in the plane.
+    constructs the 2 `N` x 2 `N` area around the point where the four corners meet 
+    if np.ndarray `array` is periodically repeated in the plane.
 
     Returns
     -------
@@ -601,10 +602,10 @@ def smoothPBC(array, overlapX=None, overlapY=None):
     array : np.ndarray
         array whose edges are manipulated
     overlapX : int or None
-        all points within <overlapX> from the edges of <array> along 
+        all points within `overlapX` from the edges of `array` along 
         axis 0 are gradually approach the value of the opposite edge.
     overlapY : int or None
-        all points within <overlapY> from the edges of <array> along 
+        all points within `overlapY` from the edges of `array` along 
         axis 1 are gradually approach the value of the opposite edge.
 
     Returns
@@ -639,7 +640,7 @@ def smoothPBC(array, overlapX=None, overlapY=None):
 def dumpConfig(arrays, filepath="konfig0py.real", Lx=None, Ly=None):
     """ dump arrays as contMech konfig
 
-    writes list <arrays> of numpy.ndarrays to a file in the typical format 
+    writes list `arrays` of numpy.ndarrays to a file in the typical format 
     that can be plotted in gnuplot or imported into a contMech simulation.
     
     """
@@ -669,7 +670,7 @@ def dumpConfig(arrays, filepath="konfig0py.real", Lx=None, Ly=None):
 def dumpImg(array, filename):
     """ dump array as image text file
 
-    writes 2D (nx, ny) numpy.ndarray <array> to a text file with ny values per
+    writes 2D (nx, ny) numpy.ndarray `array` to a text file with ny values per
     line and nx lines.
     
     """
@@ -686,9 +687,9 @@ def dumpImg(array, filename):
 def dumpLines(array, lines, filename="", dim=0):
     """ Dump line scan(s)
     
-    exports individual lines along dimension <dim> from 2D numpy.ndarray <array> 
-    into <filename>. 
-    <lines> can be an int or a list/tuple of ints with desired line indices to
+    exports individual lines along dimension `dim` from 2D numpy.ndarray `array` 
+    into `filename`. 
+    `lines` can be an int or a list/tuple of ints with desired line indices to
     be exported.
     
     """
@@ -730,10 +731,17 @@ def circularMask(w, h, center=None, rMax=None, rMin=None):
     return mask
 
 
-def XY(shape, dtype=np.uint16):
-    y = np.arange(shape[1],dtype=dtype)
-    x = np.arange(shape[0],dtype=dtype)
-    return np.tile(x,(shape[1],1)).transpose(), np.tile(y,(shape[0],1))
+def XY(shape, Lx=None, Ly=None, **kwargs):
+    if (Lx is None):
+        x = np.arange(shape[0], **kwargs).reshape((-1,1))
+        y = np.arange(shape[1], **kwargs).reshape((1,-1))
+    else:
+        assert isinstance(Lx, float)
+        if Ly is None: Ly = Lx
+        assert isinstance(Ly, float)
+        x = np.linspace(-Lx/2, Lx/2, shape[0], endpoint=False, **kwargs).reshape((-1,1))
+        y = np.linspace(-Ly/2, Ly/2, shape[1], endpoint=False, **kwargs).reshape((1,-1))
+    return x,y
 
 def center(array):
     x,y = XY(array.shape)
@@ -745,7 +753,7 @@ def center(array):
 def untilt(array, avg=None):
     """ subtract the tilt from a 2D surface
 
-    subtract the macroscopic tilt from np.ndarray <array>, assuming it to be 
+    subtract the macroscopic tilt from np.ndarray `array`, assuming it to be 
     linear in both directions.
 
     Returns
@@ -771,10 +779,16 @@ def untilt(array, avg=None):
 
 
 def Ra(array):
+    """
+    Calculate the arithmetic average height R\ :sub:`a`\ .
+    """
     h_mean = np.mean(array)
     return np.abs(array-h_mean).mean()
 
 def Rt(array, D=1): 
+    """
+    Calculate the peak-to-valley height R\ :sub:`t`\ .
+    """
     if (len(array.shape)==1) or (D==2):
         return (array.max() - array.min())
     else:
@@ -782,6 +796,9 @@ def Rt(array, D=1):
         return (array[nxH,:].max() - array[nxH,:].min())
 
 def Rz(array, N=5, D=1, norm="deprecated"):
+    """
+    Calculate the average maximum height R\ :sub:`z`\ .
+    """
     if norm!="deprecated": print("[Warn:norm] norm is deprecated.")
  
     dn = len(array)//N
@@ -848,8 +865,8 @@ def psd1D(array, output="", dim=0):
 def psd(array, output=""):
     """ compute Power Spectral Density (PSD) of an array
     
-    calculates the PSD of numpy.ndarray <array> with auto quasi-log q space.
-    writes the PSD to file <output> if given.
+    calculates the PSD of numpy.ndarray `array` with auto quasi-log q space.
+    writes the PSD to file `output` if given.
 
     Returns
     -------
@@ -888,8 +905,8 @@ def psd(array, output=""):
 def plotPSD(array, axis=None, **kwargs):
     """ plot PSD of array
     
-    plots the PSD of numpy.ndarray <array>.
-    <axis>, the matplotlib.axes.Axes object on which to plot, can be specified.
+    plots the PSD of numpy.ndarray `array`.
+    `axis`, the matplotlib.axes.Axes object on which to plot, can be specified.
 
     Returns
     -------
@@ -911,9 +928,9 @@ def plotPSD(array, axis=None, **kwargs):
 def createBorder(array, nxNew, nyNew):
     """ create border around surface 
 
-    generates a (<nxNew>, <nyNew>) numpy.ndarray that contains the (nx, ny) 
-    numpy.ndarray <array>.
-    <nxNew> must be larger than nx and <nyNew> larger than ny.
+    generates a (`nxNew`, `nyNew`) numpy.ndarray that contains the (nx, ny) 
+    numpy.ndarray `array`.
+    `nxNew` must be larger than nx and `nyNew` larger than ny.
 
     Returns
     -------
