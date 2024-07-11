@@ -56,6 +56,11 @@ LFFTW := -lfftw3 -L $(FFTW_LIB) -I $(FFTW_INC)
 
 # ----- Compilation Rules ----- #
 
+gap:
+	@echo " Building readGap.exe..."
+	@$(COMPILER) $(CPPFLAGS) readGap.cpp -o readGap.exe
+
+
 surf:
 	@echo " FFTW Paths: - $(FFTW_LIB)"
 	@echo "             - $(FFTW_INC)"

@@ -4,7 +4,9 @@ cmutils
 Utilities for analyzing, plotting, animating and manipulating data from and for `contMech` simulations.
 
 `contMech` is a continuum mechanical contact simulation program developed in the group of Prof. Dr. Martin Müser at Saarland University, Germany.
-As of 2022, the `contMech` repository is *not* public. Only this `cmutils` repository was made public to grant access to any `contMech` users who do not have a GitHub account.
+As of 2024, the official `contMech` repository is *not* public. 
+However, the undocumented source code of a legacy version has been published [here](https://doi.org/10.5281/zenodo.12726265) in the context of a [PRL](https://doi.org/10.1103/PhysRevLett.131.156201).
+The `cmutils` repository was made public to grant access to any `contMech` users who do not have a GitHub account.
 
 Documentation can be found at https://sintharic.github.io/cmutils/, which is work in progress.
 
@@ -143,3 +145,9 @@ statsParams (params.exe):
 Compile with `make params`.
 
 Outputs the exact RMS height/gradient/curvature stats that would belong to a given set of `contMech`'s "addSelfAffine" parameters: hurst, lambdaR, lambdaS, ...
+
+readGap (readGap.exe):
+-------------------------
+Compile with `make gap`.
+
+Reads a config file containing the local gap between two surfaces, converts the data to the format necessary for Reynolds flow simulations, and saves it to a file with the correct name.
