@@ -92,7 +92,7 @@ void statsF() {
 };
 
 int main(int argc, char **argv) {
-  cout << "----- Surface Stats from Parameters " << version << " -----\n";
+  cout << "----- Surface Stats from Parameters " << version << " -----\n\n";
 
   // Process arguments
   vector<string> args(argc);

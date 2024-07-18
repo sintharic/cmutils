@@ -3,6 +3,7 @@
 #include <vector>
 using namespace std;
 
+string version = "V1.01 (2024-07-18)";
 void printHelp(string);
 int nx = 1024, ny = 1024;
 bool auto_n = true;
@@ -10,6 +11,8 @@ string filename = "gap0.dat";
 
 
 int main(const int argc, const char *argv[]){
+  cout << "----- Gap file conversion " << version << " -----\n\n";
+
   // process command line inputs
   if (argc > 1) {
     //cout << "checking args\n";//DEBUG
@@ -96,8 +99,8 @@ void printHelp(string name) {
   cout << name + " [options]\n";
   cout << "\nOptions:\n";
   cout << "-i  : path to the gap file to be converted (default: gap0.dat)\n";
-  cout << "-nx : number of grid points in x direction (default: 1024)\n";
-  cout << "-ny : number of grid points in y direction (default: 1024)\n";
+  cout << "-nx : number of grid points in x direction (default: read from file)\n";
+  cout << "-ny : number of grid points in y direction (default: read from file)\n";
   cout << "\nExample:\n";
   cout << name << " -i gap0.dat -nx 1024 -ny 1024\n";
   exit(0);

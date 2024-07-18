@@ -106,7 +106,7 @@ Furthermore, you can define aliases in your .bashrc or .zshrc file, e.g. `alias 
 C++ usage and installation
 --------------------------
 See list of programs below and compile them with the respective make command.
-Most of these require a working FFTW3 installation. 
+Some of these require a working FFTW3 installation. 
 A very brief instruction on how to install FFTW on Windows is written in the Makefile.
 The Makefile automatically checks the most common FFTW installation paths. 
 If you encounter problems, specify your individual installation paths manually.
@@ -146,8 +146,16 @@ Compile with `make params`.
 
 Outputs the exact RMS height/gradient/curvature stats that would belong to a given set of `contMech`'s "addSelfAffine" parameters: hurst, lambdaR, lambdaS, ...
 
-readGap (readGap.exe):
+gapconvert (gapconvert.exe):
 -------------------------
 Compile with `make gap`.
 
 Reads a config file containing the local gap between two surfaces, converts the data to the format necessary for Reynolds flow simulations, and saves it to a file with the correct name.
+
+Shell commands:
+---------------
+Install with `make install`.
+
+Creates shell scripts (batch files) and installs them in a directory (that is likely to be) in the user's PATH. The corresponding commands will have the same names as above, except without the `.exe` and with a leading `cm_`. This way, e.g. `params.exe` can be accessed from anywhere via the command `cm_params`.
+
+Windows users should check their environment variables.
