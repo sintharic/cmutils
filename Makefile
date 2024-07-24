@@ -1,5 +1,5 @@
 SHELL = /usr/bin/env bash
-default_target: all
+default_target: install
 
 
 
@@ -87,31 +87,31 @@ FOLDER   := backup-$(NOW)
 
 # ----- Compilation Rules ----- #
 
-gap:
+gapconvert.exe: header.h gapconvert.cpp 
 	@echo " Building gapconvert.exe..."
 	@$(COMPILER) $(CPPFLAGS) $(WFLAGS) gapconvert.cpp -o gapconvert.exe
 
-surf:
+surf.exe: header.h statsSurf.cpp
 	@echo " Building surf.exe..."
 	@echo " FFTW Paths: - $(FFTW_LIB)"
 	@echo "             - $(FFTW_INC)"
 	@$(COMPILER) $(CPPFLAGS) $(WFLAGS) statsSurf.cpp $(LFFTW) -o surf.exe
 
-params:
+params.exe: header.h statsParams.cpp
 	@echo " Building params.exe..."
 	@echo " FFTW Paths: - $(FFTW_LIB)"
 	@echo "             - $(FFTW_INC)"
 	@$(COMPILER) $(CPPFLAGS) $(WFLAGS) statsParams.cpp $(LFFTW) -o params.exe
 
-range:
+range.exe: header.h extractRange.cpp
 	@echo " Building range.exe..."
 	@$(COMPILER) $(CPPFLAGS) $(WFLAGS) extractRange.cpp -o range.exe
 
-convert:
+convert.exe: header.h convertImg.cpp
 	@echo " Building convert.exe..."
 	@$(COMPILER) $(CPPFLAGS) $(WFLAGS) convertImg.cpp -o convert.exe
 
-green:
+green: header.h GreensFunc2D.cpp GreensFunc3D.cpp
 	@echo " Building GF2D.exe..."
 	@echo " FFTW Paths: - $(FFTW_LIB)"
 	@echo "             - $(FFTW_INC)"
@@ -119,30 +119,37 @@ green:
 	@echo " Building GF3D.exe..."
 	@$(COMPILER) $(CPPFLAGS) $(WFLAGS) GreensFunc3D.cpp $(LFFTW) -o GF3D.exe
 
-all: surf params range convert gap
+all: surf.exe params.exe range.exe convert.exe gapconvert.exe
 
 # ----- Install Scripts for Running Executables from Anywhere ----- #
 
-install_scripts_UNIX: range_script
+install_scripts_UNIX: scripts
 	@$(MKDIR) $(INSTALL_DIR)
 	@$(CP) cm_convert.sh $(INSTALL_DIR)/cm_convert
 	@$(CP) cm_range.sh $(INSTALL_DIR)/cm_range
 	@$(CP) cm_params.sh $(INSTALL_DIR)/cm_params
 	@$(CP) cm_surf.sh $(INSTALL_DIR)/cm_surf
 	@$(CP) cm_gapconvert.sh $(INSTALL_DIR)/cm_gapconvert
+	@$(CP) cmjobs.sh $(INSTALL_DIR)/cmjobs
 	@chmod +x $(INSTALL_DIR)/cm_convert
 	@chmod +x $(INSTALL_DIR)/cm_range
 	@chmod +x $(INSTALL_DIR)/cm_params
 	@chmod +x $(INSTALL_DIR)/cm_surf
 	@chmod +x $(INSTALL_DIR)/cm_gapconvert
+	@chmod +x $(INSTALL_DIR)/cmjobs
 	@echo " Installed scripts to $(INSTALL_DIR)."
 
-install_scripts_WINDOWS: range_script
+install_scripts_WINDOWS: scripts
 	@if not exist "$(INSTALL_DIR)" mkdir "$(INSTALL_DIR)"
+	@$(CP) cm_convert.bat "$(INSTALL_DIR)\cm_convert.bat"
 	@$(CP) cm_range.bat "$(INSTALL_DIR)\cm_range.bat"
+	@$(CP) cm_params.bat "$(INSTALL_DIR)\cm_params.bat"
+	@$(CP) cm_surf.bat "$(INSTALL_DIR)\cm_surf.bat"
+	@$(CP) cm_gapconvert.bat "$(INSTALL_DIR)\cm_gapconvert.bat"
+	@$(CP) cmjobs.bat "$(INSTALL_DIR)\cmjobs.bat"
 	@echo " Installed bat files to $(INSTALL_DIR)."
 
-range_script:
+scripts: convert.exe range.exe params.exe surf.exe gapconvert.exe
 ifeq ($(PLATFORM),WINDOWS)
 	@echo " Creating bat files..."
 	@echo @echo off > cm_convert.bat
@@ -150,11 +157,13 @@ ifeq ($(PLATFORM),WINDOWS)
 	@echo @echo off > cm_params.bat
 	@echo @echo off > cm_surf.bat
 	@echo @echo off > cm_gapconvert.bat
+	@echo @echo off > cmjobs.bat
 	@echo $(CURDIR)\\convert.exe %* >> cm_convert.bat
 	@echo $(CURDIR)\\range.exe %* >> cm_range.bat
 	@echo $(CURDIR)\\params.exe %* >> cm_params.bat
 	@echo $(CURDIR)\\surf.exe %* >> cm_surf.bat
 	@echo $(CURDIR)\\gapconvert.exe %* >> cm_gapconvert.bat
+	@echo python3 $(CURDIR)\\cmjobs.py %* >> cmjobs.bat
 else
 	@echo " Creating shell scripts..."
 	@echo "#!/bin/bash" > cm_convert.sh
@@ -162,11 +171,13 @@ else
 	@echo "#!/bin/bash" > cm_params.sh
 	@echo "#!/bin/bash" > cm_surf.sh
 	@echo "#!/bin/bash" > cm_gapconvert.sh
+	@echo "#!/bin/bash" > cmjobs.sh
 	@echo $(CURDIR)/convert.exe \"\$$@\" >> cm_convert.sh
 	@echo $(CURDIR)/range.exe \"\$$@\" >> cm_range.sh
 	@echo $(CURDIR)/params.exe \"\$$@\" >> cm_params.sh
 	@echo $(CURDIR)/surf.exe \"\$$@\" >> cm_surf.sh
 	@echo $(CURDIR)/gapconvert.exe \"\$$@\" >> cm_gapconvert.sh
+	@echo python3 $(CURDIR)/cmjobs.py \"\$$@\" >> cmjobs.sh
 endif
 
 install: install_scripts_$(PLATFORM)
