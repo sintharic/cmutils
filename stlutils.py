@@ -81,7 +81,7 @@ def from_file(inpath:str, flip:bool=True):
 
   Returns
   -------
-  vertex_list : np.ndarray
+  vertex_list : numpy.ndarray
     3D vertex positions as an array of shape (nx*ny, 3).
 
   Warning
@@ -127,7 +127,7 @@ def from_array(array:np.ndarray, Lx:float=1, Ly:float=1, flip:bool=False):
 
   Parameters
   ----------
-  array : np.ndarray
+  array : numpy.ndarray
     Array of shape (nx,ny) containing z coordinates.
   Lx : float, optional
     Physical dimension of the topography in x direction. Default is 1.
@@ -138,7 +138,7 @@ def from_array(array:np.ndarray, Lx:float=1, Ly:float=1, flip:bool=False):
 
   Returns
   -------
-  vertex_list : np.ndarray
+  vertex_list : numpy.ndarray
     3D vertex positions as an array of shape (nx*ny, 3).
   """
 
@@ -170,7 +170,7 @@ def add_border(array:np.ndarray, border:int, flip:bool):
 
   Parameters
   ----------
-  array : np.ndarray
+  array : numpy.ndarray
     Array of shape (nx,ny) containing z coordinates.
   border : int
     Width of the border in 'pixels'.
@@ -179,7 +179,7 @@ def add_border(array:np.ndarray, border:int, flip:bool):
 
   Returns
   -------
-  bordered_array : np.ndarray
+  bordered_array : numpy.ndarray
     Updated 2D array of shape (nx+2*border, ny+2*border).
   """
 
@@ -205,12 +205,12 @@ def add_foundation(vertex_list:np.ndarray):
 
   Parameters
   ----------
-  vertex_list : np.ndarray
+  vertex_list : numpy.ndarray
     Array of shape (nx*ny, 3).
 
   Returns
   -------
-  new_vertices : np.ndarray
+  new_vertices : numpy.ndarray
     Updated vertex list of shape ((nx+2)*(ny+2), 3).
   """
 
@@ -262,7 +262,7 @@ def create_faces(foundation:bool=True):
 
   Returns
   -------
-  faces_list : np.ndarray
+  faces_list : numpy.ndarray
     Array of shape (2*(nx-1)*(ny-1) + foundation*2, 3) containing the indices of the 3 vertices of each triangle.
   """
 
@@ -300,9 +300,9 @@ def save_mesh(vertex_list:np.ndarray, faces_list:np.ndarray, outpath:str):
 
   Parameters
   ----------
-  vertex_list : np.ndarray
+  vertex_list : numpy.ndarray
     Array of shape (nx*ny, 3).
-  faces_list : np.ndarray
+  faces_list : numpy.ndarray
     Array of 3-tuples of indices, where each of those 3-tuples forms a triangle in vertex_list.
   outpath : str
     Filepath to the stl output file.
@@ -353,7 +353,7 @@ def convertArray(array:np.ndarray, outpath:str, Lx:float=1, Ly:float=0, flip:boo
 
   Parameters
   ----------
-  array : np.ndarray
+  array : numpy.ndarray
     Array of shape (nx,ny) containing z coordinates.
   outpath : str
     Filepath to the stl output file.

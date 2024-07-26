@@ -6,8 +6,8 @@ FOLDER = "frames"
 ARCHIVE = "zip"
 
 # defaults (overwritten bei sys.argv)
-PATH = "."
-EXTRACT = False
+DEFAULT_PATH = "."
+DEFAULT_EXTRACT = False
 
 
 
@@ -15,23 +15,62 @@ EXTRACT = False
 
 import sys
 import os
-sys.path.append("/Users/christian/git/fsync")
 import shutil
-import futil
 
-# parse sys.argv
-if len(sys.argv) > 1:
-  for arg in sys.argv[1:]:
-    if DEBUG: print("sys.arg", arg)
-    if arg in ["-x", "-e"]: EXTRACT = True
-    elif os.path.isdir(arg): PATH = arg
+def relDirsFiles(fullpath):
+  """ List the whole directory tree and all files contained in a directory
+
+  The file list contains files in the parent and all subdirectories.
+  The directorytree can be passed to mkdirtree().
+
+  Parameters
+  ----------
+  fullpath : str
+    path to the folder whose contents are listed
+
+  Returns
+  -------
+  folderlist : list of str
+    the whole directory tree contained in <fullpath>, relative to <fullpath>
+  filelist : list of str
+    relative paths to all files contained in the directroy tree
+
+  """
+
+  if fullpath[-1] != os.sep: fullpath += os.sep
+
+  # base path
+  folderlist = []; filelist = []
+  lsdir = sorted(os.listdir(fullpath))
+  for obj in lsdir:
+    if os.path.isdir(fullpath+obj): folderlist.append(obj)
+    else: filelist.append(obj)
+
+  # recursive through sub-directories
+  found = True
+  newfolders = folderlist.copy()
+  while found:
+    toadd = []
+    for folder in newfolders:
+      folder = folder + os.sep
+      lsdir = sorted(os.listdir(fullpath+folder))
+      for obj in lsdir:
+        if os.path.isdir(fullpath+folder+obj): 
+          toadd.append(folder+obj)
+        else: filelist.append(folder+obj)
+    if len(toadd):
+      folderlist = folderlist + toadd
+      newfolders = toadd.copy()
+    else: found = False
+
+  return(folderlist, filelist)
 
 
-def main(inpath=PATH, extract=EXTRACT):
+def rxive(inpath=DEFAULT_PATH, extract=DEFAULT_EXTRACT):
 
   # ----- determine files/folders to operate on ----- #
 
-  paths,files = futil.relDirsFiles(inpath)
+  paths,files = relDirsFiles(inpath)
   if extract:
     operation = "extracting"
     tail = f"{FOLDER}.{ARCHIVE}"
@@ -90,4 +129,15 @@ def main(inpath=PATH, extract=EXTRACT):
 
 
 
-if __name__ == '__main__': main()
+if __name__ == '__main__': 
+  extract = DEFAULT_EXTRACT
+  path = DEFAULT_PATH
+
+  # parse sys.argv
+  if len(sys.argv) > 1:
+    for arg in sys.argv[1:]:
+      if DEBUG: print("sys.arg", arg)
+      if arg in ["-x", "-e"]: extract = True
+      elif os.path.isdir(arg): path = arg
+  
+  rxive(path, extract)

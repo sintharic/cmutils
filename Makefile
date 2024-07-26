@@ -131,12 +131,14 @@ install_scripts_UNIX: scripts
 	@$(CP) cm_surf.sh $(INSTALL_DIR)/cm_surf
 	@$(CP) cm_gapconvert.sh $(INSTALL_DIR)/cm_gapconvert
 	@$(CP) cmjobs.sh $(INSTALL_DIR)/cmjobs
+	@$(CP) cm_rxive.sh $(INSTALL_DIR)/cm_rxive
 	@chmod +x $(INSTALL_DIR)/cm_convert
 	@chmod +x $(INSTALL_DIR)/cm_range
 	@chmod +x $(INSTALL_DIR)/cm_params
 	@chmod +x $(INSTALL_DIR)/cm_surf
 	@chmod +x $(INSTALL_DIR)/cm_gapconvert
 	@chmod +x $(INSTALL_DIR)/cmjobs
+	@chmod +x $(INSTALL_DIR)/cm_rxive
 	@echo " Installed scripts to $(INSTALL_DIR)."
 
 install_scripts_WINDOWS: scripts
@@ -164,6 +166,7 @@ ifeq ($(PLATFORM),WINDOWS)
 	@echo $(CURDIR)\\surf.exe %* >> cm_surf.bat
 	@echo $(CURDIR)\\gapconvert.exe %* >> cm_gapconvert.bat
 	@echo python3 $(CURDIR)\\cmjobs.py %* >> cmjobs.bat
+	@echo python3 $(CURDIR)\\rxive.py %* >> cm_rxive.bat
 else
 	@echo " Creating shell scripts..."
 	@echo "#!/bin/bash" > cm_convert.sh
@@ -178,6 +181,7 @@ else
 	@echo $(CURDIR)/surf.exe \"\$$@\" >> cm_surf.sh
 	@echo $(CURDIR)/gapconvert.exe \"\$$@\" >> cm_gapconvert.sh
 	@echo python3 $(CURDIR)/cmjobs.py \"\$$@\" >> cmjobs.sh
+	@echo python3 $(CURDIR)/rxive.py \"\$$@\" >> cm_rxive.sh
 endif
 
 install: install_scripts_$(PLATFORM)
