@@ -12,7 +12,9 @@ executable = "contMech"
 
 WARN = False
 
-import time, os, sys
+import time
+import os
+import sys
 import datetime
 import psutil as ps
 import getpass
@@ -104,8 +106,8 @@ def main():
             while monifile.read(1) != b"\n": monifile.seek(-2, 1)
             lineN = monifile.read().decode('UTF-8')
             idx = lineN.find("\t")
-            time = float(lineN[:idx])
-            iTime = int(round(time/dTime))
+            tNow = float(lineN[:idx])
+            iTime = int(round(tNow/dTime))
         except FileNotFoundError: iTime = -nTime
         except Exception as e: raise e
       else: iTime = -nTime
