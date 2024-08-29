@@ -1,0 +1,6 @@
+psutil
+numpy
+scipy
+numba
+matplotlib
+numpy-stl

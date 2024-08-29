@@ -1,0 +1,16 @@
+name: cm
+
+dependencies:
+  - python=3.9
+  - setuptools
+  - pip
+  - psutil
+  - numpy
+  - scipy
+  - sympy
+  - numba
+  - matplotlib
+  - pytest
+  - ipython
+  - jupyter
+  - sphinx
