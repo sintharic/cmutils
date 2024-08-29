@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>stlutils module &#8212; cmutils 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/cloud.css?v=f9ae72be" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+    
+    <script src="_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+
+    
+    
+     
+        <script src="_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.js"></script>
+    
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="modparams module" href="modparams.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="modparams.html" title="modparams module"
+             accesskey="P">previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">cmutils 0.0.1 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Python utilities</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">stlutils module</a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-stlutils">
+<span id="stlutils-module"></span><h1>stlutils module<a class="headerlink" href="#module-stlutils" title="Link to this heading">¶</a></h1>
+<section id="stl-file-generation">
+<h2>STL file generation<a class="headerlink" href="#stl-file-generation" title="Link to this heading">¶</a></h2>
+<p>This is a simple “brute force” conversion resulting in large files.
+Each rectangle in the rastered data is simply converted to two triangles.</p>
+<p>The resulting stl file therefore includes:</p>
+<ul class="simple">
+<li><p>vertex list: x-, y-, and z-coordinates of all points in the original surface</p></li>
+<li><p>faces: triangles represented by the indices of their corners in the vertex list</p></li>
+<li><p>vectors: normals of these triangle faces</p></li>
+</ul>
+<p>You can reduce the size of the file afterwards.
+In MeshLab, for example, you can use
+“Filters -&gt; Simplification: Quadratic Edge Collapse Decimation”,
+where “Percentage reduction” is the target mesh size relative to the original.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<p>Generate a blurred uniform random surface profile and save it to an stl file
+with an added border around it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">stlutils</span>
+<span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">ndi</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">))</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">ndi</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">stlutils</span><span class="o">.</span><span class="n">convertArray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;random.stl&#39;</span><span class="p">,</span> <span class="n">Lx</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">Ly</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">border</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Save the same array to a config file and convert it to stl without the border around it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">cmutils</span> <span class="k">as</span> <span class="nn">cm</span>
+
+<span class="n">cm</span><span class="o">.</span><span class="n">dumpConfig</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;random.dat&#39;</span><span class="p">)</span>
+<span class="n">stlutils</span><span class="o">.</span><span class="n">convertFile</span><span class="p">(</span><span class="s1">&#39;random.dat&#39;</span><span class="p">,</span> <span class="s1">&#39;random2.stl&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The resulting stl file (with border) looks like this:</p>
+<img alt="The generated stl file viewed in MeshLab." class="align-center" src="_images/snapshot.png" />
+</section>
+<section id="api-documentation">
+<h2>API documentation<a class="headerlink" href="#api-documentation" title="Link to this heading">¶</a></h2>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="stlutils.add_border">
+<span class="sig-prename descclassname"><span class="pre">stlutils.</span></span><span class="sig-name descname"><span class="pre">add_border</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stlutils.html#add_border"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stlutils.add_border" title="Link to this definition">¶</a></dt>
+<dd><p>Add border around 2D height array assuming uniform lattice spacing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>np.ndarray</em>) – Array of shape (nx,ny) containing z coordinates.</p></li>
+<li><p><strong>border</strong> (<em>int</em>) – Width of the border in ‘pixels’.</p></li>
+<li><p><strong>flip</strong> (<em>bool</em>) – Whether or not to flip the topography upside-down.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>bordered_array</strong> (<em>np.ndarray</em>) – Updated 2D array of shape (nx+2*border, ny+2*border).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stlutils.add_foundation">
+<span class="sig-prename descclassname"><span class="pre">stlutils.</span></span><span class="sig-name descname"><span class="pre">add_foundation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vertex_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stlutils.html#add_foundation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stlutils.add_foundation" title="Link to this definition">¶</a></dt>
+<dd><p>Add to vertex list the vertices representing the bottom foundation of the 3D model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vertex_list</strong> (<em>np.ndarray</em>) – Array of shape (nx*ny, 3).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>new_vertices</strong> (<em>np.ndarray</em>) – Updated vertex list of shape ((nx+2)*(ny+2), 3).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stlutils.convertArray">
+<span class="sig-prename descclassname"><span class="pre">stlutils.</span></span><span class="sig-name descname"><span class="pre">convertArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Lx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ly</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foundation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stlutils.html#convertArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stlutils.convertArray" title="Link to this definition">¶</a></dt>
+<dd><p>Create stl file from 2D numpy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>np.ndarray</em>) – Array of shape (nx,ny) containing z coordinates.</p></li>
+<li><p><strong>outpath</strong> (<em>str</em>) – Filepath to the stl output file.</p></li>
+<li><p><strong>Lx</strong> (<em>float</em><em>, </em><em>optional</em>) – Physical dimension of the topography in x direction. Default is 1.</p></li>
+<li><p><strong>Ly</strong> (<em>float</em><em>, </em><em>optional</em>) – Physical dimension of the topography in y direction. Default is 0.</p></li>
+<li><p><strong>flip</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to flip the topography upside-down. Default is False.</p></li>
+<li><p><strong>foundation</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to add 2 triangles representing the bottom of the 3D model. Default is True.</p></li>
+<li><p><strong>border</strong> (<em>int</em><em>, </em><em>optional</em>) – Width of the border in ‘pixels’. Default is 0.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stlutils.convertFile">
+<span class="sig-prename descclassname"><span class="pre">stlutils.</span></span><span class="sig-name descname"><span class="pre">convertFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foundation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stlutils.html#convertFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stlutils.convertFile" title="Link to this definition">¶</a></dt>
+<dd><p>Create stl file from config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inpath</strong> (<em>str</em>) – Filepath to a contMech config file containing nx*ny points.</p></li>
+<li><p><strong>outpath</strong> (<em>str</em><em>, </em><em>optional</em>) – Filepath to the stl output file. Default is “”.</p></li>
+<li><p><strong>norm</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor, by which to multiply coordinates. Default is 1.</p></li>
+<li><p><strong>flip</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to flip the topography upside-down. Default is True.</p></li>
+<li><p><strong>foundation</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to add 2 triangles representing the bottom of the 3D model. Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stlutils.create_faces">
+<span class="sig-prename descclassname"><span class="pre">stlutils.</span></span><span class="sig-name descname"><span class="pre">create_faces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">foundation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stlutils.html#create_faces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stlutils.create_faces" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate the 2*(nx-1)*(ny-1) triangles contained in a nx*ny surface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>foundation</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to add 2 triangles representing the bottom of the 3D model. Default is True.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>faces_list</strong> (<em>np.ndarray</em>) – Array of shape (2*(nx-1)*(ny-1) + foundation*2, 3) containing the indices of the 3 vertices of each triangle.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stlutils.from_array">
+<span class="sig-prename descclassname"><span class="pre">stlutils.</span></span><span class="sig-name descname"><span class="pre">from_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Lx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ly</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stlutils.html#from_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stlutils.from_array" title="Link to this definition">¶</a></dt>
+<dd><p>Convert 2D height topography to a 3D vertex list assuming uniform lattice spacing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>np.ndarray</em>) – Array of shape (nx,ny) containing z coordinates.</p></li>
+<li><p><strong>Lx</strong> (<em>float</em><em>, </em><em>optional</em>) – Physical dimension of the topography in x direction. Default is 1.</p></li>
+<li><p><strong>Ly</strong> (<em>float</em><em>, </em><em>optional</em>) – Physical dimension of the topography in y direction. Default is 1.</p></li>
+<li><p><strong>flip</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to flip the topography upside-down. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>vertex_list</strong> (<em>np.ndarray</em>) – 3D vertex positions as an array of shape (nx*ny, 3).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stlutils.from_file">
+<span class="sig-prename descclassname"><span class="pre">stlutils.</span></span><span class="sig-name descname"><span class="pre">from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stlutils.html#from_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stlutils.from_file" title="Link to this definition">¶</a></dt>
+<dd><p>Convert 2D height topography to a 3D vertex list assuming uniform lattice spacing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inpath</strong> (<em>str</em>) – Filepath to a contMech config file containing nx*ny points.</p></li>
+<li><p><strong>flip</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to flip the topography upside-down. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>vertex_list</strong> (<em>np.ndarray</em>) – 3D vertex positions as an array of shape (nx*ny, 3).</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>These files assume that the surface is periodically repeatable!</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>flip=True is default since these files store the surface upside down!</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stlutils.save_mesh">
+<span class="sig-prename descclassname"><span class="pre">stlutils.</span></span><span class="sig-name descname"><span class="pre">save_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vertex_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faces_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stlutils.html#save_mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stlutils.save_mesh" title="Link to this definition">¶</a></dt>
+<dd><p>Create mesh from vertices and faces and save it to an stl file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vertex_list</strong> (<em>np.ndarray</em>) – Array of shape (nx*ny, 3).</p></li>
+<li><p><strong>faces_list</strong> (<em>np.ndarray</em>) – Array of 3-tuples of indices, where each of those 3-tuples forms a triangle in vertex_list.</p></li>
+<li><p><strong>outpath</strong> (<em>str</em>) – Filepath to the stl output file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><div class="sphinx-toc sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">stlutils module</a><ul>
+<li><a class="reference internal" href="#stl-file-generation">STL file generation</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#api-documentation">API documentation</a></li>
+<li><a class="reference internal" href="#stlutils.add_border"><code class="docutils literal notranslate"><span class="pre">add_border()</span></code></a></li>
+<li><a class="reference internal" href="#stlutils.add_foundation"><code class="docutils literal notranslate"><span class="pre">add_foundation()</span></code></a></li>
+<li><a class="reference internal" href="#stlutils.convertArray"><code class="docutils literal notranslate"><span class="pre">convertArray()</span></code></a></li>
+<li><a class="reference internal" href="#stlutils.convertFile"><code class="docutils literal notranslate"><span class="pre">convertFile()</span></code></a></li>
+<li><a class="reference internal" href="#stlutils.create_faces"><code class="docutils literal notranslate"><span class="pre">create_faces()</span></code></a></li>
+<li><a class="reference internal" href="#stlutils.from_array"><code class="docutils literal notranslate"><span class="pre">from_array()</span></code></a></li>
+<li><a class="reference internal" href="#stlutils.from_file"><code class="docutils literal notranslate"><span class="pre">from_file()</span></code></a></li>
+<li><a class="reference internal" href="#stlutils.save_mesh"><code class="docutils literal notranslate"><span class="pre">save_mesh()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div class="sphinxprev">
+    <h4>Previous page</h4>
+    <p class="topless"><a href="modparams.html"
+                          title="Previous page">&larr; modparams module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/stlutils.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+    
+    
+        <div class="sidebar-toggle-group no-js">
+            
+            <button class="sidebar-toggle" id="sidebar-hide" title="Hide the sidebar menu">
+                 «
+                <span class="show-for-small">hide menu</span>
+                
+            </button>
+            <button class="sidebar-toggle" id="sidebar-show" title="Show the sidebar menu">
+                
+                <span class="show-for-small">menu</span>
+                <span class="hide-for-small">sidebar</span>
+                 »
+            </button>
+        </div>
+    
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="modparams.html" title="modparams module"
+             >previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">cmutils 0.0.1 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="modules.html" >Python utilities</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">stlutils module</a></li> 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Christian Mueller.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
+</html>

@@ -1,0 +1,664 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>cmanim module &#8212; cmutils 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/cloud.css?v=f9ae72be" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+    
+    <script src="_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+
+    
+    
+     
+        <script src="_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.js"></script>
+    
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="cmparams module" href="cmparams.html" />
+    <link rel="prev" title="cmutils module" href="cmutils.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="cmparams.html" title="cmparams module"
+             accesskey="N">next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="cmutils.html" title="cmutils module"
+             accesskey="P">previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">cmutils 0.0.1 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Python utilities</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">cmanim module</a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-cmanim">
+<span id="cmanim-module"></span><h1>cmanim module<a class="headerlink" href="#module-cmanim" title="Link to this heading">¶</a></h1>
+<section id="animation-of-contmech-simulations">
+<h2>Animation of contMech Simulations<a class="headerlink" href="#animation-of-contmech-simulations" title="Link to this heading">¶</a></h2>
+<p>An easy-to-use library for animating simulation results.
+The focus is on fully automatic usage, where the best possible parameters are read from params.out.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<p>Example to create and save a contact movie:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">cmanim</span>
+
+<span class="n">animation</span> <span class="o">=</span> <span class="n">cmanim</span><span class="o">.</span><span class="n">runCont2D</span><span class="p">()</span>
+<span class="n">cmanim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">animation</span><span class="p">,</span> <span class="s2">&quot;movie.gif&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Specifying custom parameters is possible by calling individual initialization functions one after the other.
+E.g. you can animate the cross-sections along x-direction from two different simulations in one figure, limit it to frames 40 to 100, and zoom in to a certain xrange:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cmanim</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="s2">&quot;DispX&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">path1</span><span class="p">,</span> <span class="n">path2</span><span class="p">]</span> <span class="p">)</span>
+<span class="n">cmanim</span><span class="o">.</span><span class="n">XLIM</span> <span class="o">=</span> <span class="p">[</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">]</span>
+<span class="n">cmanim</span><span class="o">.</span><span class="n">START</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">cmanim</span><span class="o">.</span><span class="n">END</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">cmanim</span><span class="o">.</span><span class="n">NFRAMES</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">animation</span> <span class="o">=</span> <span class="n">cmanim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Essentially, the previously mentioned <cite>runCont2D()</cite> is just a wrapper for <cite>cmanim.init(“Cont2D”,paths=”.”); cmanim.run()</cite>, where <cite>init(…)</cite> automatically determines plot parameters, which you can (but most of the time don’t need to) overwrite.</p>
+</section>
+<section id="api-documentation">
+<h2>API documentation<a class="headerlink" href="#api-documentation" title="Link to this heading">¶</a></h2>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.animate2D">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">animate2D</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#animate2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.animate2D" title="Link to this definition">¶</a></dt>
+<dd><p>run animation from 2D files</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.animate3D">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">animate3D</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#animate3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.animate3D" title="Link to this definition">¶</a></dt>
+<dd><p>run animation from 3D files</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.checkDir">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">checkDir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#checkDir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.checkDir" title="Link to this definition">¶</a></dt>
+<dd><p>Checks &lt;path&gt; directory for “frames” subfolder and “params.out”.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.dataReset">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">dataReset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#dataReset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.dataReset" title="Link to this definition">¶</a></dt>
+<dd><p>hard reset</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.dumpGlobals">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">dumpGlobals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#dumpGlobals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.dumpGlobals" title="Link to this definition">¶</a></dt>
+<dd><p>shows automatically adjusted parameters for user to check</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">gfmdSheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newID</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#gfmdSheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.gfmdSheet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.ID">
+<span class="sig-name descname"><span class="pre">ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.ID" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.dTime">
+<span class="sig-name descname"><span class="pre">dTime</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.dTime" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.data">
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([[0.]])</span></em><a class="headerlink" href="#cmanim.gfmdSheet.data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.dzRamp">
+<span class="sig-name descname"><span class="pre">dzRamp</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.dzRamp" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.f3dMovie">
+<span class="sig-name descname"><span class="pre">f3dMovie</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.f3dMovie" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.fKelvinVoigt">
+<span class="sig-name descname"><span class="pre">fKelvinVoigt</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.fKelvinVoigt" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.fRough">
+<span class="sig-name descname"><span class="pre">fRough</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.fRough" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.fSteppedRamp">
+<span class="sig-name descname"><span class="pre">fSteppedRamp</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.fSteppedRamp" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.files">
+<span class="sig-name descname"><span class="pre">files</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#cmanim.gfmdSheet.files" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.increment">
+<span class="sig-name descname"><span class="pre">increment</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmanim.gfmdSheet.increment" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.konfigName">
+<span class="sig-name descname"><span class="pre">konfigName</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'konfig'</span></em><a class="headerlink" href="#cmanim.gfmdSheet.konfigName" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.lengthX">
+<span class="sig-name descname"><span class="pre">lengthX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.lengthX" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.lengthY">
+<span class="sig-name descname"><span class="pre">lengthY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.lengthY" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.minmaxZ">
+<span class="sig-name descname"><span class="pre">minmaxZ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#cmanim.gfmdSheet.minmaxZ" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.nElast">
+<span class="sig-name descname"><span class="pre">nElast</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.nElast" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.nFrames">
+<span class="sig-name descname"><span class="pre">nFrames</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.nFrames" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.nTime">
+<span class="sig-name descname"><span class="pre">nTime</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.nTime" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.nVeloTurnStep">
+<span class="sig-name descname"><span class="pre">nVeloTurnStep</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#cmanim.gfmdSheet.nVeloTurnStep" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.nx">
+<span class="sig-name descname"><span class="pre">nx</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.nx" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.ny">
+<span class="sig-name descname"><span class="pre">ny</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.ny" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.ramp">
+<span class="sig-name descname"><span class="pre">ramp</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([[0.]])</span></em><a class="headerlink" href="#cmanim.gfmdSheet.ramp" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.rampName">
+<span class="sig-name descname"><span class="pre">rampName</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#cmanim.gfmdSheet.rampName" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.rampPeriod">
+<span class="sig-name descname"><span class="pre">rampPeriod</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.rampPeriod" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.stiffness0">
+<span class="sig-name descname"><span class="pre">stiffness0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.stiffness0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.updateCols">
+<span class="sig-name descname"><span class="pre">updateCols</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#gfmdSheet.updateCols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.gfmdSheet.updateCols" title="Link to this definition">¶</a></dt>
+<dd><p>determines which columns in the data files must be imported</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.updateData">
+<span class="sig-name descname"><span class="pre">updateData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numFrame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#gfmdSheet.updateData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.gfmdSheet.updateData" title="Link to this definition">¶</a></dt>
+<dd><p>reads and sets up the data file needed to plot the next frame</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.updateDims">
+<span class="sig-name descname"><span class="pre">updateDims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#gfmdSheet.updateDims"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.gfmdSheet.updateDims" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.updateFiles">
+<span class="sig-name descname"><span class="pre">updateFiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#gfmdSheet.updateFiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.gfmdSheet.updateFiles" title="Link to this definition">¶</a></dt>
+<dd><p>sets up list of frame files belonging to this object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.updateNxNy">
+<span class="sig-name descname"><span class="pre">updateNxNy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#gfmdSheet.updateNxNy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.gfmdSheet.updateNxNy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.usecols">
+<span class="sig-name descname"><span class="pre">usecols</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[0,</span> <span class="pre">1]</span></em><a class="headerlink" href="#cmanim.gfmdSheet.usecols" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.gfmdSheet.vzConstCOM">
+<span class="sig-name descname"><span class="pre">vzConstCOM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.gfmdSheet.vzConstCOM" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.init">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.init" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.initGlobals">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">initGlobals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#initGlobals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.initGlobals" title="Link to this definition">¶</a></dt>
+<dd><p>initializes global parameters</p>
+<p>goes through all simulation directories in &lt;paths&gt; and tries to find optimal
+parameters to plot all simulations into one animation</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.initParams">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">initParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#initParams"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.initParams" title="Link to this definition">¶</a></dt>
+<dd><p>initialize params.out</p>
+<p>reads &lt;path&gt;/params.out to recreate sheet and interaction setup,
+initializes them and checks corresponding files and data to determine
+optimal plot parameters.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cmanim.interSheet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">interSheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newID</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#interSheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.interSheet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.interSheet.ID">
+<span class="sig-name descname"><span class="pre">ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.interSheet.ID" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.interSheet.attrFiles">
+<span class="sig-name descname"><span class="pre">attrFiles</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#cmanim.interSheet.attrFiles" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.interSheet.contFiles">
+<span class="sig-name descname"><span class="pre">contFiles</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#cmanim.interSheet.contFiles" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.interSheet.data">
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([[0.]])</span></em><a class="headerlink" href="#cmanim.interSheet.data" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.interSheet.fDumpFrame">
+<span class="sig-name descname"><span class="pre">fDumpFrame</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.interSheet.fDumpFrame" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.interSheet.fPotential">
+<span class="sig-name descname"><span class="pre">fPotential</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.interSheet.fPotential" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.interSheet.increment">
+<span class="sig-name descname"><span class="pre">increment</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmanim.interSheet.increment" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.interSheet.konfigName">
+<span class="sig-name descname"><span class="pre">konfigName</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'inter'</span></em><a class="headerlink" href="#cmanim.interSheet.konfigName" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.interSheet.nFrames">
+<span class="sig-name descname"><span class="pre">nFrames</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.interSheet.nFrames" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.interSheet.nTime">
+<span class="sig-name descname"><span class="pre">nTime</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.interSheet.nTime" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.interSheet.nx">
+<span class="sig-name descname"><span class="pre">nx</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.interSheet.nx" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.interSheet.ny">
+<span class="sig-name descname"><span class="pre">ny</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmanim.interSheet.ny" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmanim.interSheet.resolMovie">
+<span class="sig-name descname"><span class="pre">resolMovie</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">512</span></em><a class="headerlink" href="#cmanim.interSheet.resolMovie" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cmanim.interSheet.updateData">
+<span class="sig-name descname"><span class="pre">updateData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numFrame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#interSheet.updateData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.interSheet.updateData" title="Link to this definition">¶</a></dt>
+<dd><p>reads and sets up the data file needed to plot the next frame</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cmanim.interSheet.updateFiles">
+<span class="sig-name descname"><span class="pre">updateFiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#interSheet.updateFiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.interSheet.updateFiles" title="Link to this definition">¶</a></dt>
+<dd><p>sets up list of frame files belonging to this object</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.reanimate">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">reanimate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#reanimate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.reanimate" title="Link to this definition">¶</a></dt>
+<dd><p>runs the previous animation again.</p>
+<p>helpful after manually changing parameters</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.run">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.run" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.runCont2D">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">runCont2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">morepaths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#runCont2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.runCont2D" title="Link to this definition">¶</a></dt>
+<dd><p>animates contact movie from interSheet frames</p>
+<p>with stress-displacement curve if applicable.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.runCont3D">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">runCont3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">morepaths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#runCont3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.runCont3D" title="Link to this definition">¶</a></dt>
+<dd><p>animates contact movie from sheet configs</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.runDisp3D">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">runDisp3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">morepaths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#runDisp3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.runDisp3D" title="Link to this definition">¶</a></dt>
+<dd><p>animates displacement movie from elastic sheet config</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.runDispD">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">runDispD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">morepaths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#runDispD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.runDispD" title="Link to this definition">¶</a></dt>
+<dd><p>animates displacement along diagonal direction</p>
+<p>with stress-displacement curve if applicable.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.runDispX">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">runDispX</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">morepaths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#runDispX"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.runDispX" title="Link to this definition">¶</a></dt>
+<dd><p>animates displacement along X direction</p>
+<p>with stress-displacement curve if applicable.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.runDispY">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">runDispY</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">morepaths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#runDispY"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.runDispY" title="Link to this definition">¶</a></dt>
+<dd><p>animates displacement along Y direction</p>
+<p>with stress-displacement curve if applicable.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.runDist3D">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">runDist3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">morepaths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#runDist3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.runDist3D" title="Link to this definition">¶</a></dt>
+<dd><p>animates surface distance movie from sheet configs</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.runPressD">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">runPressD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">morepaths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#runPressD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.runPressD" title="Link to this definition">¶</a></dt>
+<dd><p>animates displacement along diagonal direction</p>
+<p>with stress-displacement curve if applicable.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.runPressX">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">runPressX</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">morepaths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#runPressX"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.runPressX" title="Link to this definition">¶</a></dt>
+<dd><p>animates pressure along X direction</p>
+<p>with stress-displacement curve if applicable.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.runPressY">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">runPressY</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">morepaths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#runPressY"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.runPressY" title="Link to this definition">¶</a></dt>
+<dd><p>animates displacement along Y direction</p>
+<p>with stress-displacement curve if applicable.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmanim.save">
+<span class="sig-prename descclassname"><span class="pre">cmanim.</span></span><span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">animation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmanim.html#save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmanim.save" title="Link to this definition">¶</a></dt>
+<dd><p>save animation to file</p>
+<p>For mp4 files, make sure ffmpg and h264 are installed correctly:
+conda install -c conda-forge ffmpeg
+conda install -c conda-forge x264=20131218</p>
+<p>(see: <a class="reference external" href="https://stackoverflow.com/questions/13316397/matplotlib-animation-no-moviewriters-available">https://stackoverflow.com/questions/13316397/matplotlib-animation-no-moviewriters-available</a>)
+(see: <a class="reference external" href="https://github.com/sigsep/sigsep-mus-db/issues/14">https://github.com/sigsep/sigsep-mus-db/issues/14</a>)</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><div class="sphinx-toc sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">cmanim module</a><ul>
+<li><a class="reference internal" href="#animation-of-contmech-simulations">Animation of contMech Simulations</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#api-documentation">API documentation</a></li>
+<li><a class="reference internal" href="#cmanim.animate2D"><code class="docutils literal notranslate"><span class="pre">animate2D()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.animate3D"><code class="docutils literal notranslate"><span class="pre">animate3D()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.checkDir"><code class="docutils literal notranslate"><span class="pre">checkDir()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.dataReset"><code class="docutils literal notranslate"><span class="pre">dataReset()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.dumpGlobals"><code class="docutils literal notranslate"><span class="pre">dumpGlobals()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet"><code class="docutils literal notranslate"><span class="pre">gfmdSheet</span></code></a><ul>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.ID"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.ID</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.dTime"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.dTime</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.data"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.data</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.dzRamp"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.dzRamp</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.f3dMovie"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.f3dMovie</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.fKelvinVoigt"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fKelvinVoigt</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.fRough"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fRough</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.fSteppedRamp"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fSteppedRamp</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.files"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.files</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.increment"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.increment</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.konfigName"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.konfigName</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.lengthX"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.lengthX</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.lengthY"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.lengthY</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.minmaxZ"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.minmaxZ</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.nElast"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.nElast</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.nFrames"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.nFrames</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.nTime"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.nTime</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.nVeloTurnStep"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.nVeloTurnStep</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.nx"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.nx</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.ny"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.ny</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.ramp"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.ramp</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.rampName"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.rampName</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.rampPeriod"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.rampPeriod</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.stiffness0"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.stiffness0</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.updateCols"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.updateCols()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.updateData"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.updateData()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.updateDims"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.updateDims()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.updateFiles"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.updateFiles()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.updateNxNy"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.updateNxNy()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.usecols"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.usecols</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.gfmdSheet.vzConstCOM"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.vzConstCOM</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cmanim.init"><code class="docutils literal notranslate"><span class="pre">init()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.initGlobals"><code class="docutils literal notranslate"><span class="pre">initGlobals()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.initParams"><code class="docutils literal notranslate"><span class="pre">initParams()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.interSheet"><code class="docutils literal notranslate"><span class="pre">interSheet</span></code></a><ul>
+<li><a class="reference internal" href="#cmanim.interSheet.ID"><code class="docutils literal notranslate"><span class="pre">interSheet.ID</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.interSheet.attrFiles"><code class="docutils literal notranslate"><span class="pre">interSheet.attrFiles</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.interSheet.contFiles"><code class="docutils literal notranslate"><span class="pre">interSheet.contFiles</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.interSheet.data"><code class="docutils literal notranslate"><span class="pre">interSheet.data</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.interSheet.fDumpFrame"><code class="docutils literal notranslate"><span class="pre">interSheet.fDumpFrame</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.interSheet.fPotential"><code class="docutils literal notranslate"><span class="pre">interSheet.fPotential</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.interSheet.increment"><code class="docutils literal notranslate"><span class="pre">interSheet.increment</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.interSheet.konfigName"><code class="docutils literal notranslate"><span class="pre">interSheet.konfigName</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.interSheet.nFrames"><code class="docutils literal notranslate"><span class="pre">interSheet.nFrames</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.interSheet.nTime"><code class="docutils literal notranslate"><span class="pre">interSheet.nTime</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.interSheet.nx"><code class="docutils literal notranslate"><span class="pre">interSheet.nx</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.interSheet.ny"><code class="docutils literal notranslate"><span class="pre">interSheet.ny</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.interSheet.resolMovie"><code class="docutils literal notranslate"><span class="pre">interSheet.resolMovie</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.interSheet.updateData"><code class="docutils literal notranslate"><span class="pre">interSheet.updateData()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.interSheet.updateFiles"><code class="docutils literal notranslate"><span class="pre">interSheet.updateFiles()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cmanim.reanimate"><code class="docutils literal notranslate"><span class="pre">reanimate()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.runCont2D"><code class="docutils literal notranslate"><span class="pre">runCont2D()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.runCont3D"><code class="docutils literal notranslate"><span class="pre">runCont3D()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.runDisp3D"><code class="docutils literal notranslate"><span class="pre">runDisp3D()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.runDispD"><code class="docutils literal notranslate"><span class="pre">runDispD()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.runDispX"><code class="docutils literal notranslate"><span class="pre">runDispX()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.runDispY"><code class="docutils literal notranslate"><span class="pre">runDispY()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.runDist3D"><code class="docutils literal notranslate"><span class="pre">runDist3D()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.runPressD"><code class="docutils literal notranslate"><span class="pre">runPressD()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.runPressX"><code class="docutils literal notranslate"><span class="pre">runPressX()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.runPressY"><code class="docutils literal notranslate"><span class="pre">runPressY()</span></code></a></li>
+<li><a class="reference internal" href="#cmanim.save"><code class="docutils literal notranslate"><span class="pre">save()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div class="sphinxprev">
+    <h4>Previous page</h4>
+    <p class="topless"><a href="cmutils.html"
+                          title="Previous page">&larr; cmutils module</a></p>
+  </div>
+  <div class="sphinxnext">
+    <h4>Next page</h4>
+    <p class="topless"><a href="cmparams.html"
+                          title="Next page">&rarr; cmparams module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cmanim.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+    
+    
+        <div class="sidebar-toggle-group no-js">
+            
+            <button class="sidebar-toggle" id="sidebar-hide" title="Hide the sidebar menu">
+                 «
+                <span class="show-for-small">hide menu</span>
+                
+            </button>
+            <button class="sidebar-toggle" id="sidebar-show" title="Show the sidebar menu">
+                
+                <span class="show-for-small">menu</span>
+                <span class="hide-for-small">sidebar</span>
+                 »
+            </button>
+        </div>
+    
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="cmparams.html" title="cmparams module"
+             >next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="cmutils.html" title="cmutils module"
+             >previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">cmutils 0.0.1 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="modules.html" >Python utilities</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">cmanim module</a></li> 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Christian Mueller.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
+</html>

@@ -1,0 +1,919 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>cmparams module &#8212; cmutils 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/cloud.css?v=f9ae72be" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+    
+    <script src="_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+
+    
+    
+     
+        <script src="_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.js"></script>
+    
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="modparams module" href="modparams.html" />
+    <link rel="prev" title="cmanim module" href="cmanim.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="modparams.html" title="modparams module"
+             accesskey="N">next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="cmanim.html" title="cmanim module"
+             accesskey="P">previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">cmutils 0.0.1 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Python utilities</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">cmparams module</a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-cmparams">
+<span id="cmparams-module"></span><h1>cmparams module<a class="headerlink" href="#module-cmparams" title="Link to this heading">¶</a></h1>
+<section id="interface-for-contmech-parameters">
+<h2>Interface for contMech Parameters<a class="headerlink" href="#interface-for-contmech-parameters" title="Link to this heading">¶</a></h2>
+<p>This module mimicks the objects defined in a <cite>contMech</cite> simulation and their
+attributes, which can be derived from the corresponding params file.</p>
+</section>
+<section id="api-documentation">
+<h2>API documentation<a class="headerlink" href="#api-documentation" title="Link to this heading">¶</a></h2>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cmparams.</span></span><span class="sig-name descname"><span class="pre">gfmdSheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newID</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmparams.html#gfmdSheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmparams.gfmdSheet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.ID">
+<span class="sig-name descname"><span class="pre">ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.ID" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.contactMod">
+<span class="sig-name descname"><span class="pre">contactMod</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.gfmdSheet.contactMod" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.dpRamp">
+<span class="sig-name descname"><span class="pre">dpRamp</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.dpRamp" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.dzRamp">
+<span class="sig-name descname"><span class="pre">dzRamp</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.dzRamp" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.dzStep">
+<span class="sig-name descname"><span class="pre">dzStep</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.dzStep" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.elastExpnt0">
+<span class="sig-name descname"><span class="pre">elastExpnt0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.gfmdSheet.elastExpnt0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.f3dMovie">
+<span class="sig-name descname"><span class="pre">f3dMovie</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.f3dMovie" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fAddSWR">
+<span class="sig-name descname"><span class="pre">fAddSWR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fAddSWR" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fBoxMuller">
+<span class="sig-name descname"><span class="pre">fBoxMuller</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fBoxMuller" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fConstCOM">
+<span class="sig-name descname"><span class="pre">fConstCOM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fConstCOM" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fDispX">
+<span class="sig-name descname"><span class="pre">fDispX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fDispX" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fDispY">
+<span class="sig-name descname"><span class="pre">fDispY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fDispY" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fDumpMaxwell">
+<span class="sig-name descname"><span class="pre">fDumpMaxwell</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fDumpMaxwell" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fExtrapolateInf">
+<span class="sig-name descname"><span class="pre">fExtrapolateInf</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fExtrapolateInf" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fKelvinVoigt">
+<span class="sig-name descname"><span class="pre">fKelvinVoigt</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fKelvinVoigt" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fLateral">
+<span class="sig-name descname"><span class="pre">fLateral</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fLateral" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fMassWeightg">
+<span class="sig-name descname"><span class="pre">fMassWeightg</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fMassWeightg" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fMaxwell">
+<span class="sig-name descname"><span class="pre">fMaxwell</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fMaxwell" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fOnSitePeriod">
+<span class="sig-name descname"><span class="pre">fOnSitePeriod</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fOnSitePeriod" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fOnSitePotential">
+<span class="sig-name descname"><span class="pre">fOnSitePotential</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fOnSitePotential" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fRollOff">
+<span class="sig-name descname"><span class="pre">fRollOff</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fRollOff" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fRoughAdd">
+<span class="sig-name descname"><span class="pre">fRoughAdd</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fRoughAdd" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fRoughNorm">
+<span class="sig-name descname"><span class="pre">fRoughNorm</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fRoughNorm" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fRoughRead">
+<span class="sig-name descname"><span class="pre">fRoughRead</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fRoughRead" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fSteppedRamp">
+<span class="sig-name descname"><span class="pre">fSteppedRamp</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fSteppedRamp" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fThickness0">
+<span class="sig-name descname"><span class="pre">fThickness0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fThickness0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fTopoAdd">
+<span class="sig-name descname"><span class="pre">fTopoAdd</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fTopoAdd" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fTopoRead">
+<span class="sig-name descname"><span class="pre">fTopoRead</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fTopoRead" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.frictRelax">
+<span class="sig-name descname"><span class="pre">frictRelax</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">500</span></em><a class="headerlink" href="#cmparams.gfmdSheet.frictRelax" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.frictionCoeffOS">
+<span class="sig-name descname"><span class="pre">frictionCoeffOS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.frictionCoeffOS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.fzOpposite">
+<span class="sig-name descname"><span class="pre">fzOpposite</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.fzOpposite" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.gammaOnSite">
+<span class="sig-name descname"><span class="pre">gammaOnSite</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.gammaOnSite" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.heightFlatPunch">
+<span class="sig-name descname"><span class="pre">heightFlatPunch</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.gfmdSheet.heightFlatPunch" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.heightSWR">
+<span class="sig-name descname"><span class="pre">heightSWR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></em><a class="headerlink" href="#cmparams.gfmdSheet.heightSWR" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.hertzExpnt">
+<span class="sig-name descname"><span class="pre">hertzExpnt</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#cmparams.gfmdSheet.hertzExpnt" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.hurst">
+<span class="sig-name descname"><span class="pre">hurst</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.8</span></em><a class="headerlink" href="#cmparams.gfmdSheet.hurst" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.konfigName">
+<span class="sig-name descname"><span class="pre">konfigName</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'konfig'</span></em><a class="headerlink" href="#cmparams.gfmdSheet.konfigName" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.lambdaR">
+<span class="sig-name descname"><span class="pre">lambdaR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="headerlink" href="#cmparams.gfmdSheet.lambdaR" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.lambdaS">
+<span class="sig-name descname"><span class="pre">lambdaS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.05</span></em><a class="headerlink" href="#cmparams.gfmdSheet.lambdaS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.massGFMD">
+<span class="sig-name descname"><span class="pre">massGFMD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.massGFMD" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.nElast">
+<span class="sig-name descname"><span class="pre">nElast</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.nElast" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.nMaxwell">
+<span class="sig-name descname"><span class="pre">nMaxwell</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.gfmdSheet.nMaxwell" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.nVeloTurnStep">
+<span class="sig-name descname"><span class="pre">nVeloTurnStep</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.nVeloTurnStep" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.nqxAddSWR">
+<span class="sig-name descname"><span class="pre">nqxAddSWR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#cmparams.gfmdSheet.nqxAddSWR" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.nqyAddSWR">
+<span class="sig-name descname"><span class="pre">nqyAddSWR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#cmparams.gfmdSheet.nqyAddSWR" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.peklenik">
+<span class="sig-name descname"><span class="pre">peklenik</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.gfmdSheet.peklenik" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.poisson0">
+<span class="sig-name descname"><span class="pre">poisson0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.25</span></em><a class="headerlink" href="#cmparams.gfmdSheet.poisson0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.pressFinal">
+<span class="sig-name descname"><span class="pre">pressFinal</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.pressFinal" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.pressInit">
+<span class="sig-name descname"><span class="pre">pressInit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.pressInit" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.rKV_LPF">
+<span class="sig-name descname"><span class="pre">rKV_LPF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#cmparams.gfmdSheet.rKV_LPF" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.rRoughNorm">
+<span class="sig-name descname"><span class="pre">rRoughNorm</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.gfmdSheet.rRoughNorm" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.rSphere">
+<span class="sig-name descname"><span class="pre">rSphere</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></em><a class="headerlink" href="#cmparams.gfmdSheet.rSphere" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.rVeloTurnStep">
+<span class="sig-name descname"><span class="pre">rVeloTurnStep</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.rVeloTurnStep" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.rXhertz">
+<span class="sig-name descname"><span class="pre">rXhertz</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.rXhertz" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.rYhertz">
+<span class="sig-name descname"><span class="pre">rYhertz</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#cmparams.gfmdSheet.rYhertz" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.radiusFlatPunch">
+<span class="sig-name descname"><span class="pre">radiusFlatPunch</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.25</span></em><a class="headerlink" href="#cmparams.gfmdSheet.radiusFlatPunch" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.rampRelax">
+<span class="sig-name descname"><span class="pre">rampRelax</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">350</span></em><a class="headerlink" href="#cmparams.gfmdSheet.rampRelax" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.rampSteps">
+<span class="sig-name descname"><span class="pre">rampSteps</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">150</span></em><a class="headerlink" href="#cmparams.gfmdSheet.rampSteps" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.resolMovie">
+<span class="sig-name descname"><span class="pre">resolMovie</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">512</span></em><a class="headerlink" href="#cmparams.gfmdSheet.resolMovie" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.scalKV">
+<span class="sig-name descname"><span class="pre">scalKV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000</span></em><a class="headerlink" href="#cmparams.gfmdSheet.scalKV" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.stiffness0">
+<span class="sig-name descname"><span class="pre">stiffness0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="headerlink" href="#cmparams.gfmdSheet.stiffness0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.tauKV">
+<span class="sig-name descname"><span class="pre">tauKV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.gfmdSheet.tauKV" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.thickness0">
+<span class="sig-name descname"><span class="pre">thickness0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.gfmdSheet.thickness0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.vX">
+<span class="sig-name descname"><span class="pre">vX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.vX" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.vXOnSite">
+<span class="sig-name descname"><span class="pre">vXOnSite</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.vXOnSite" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.vY">
+<span class="sig-name descname"><span class="pre">vY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.vY" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.vYOnSite">
+<span class="sig-name descname"><span class="pre">vYOnSite</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.vYOnSite" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.veloTurnPress">
+<span class="sig-name descname"><span class="pre">veloTurnPress</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.veloTurnPress" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.vzConstCOM">
+<span class="sig-name descname"><span class="pre">vzConstCOM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.vzConstCOM" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.zConstCOM">
+<span class="sig-name descname"><span class="pre">zConstCOM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.zConstCOM" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.zOpposite">
+<span class="sig-name descname"><span class="pre">zOpposite</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.gfmdSheet.zOpposite" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.gfmdSheet.zeroModeMass">
+<span class="sig-name descname"><span class="pre">zeroModeMass</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.gfmdSheet.zeroModeMass" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cmparams.interSheet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cmparams.</span></span><span class="sig-name descname"><span class="pre">interSheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newID</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmparams.html#interSheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmparams.interSheet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.ID">
+<span class="sig-name descname"><span class="pre">ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.interSheet.ID" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.fConstraint">
+<span class="sig-name descname"><span class="pre">fConstraint</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.interSheet.fConstraint" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.fDumpFrame">
+<span class="sig-name descname"><span class="pre">fDumpFrame</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.interSheet.fDumpFrame" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.fDumpGap">
+<span class="sig-name descname"><span class="pre">fDumpGap</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.interSheet.fDumpGap" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.fDumpLateral">
+<span class="sig-name descname"><span class="pre">fDumpLateral</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.interSheet.fDumpLateral" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.fPotential">
+<span class="sig-name descname"><span class="pre">fPotential</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.interSheet.fPotential" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.fPotentialTest">
+<span class="sig-name descname"><span class="pre">fPotentialTest</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.interSheet.fPotentialTest" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.frictRelax">
+<span class="sig-name descname"><span class="pre">frictRelax</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.interSheet.frictRelax" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.frictionCoeff">
+<span class="sig-name descname"><span class="pre">frictionCoeff</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.interSheet.frictionCoeff" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.nTimeOff">
+<span class="sig-name descname"><span class="pre">nTimeOff</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.interSheet.nTimeOff" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.nTimeOn">
+<span class="sig-name descname"><span class="pre">nTimeOn</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.interSheet.nTimeOn" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.potCurve">
+<span class="sig-name descname"><span class="pre">potCurve</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.interSheet.potCurve" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.potCurveRel">
+<span class="sig-name descname"><span class="pre">potCurveRel</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.interSheet.potCurveRel" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.potRange">
+<span class="sig-name descname"><span class="pre">potRange</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.interSheet.potRange" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.resolMovie">
+<span class="sig-name descname"><span class="pre">resolMovie</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">512</span></em><a class="headerlink" href="#cmparams.interSheet.resolMovie" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.sheetID0">
+<span class="sig-name descname"><span class="pre">sheetID0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.interSheet.sheetID0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.sheetID1">
+<span class="sig-name descname"><span class="pre">sheetID1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.interSheet.sheetID1" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.interSheet.surfEnerg">
+<span class="sig-name descname"><span class="pre">surfEnerg</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.interSheet.surfEnerg" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cmparams.read">
+<span class="sig-prename descclassname"><span class="pre">cmparams.</span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmparams.html#read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmparams.read" title="Link to this definition">¶</a></dt>
+<dd><p>Read parameters from a <cite>params.in</cite> or <cite>params.out</cite> file of a <cite>contMech</cite> simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file</strong> (<em>str</em>) – Filepath to a contMech params file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>sim</strong> (<em>simulation</em>) – object containing the same objects and attributes as a <cite>contMech</cite> simulation
+using the same params file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cmparams.simulation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cmparams.</span></span><span class="sig-name descname"><span class="pre">simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cmparams.html#simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cmparams.simulation" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.INTER">
+<span class="sig-name descname"><span class="pre">INTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#cmparams.simulation.INTER" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.SHEET">
+<span class="sig-name descname"><span class="pre">SHEET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#cmparams.simulation.SHEET" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.dTime">
+<span class="sig-name descname"><span class="pre">dTime</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.dTime" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.dampGlobal">
+<span class="sig-name descname"><span class="pre">dampGlobal</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.5</span></em><a class="headerlink" href="#cmparams.simulation.dampGlobal" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.fFire">
+<span class="sig-name descname"><span class="pre">fFire</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.fFire" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.fLangevin">
+<span class="sig-name descname"><span class="pre">fLangevin</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.fLangevin" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.fLogMeasure">
+<span class="sig-name descname"><span class="pre">fLogMeasure</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.fLogMeasure" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.fireDecrmt">
+<span class="sig-name descname"><span class="pre">fireDecrmt</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.simulation.fireDecrmt" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.fireIncrmt">
+<span class="sig-name descname"><span class="pre">fireIncrmt</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#cmparams.simulation.fireIncrmt" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.fireRedrct">
+<span class="sig-name descname"><span class="pre">fireRedrct</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.fireRedrct" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.frameInterval">
+<span class="sig-name descname"><span class="pre">frameInterval</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.frameInterval" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.freqFrame">
+<span class="sig-name descname"><span class="pre">freqFrame</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.freqFrame" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.inter">
+<span class="sig-name descname"><span class="pre">inter</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#cmparams.simulation.inter" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.lengthX">
+<span class="sig-name descname"><span class="pre">lengthX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.lengthX" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.lengthY">
+<span class="sig-name descname"><span class="pre">lengthY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.lengthY" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.nInter">
+<span class="sig-name descname"><span class="pre">nInter</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.nInter" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.nRelax">
+<span class="sig-name descname"><span class="pre">nRelax</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.nRelax" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.nSheet">
+<span class="sig-name descname"><span class="pre">nSheet</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.nSheet" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.nTime">
+<span class="sig-name descname"><span class="pre">nTime</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.nTime" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.nxGlobal">
+<span class="sig-name descname"><span class="pre">nxGlobal</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.nxGlobal" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.nyGlobal">
+<span class="sig-name descname"><span class="pre">nyGlobal</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.nyGlobal" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#cmparams.simulation.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.randSeed">
+<span class="sig-name descname"><span class="pre">randSeed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4712</span></em><a class="headerlink" href="#cmparams.simulation.randSeed" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.sheet">
+<span class="sig-name descname"><span class="pre">sheet</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#cmparams.simulation.sheet" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.tempFinal">
+<span class="sig-name descname"><span class="pre">tempFinal</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.tempFinal" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cmparams.simulation.tempInit">
+<span class="sig-name descname"><span class="pre">tempInit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#cmparams.simulation.tempInit" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><div class="sphinx-toc sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">cmparams module</a><ul>
+<li><a class="reference internal" href="#interface-for-contmech-parameters">Interface for contMech Parameters</a></li>
+<li><a class="reference internal" href="#api-documentation">API documentation</a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet"><code class="docutils literal notranslate"><span class="pre">gfmdSheet</span></code></a><ul>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.ID"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.ID</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.contactMod"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.contactMod</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.dpRamp"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.dpRamp</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.dzRamp"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.dzRamp</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.dzStep"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.dzStep</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.elastExpnt0"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.elastExpnt0</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.f3dMovie"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.f3dMovie</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fAddSWR"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fAddSWR</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fBoxMuller"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fBoxMuller</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fConstCOM"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fConstCOM</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fDispX"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fDispX</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fDispY"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fDispY</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fDumpMaxwell"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fDumpMaxwell</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fExtrapolateInf"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fExtrapolateInf</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fKelvinVoigt"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fKelvinVoigt</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fLateral"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fLateral</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fMassWeightg"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fMassWeightg</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fMaxwell"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fMaxwell</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fOnSitePeriod"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fOnSitePeriod</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fOnSitePotential"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fOnSitePotential</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fRollOff"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fRollOff</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fRoughAdd"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fRoughAdd</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fRoughNorm"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fRoughNorm</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fRoughRead"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fRoughRead</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fSteppedRamp"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fSteppedRamp</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fThickness0"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fThickness0</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fTopoAdd"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fTopoAdd</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fTopoRead"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fTopoRead</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.frictRelax"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.frictRelax</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.frictionCoeffOS"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.frictionCoeffOS</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.fzOpposite"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.fzOpposite</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.gammaOnSite"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.gammaOnSite</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.heightFlatPunch"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.heightFlatPunch</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.heightSWR"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.heightSWR</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.hertzExpnt"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.hertzExpnt</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.hurst"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.hurst</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.konfigName"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.konfigName</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.lambdaR"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.lambdaR</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.lambdaS"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.lambdaS</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.massGFMD"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.massGFMD</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.nElast"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.nElast</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.nMaxwell"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.nMaxwell</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.nVeloTurnStep"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.nVeloTurnStep</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.nqxAddSWR"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.nqxAddSWR</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.nqyAddSWR"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.nqyAddSWR</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.peklenik"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.peklenik</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.poisson0"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.poisson0</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.pressFinal"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.pressFinal</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.pressInit"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.pressInit</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.rKV_LPF"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.rKV_LPF</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.rRoughNorm"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.rRoughNorm</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.rSphere"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.rSphere</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.rVeloTurnStep"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.rVeloTurnStep</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.rXhertz"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.rXhertz</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.rYhertz"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.rYhertz</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.radiusFlatPunch"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.radiusFlatPunch</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.rampRelax"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.rampRelax</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.rampSteps"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.rampSteps</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.resolMovie"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.resolMovie</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.scalKV"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.scalKV</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.stiffness0"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.stiffness0</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.tauKV"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.tauKV</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.thickness0"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.thickness0</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.vX"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.vX</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.vXOnSite"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.vXOnSite</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.vY"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.vY</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.vYOnSite"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.vYOnSite</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.veloTurnPress"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.veloTurnPress</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.vzConstCOM"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.vzConstCOM</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.zConstCOM"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.zConstCOM</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.zOpposite"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.zOpposite</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.gfmdSheet.zeroModeMass"><code class="docutils literal notranslate"><span class="pre">gfmdSheet.zeroModeMass</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cmparams.interSheet"><code class="docutils literal notranslate"><span class="pre">interSheet</span></code></a><ul>
+<li><a class="reference internal" href="#cmparams.interSheet.ID"><code class="docutils literal notranslate"><span class="pre">interSheet.ID</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.fConstraint"><code class="docutils literal notranslate"><span class="pre">interSheet.fConstraint</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.fDumpFrame"><code class="docutils literal notranslate"><span class="pre">interSheet.fDumpFrame</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.fDumpGap"><code class="docutils literal notranslate"><span class="pre">interSheet.fDumpGap</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.fDumpLateral"><code class="docutils literal notranslate"><span class="pre">interSheet.fDumpLateral</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.fPotential"><code class="docutils literal notranslate"><span class="pre">interSheet.fPotential</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.fPotentialTest"><code class="docutils literal notranslate"><span class="pre">interSheet.fPotentialTest</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.frictRelax"><code class="docutils literal notranslate"><span class="pre">interSheet.frictRelax</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.frictionCoeff"><code class="docutils literal notranslate"><span class="pre">interSheet.frictionCoeff</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.nTimeOff"><code class="docutils literal notranslate"><span class="pre">interSheet.nTimeOff</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.nTimeOn"><code class="docutils literal notranslate"><span class="pre">interSheet.nTimeOn</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.potCurve"><code class="docutils literal notranslate"><span class="pre">interSheet.potCurve</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.potCurveRel"><code class="docutils literal notranslate"><span class="pre">interSheet.potCurveRel</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.potRange"><code class="docutils literal notranslate"><span class="pre">interSheet.potRange</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.resolMovie"><code class="docutils literal notranslate"><span class="pre">interSheet.resolMovie</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.sheetID0"><code class="docutils literal notranslate"><span class="pre">interSheet.sheetID0</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.sheetID1"><code class="docutils literal notranslate"><span class="pre">interSheet.sheetID1</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.interSheet.surfEnerg"><code class="docutils literal notranslate"><span class="pre">interSheet.surfEnerg</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cmparams.read"><code class="docutils literal notranslate"><span class="pre">read()</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation"><code class="docutils literal notranslate"><span class="pre">simulation</span></code></a><ul>
+<li><a class="reference internal" href="#cmparams.simulation.INTER"><code class="docutils literal notranslate"><span class="pre">simulation.INTER</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.SHEET"><code class="docutils literal notranslate"><span class="pre">simulation.SHEET</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.dTime"><code class="docutils literal notranslate"><span class="pre">simulation.dTime</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.dampGlobal"><code class="docutils literal notranslate"><span class="pre">simulation.dampGlobal</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.fFire"><code class="docutils literal notranslate"><span class="pre">simulation.fFire</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.fLangevin"><code class="docutils literal notranslate"><span class="pre">simulation.fLangevin</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.fLogMeasure"><code class="docutils literal notranslate"><span class="pre">simulation.fLogMeasure</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.fireDecrmt"><code class="docutils literal notranslate"><span class="pre">simulation.fireDecrmt</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.fireIncrmt"><code class="docutils literal notranslate"><span class="pre">simulation.fireIncrmt</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.fireRedrct"><code class="docutils literal notranslate"><span class="pre">simulation.fireRedrct</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.frameInterval"><code class="docutils literal notranslate"><span class="pre">simulation.frameInterval</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.freqFrame"><code class="docutils literal notranslate"><span class="pre">simulation.freqFrame</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.inter"><code class="docutils literal notranslate"><span class="pre">simulation.inter</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.lengthX"><code class="docutils literal notranslate"><span class="pre">simulation.lengthX</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.lengthY"><code class="docutils literal notranslate"><span class="pre">simulation.lengthY</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.nInter"><code class="docutils literal notranslate"><span class="pre">simulation.nInter</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.nRelax"><code class="docutils literal notranslate"><span class="pre">simulation.nRelax</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.nSheet"><code class="docutils literal notranslate"><span class="pre">simulation.nSheet</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.nTime"><code class="docutils literal notranslate"><span class="pre">simulation.nTime</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.nxGlobal"><code class="docutils literal notranslate"><span class="pre">simulation.nxGlobal</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.nyGlobal"><code class="docutils literal notranslate"><span class="pre">simulation.nyGlobal</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.path"><code class="docutils literal notranslate"><span class="pre">simulation.path</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.randSeed"><code class="docutils literal notranslate"><span class="pre">simulation.randSeed</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.sheet"><code class="docutils literal notranslate"><span class="pre">simulation.sheet</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.tempFinal"><code class="docutils literal notranslate"><span class="pre">simulation.tempFinal</span></code></a></li>
+<li><a class="reference internal" href="#cmparams.simulation.tempInit"><code class="docutils literal notranslate"><span class="pre">simulation.tempInit</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div class="sphinxprev">
+    <h4>Previous page</h4>
+    <p class="topless"><a href="cmanim.html"
+                          title="Previous page">&larr; cmanim module</a></p>
+  </div>
+  <div class="sphinxnext">
+    <h4>Next page</h4>
+    <p class="topless"><a href="modparams.html"
+                          title="Next page">&rarr; modparams module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cmparams.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+    
+    
+        <div class="sidebar-toggle-group no-js">
+            
+            <button class="sidebar-toggle" id="sidebar-hide" title="Hide the sidebar menu">
+                 «
+                <span class="show-for-small">hide menu</span>
+                
+            </button>
+            <button class="sidebar-toggle" id="sidebar-show" title="Show the sidebar menu">
+                
+                <span class="show-for-small">menu</span>
+                <span class="hide-for-small">sidebar</span>
+                 »
+            </button>
+        </div>
+    
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="modparams.html" title="modparams module"
+             >next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="cmanim.html" title="cmanim module"
+             >previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">cmutils 0.0.1 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="modules.html" >Python utilities</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">cmparams module</a></li> 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Christian Mueller.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
+</html>

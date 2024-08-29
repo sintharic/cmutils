@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>modparams &#8212; cmutils 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/cloud.css?v=f9ae72be" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+    
+    <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+
+    
+    
+     
+        <script src="../_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="../_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="../_static/cloud.js"></script>
+    
+
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+    <li><a href="../index.html">cmutils 0.0.1 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">modparams</a></li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for modparams</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">-----------------------------------------</span>
+<span class="sd">  Modification of contMech params files</span>
+<span class="sd">-----------------------------------------</span>
+
+<span class="sd">A collection of functions allowing to modify a `contMech` params file in-place.</span>
+
+<span class="sd">.. warning::</span>
+<span class="sd">    This module uses system calls to `sed` (on GNU/Linux) or `gsed` (on Mac).</span>
+<span class="sd">    Note that the Mac version of `sed` is fundamentally different to GNU&#39;s. </span>
+<span class="sd">    Importing the module raises an error if GNU `sed` is not installed properly.</span>
+
+
+<span class="sd">---------------------</span>
+<span class="sd">  API documentation</span>
+<span class="sd">---------------------</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">SED</span> <span class="o">=</span> <span class="s1">&#39;sed&#39;</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">cmparams</span> <span class="kn">import</span> <span class="n">paramType</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">run</span> <span class="k">as</span> <span class="n">call</span>
+
+
+
+<span class="c1"># check the installed version of sed/gsed</span>
+<span class="n">testfile</span> <span class="o">=</span> <span class="s2">&quot;_modparams_test_&quot;</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">testfile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span> <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;original&quot;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span> 
+  <span class="n">proc</span> <span class="o">=</span> <span class="n">call</span><span class="p">([</span><span class="s2">&quot;gsed&quot;</span><span class="p">,</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;/original/c\modified&quot;</span><span class="p">,</span> <span class="n">testfile</span><span class="p">],</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+  <span class="n">returnval</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span>
+  <span class="k">if</span> <span class="n">returnval</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+<span class="k">except</span><span class="p">:</span> 
+  <span class="n">returnval</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">if</span> <span class="n">returnval</span><span class="p">:</span>
+  <span class="k">try</span><span class="p">:</span> 
+    <span class="n">proc</span> <span class="o">=</span> <span class="n">call</span><span class="p">([</span><span class="s2">&quot;sed&quot;</span><span class="p">,</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;/original/c\modified&quot;</span><span class="p">,</span> <span class="n">testfile</span><span class="p">],</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">returnval</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span>
+    <span class="k">if</span> <span class="n">returnval</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+  <span class="k">except</span><span class="p">:</span> 
+    <span class="n">returnval</span> <span class="o">=</span> <span class="mi">1</span>
+  <span class="k">if</span> <span class="n">returnval</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">testfile</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;sed/gsed not working as intended.&quot;</span><span class="p">)</span>
+  <span class="k">else</span><span class="p">:</span> 
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">testfile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span> <span class="n">content</span> <span class="o">=</span> <span class="n">fid</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">content</span> <span class="o">==</span> <span class="s2">&quot;modified</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">SED</span> <span class="o">=</span> <span class="s2">&quot;sed&quot;</span>
+    <span class="k">else</span><span class="p">:</span> 
+      <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+      <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">testfile</span><span class="p">)</span>
+      <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;sed/gsed not working as intended.&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span> 
+  <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">testfile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span> <span class="n">content</span> <span class="o">=</span> <span class="n">fid</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+  <span class="k">if</span> <span class="n">content</span> <span class="o">==</span> <span class="s2">&quot;modified</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">SED</span> <span class="o">=</span> <span class="s2">&quot;gsed&quot;</span>
+  <span class="k">else</span><span class="p">:</span> 
+    <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">testfile</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;sed/gsed not working as intended.&quot;</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">testfile</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="sed">
+<a class="viewcode-back" href="../modparams.html#modparams.sed">[docs]</a>
+<span class="k">def</span> <span class="nf">sed</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
+  <span class="n">proc</span> <span class="o">=</span> <span class="n">call</span><span class="p">([</span><span class="n">SED</span><span class="p">,</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">file</span><span class="p">],</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">proc</span><span class="o">.</span><span class="n">check_returncode</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="check">
+<a class="viewcode-back" href="../modparams.html#modparams.check">[docs]</a>
+<span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span> <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">params</span><span class="p">]</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">][:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;# &#39;</span><span class="p">:</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">:]</span>
+    <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39; #&#39;</span><span class="p">:</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">][:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+  <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span> <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">values</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span> <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="o">!=</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;parameter names and values must have same length, but have </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">params</span><span class="p">,</span> <span class="n">values</span>
+  <span class="k">else</span><span class="p">:</span> 
+    <span class="k">return</span> <span class="n">params</span></div>
+
+
+
+<div class="viewcode-block" id="param_type">
+<a class="viewcode-back" href="../modparams.html#modparams.param_type">[docs]</a>
+<span class="k">def</span> <span class="nf">param_type</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+  <span class="k">try</span><span class="p">:</span> <span class="n">ptype</span> <span class="o">=</span> <span class="n">paramType</span><span class="p">[</span><span class="n">param</span><span class="p">]</span>
+  <span class="k">except</span><span class="p">:</span> 
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;WARNING: Unknown paramType for _</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s1">_. Assuming float.&#39;</span><span class="p">)</span>
+    <span class="n">ptype</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
+  <span class="k">return</span> <span class="n">ptype</span></div>
+
+
+
+<div class="viewcode-block" id="get_values">
+<a class="viewcode-back" href="../modparams.html#modparams.get_values">[docs]</a>
+<span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
+  <span class="c1"># sanity checks</span>
+  <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file</span><span class="p">):</span> 
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid params file: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">file</span><span class="p">)</span>
+  <span class="n">params</span> <span class="o">=</span> <span class="n">check</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+  <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+  <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fid</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+      <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">param</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+        <span class="n">ptype</span> <span class="o">=</span> <span class="n">param_type</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+        <span class="k">if</span> <span class="sa">f</span><span class="s1">&#39;# </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s1"> #&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+          <span class="c1">#print(line)#DEBUG</span>
+          <span class="k">if</span> <span class="n">ptype</span> <span class="o">==</span> <span class="s1">&#39;int&#39;</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+          <span class="k">else</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+
+  <span class="k">return</span> <span class="n">values</span></div>
+
+
+
+<div class="viewcode-block" id="set">
+<a class="viewcode-back" href="../modparams.html#modparams.set">[docs]</a>
+<span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="s1">&#39;params.in&#39;</span><span class="p">):</span>
+  <span class="c1"># sanity checks</span>
+  <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file</span><span class="p">):</span> 
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid params file: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">file</span><span class="p">)</span>
+  <span class="n">params</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">check</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+
+  <span class="k">for</span> <span class="n">param</span><span class="p">,</span><span class="n">pval</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">params</span><span class="p">,</span><span class="n">values</span><span class="p">):</span>
+    <span class="n">ptype</span> <span class="o">=</span> <span class="n">param_type</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ptype</span> <span class="o">==</span> <span class="s1">&#39;int&#39;</span><span class="p">:</span> 
+      <span class="n">newval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">pval</span><span class="p">))</span>
+      <span class="n">command</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/# </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2"> #/c</span><span class="se">\\</span><span class="si">{</span><span class="n">newval</span><span class="si">}</span><span class="se">\\</span><span class="s2">t</span><span class="se">\\</span><span class="s2">t# </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2"> #&quot;</span>
+    <span class="k">else</span><span class="p">:</span> 
+      <span class="n">newval</span> <span class="o">=</span> <span class="n">pval</span>
+      <span class="n">command</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/# </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2"> #/c</span><span class="se">\\</span><span class="si">{</span><span class="n">newval</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="se">\\</span><span class="s2">t</span><span class="se">\\</span><span class="s2">t# </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2"> #&quot;</span>
+
+    <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SED</span><span class="si">}</span><span class="s2"> -i &#39;</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&#39; </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="n">sed</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="add">
+<a class="viewcode-back" href="../modparams.html#modparams.add">[docs]</a>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">after</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="s1">&#39;params.in&#39;</span><span class="p">):</span>
+  <span class="c1"># sanity checks</span>
+  <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file</span><span class="p">):</span> 
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid params file: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">file</span><span class="p">)</span>
+  <span class="n">params</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">check</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">after</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;# &#39;</span><span class="p">:</span> <span class="n">after</span> <span class="o">=</span> <span class="n">after</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+  <span class="k">if</span> <span class="n">after</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39; #&#39;</span><span class="p">:</span> <span class="n">after</span> <span class="o">=</span> <span class="n">after</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+  <span class="k">for</span> <span class="n">param</span><span class="p">,</span><span class="n">pval</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">params</span><span class="p">,</span><span class="n">values</span><span class="p">):</span>
+    <span class="n">ptype</span> <span class="o">=</span> <span class="n">param_type</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ptype</span> <span class="o">==</span> <span class="s1">&#39;int&#39;</span><span class="p">:</span> 
+      <span class="n">newval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">pval</span><span class="p">))</span>
+      <span class="n">command</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/# </span><span class="si">{</span><span class="n">after</span><span class="si">}</span><span class="s2"> #/a</span><span class="se">\\</span><span class="si">{</span><span class="n">newval</span><span class="si">}</span><span class="se">\\</span><span class="s2">t</span><span class="se">\\</span><span class="s2">t# </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2"> #&quot;</span>
+    <span class="k">else</span><span class="p">:</span> 
+      <span class="n">newval</span> <span class="o">=</span> <span class="n">pval</span>
+      <span class="n">command</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/# </span><span class="si">{</span><span class="n">after</span><span class="si">}</span><span class="s2"> #/a</span><span class="se">\\</span><span class="si">{</span><span class="n">newval</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="se">\\</span><span class="s2">t</span><span class="se">\\</span><span class="s2">t# </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2"> #&quot;</span>
+
+    <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SED</span><span class="si">}</span><span class="s2"> -i &#39;</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&#39; </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="n">sed</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="multiply">
+<a class="viewcode-back" href="../modparams.html#modparams.multiply">[docs]</a>
+<span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">factors</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="s1">&#39;params.in&#39;</span><span class="p">):</span>
+  <span class="c1"># sanity checks</span>
+  <span class="n">params</span><span class="p">,</span> <span class="n">factors</span> <span class="o">=</span> <span class="n">check</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">factors</span><span class="p">)</span>
+
+  <span class="n">old_values</span> <span class="o">=</span> <span class="n">get_values</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+  <span class="n">new_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span><span class="o">*</span><span class="n">fac</span> <span class="k">for</span> <span class="n">val</span><span class="p">,</span><span class="n">fac</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">old_values</span><span class="p">,</span> <span class="n">factors</span><span class="p">)]</span>
+  <span class="nb">set</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">new_values</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># old functions for compatibility</span>
+<span class="n">paramNames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;nTime&#39;</span><span class="p">]</span>
+<span class="n">paramFacs</span>  <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<div class="viewcode-block" id="modify">
+<a class="viewcode-back" href="../modparams.html#modparams.modify">[docs]</a>
+<span class="k">def</span> <span class="nf">modify</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+  <span class="n">multiply</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">paramNames</span><span class="p">,</span> <span class="n">paramFacs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="run">
+<a class="viewcode-back" href="../modparams.html#modparams.run">[docs]</a>
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+  <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">paramNames</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">paramFacs</span><span class="p">):</span> 
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;paramNames, paramFacs and paramTypes must have the same length!&#39;</span><span class="p">)</span>
+  <span class="n">modify</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+    
+    
+        <div class="sidebar-toggle-group no-js">
+            
+            <button class="sidebar-toggle" id="sidebar-hide" title="Hide the sidebar menu">
+                 «
+                <span class="show-for-small">hide menu</span>
+                
+            </button>
+            <button class="sidebar-toggle" id="sidebar-show" title="Show the sidebar menu">
+                
+                <span class="show-for-small">menu</span>
+                <span class="hide-for-small">sidebar</span>
+                 »
+            </button>
+        </div>
+    
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> &nbsp; &nbsp;</li>
+    <li><a href="../index.html">cmutils 0.0.1 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">modparams</a></li> 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Christian Mueller.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
+</html>
